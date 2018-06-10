@@ -1,0 +1,19 @@
+application: rerune-test
+runtime: python27
+threadsafe: true
+api_version: 1
+
+handlers:
+# Endpoints handler
+- url: /_ah/spi/.*
+  script: backend.service.endpoints_application
+
+libraries:
+- name: jinja2
+  version: latest
+
+- name: webapp2
+  version: latest
+
+- name: endpoints
+  version: 1.0
