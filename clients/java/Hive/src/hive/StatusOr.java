@@ -12,11 +12,13 @@ public class StatusOr<T> {
 		value = v;
 	}
 	
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public StatusOr(StatusOr statusOr) {
 		if (statusOr.hasError()) {
 			errorMessage = statusOr.errorMessage;
 			error = statusOr.error;
+		} else {
+			value = (T) statusOr.get();
 		}
 	}
 	

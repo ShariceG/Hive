@@ -12,20 +12,24 @@ public class ServerClientMain {
 
 	public static void main(String[] args) {
 		madePosts = new ArrayList<Post>();
-		System.out.println("yo");
 //		createUsers(USER_COUNT);
-//		makePosts(1);
+		makePosts(1);
 //		makeComments(100);
 //		makePostUpdates(100);
 //		StatusOr<Response> response = client.getAllPostComments("f7e29db07ff845e6a001583949d32b6a", ServerClient.NO_CALLBACK);
 //		printArrayList(response.get().getComments());
+		client.shutdown();
 	}
 	
 	public static void makePostUpdates(int amount) {
 		System.out.println("Making " + amount + " post updates.");
 		for (int i = 0; i < amount; i++) {
 			ActionType type = new Random().nextInt(1000) < 500 ? ActionType.LIKE : ActionType.DISLIKE;
-			client.updatePost(getRandomUsername(), getRandomPostId(), type, ServerClient.NO_CALLBACK);
+			client.updatePost(getRandomUsername(), getRandomPostId(), type, new Callback() {
+				public void serverRequestCallback(StatusOr<Response> response) {
+					System.out.println(response.toString());
+				}
+			});
 		}
 	}
 	
@@ -34,7 +38,11 @@ public class ServerClientMain {
 		for (int i = 0; i < amount; i++) {
 			String username = getRandomUsername();
 			String comment = "Comment by " + username;
-			client.insertComment(username, comment, getRandomPostId(), ServerClient.NO_CALLBACK);
+			client.insertComment(username, comment, getRandomPostId(), new Callback() {
+				public void serverRequestCallback(StatusOr<Response> response) {
+					System.out.println(response.toString());
+				}
+			});
 		}
 	}
 	
@@ -44,8 +52,11 @@ public class ServerClientMain {
 			String username = getRandomUsername();
 			String post = "Post by " + username;
 			String location = getRandomLocation();
-			StatusOr<Response> response = client.insertPost(username, post, location, ServerClient.NO_CALLBACK);
-			madePosts.add(response.get().getPost().get());
+			client.insertPost(username, post, location, new Callback() {
+				public void serverRequestCallback(StatusOr<Response> response) {
+					madePosts.add(response.get().getPost().get());
+				}
+			});
 		}
 	}
 	
@@ -67,13 +78,16 @@ public class ServerClientMain {
 	public static void createUsers(int amount) {
 		System.out.println("Creating " + amount + " users.");
 		for (int i = 0; i < amount; i++) {
-			StatusOr<Response> response = client.createUser("user"+i, i+""+i+""+i, ServerClient.NO_CALLBACK);
-			if (response.hasError()) {
-				System.err.println(response.getErrorMessage());
-			}
-			if (response.get().serverReturnedWithError()) {
-				System.out.println(response.get().getServerStatusCode().name());
-			}
+			client.createUser("user"+i, i+""+i+""+i, new Callback() {
+				public void serverRequestCallback(StatusOr<Response> response) {
+					if (response.hasError()) {
+						System.err.println(response.getErrorMessage());
+					}
+					if (response.get().serverReturnedWithError()) {
+						System.out.println(response.get().getServerStatusCode().name());
+					}
+				}
+			});
 		}
 	}
 	
