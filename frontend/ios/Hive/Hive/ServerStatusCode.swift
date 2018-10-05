@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum ServerStatusCode {
+enum ServerStatusCode: Int {
     case OK
     case USER_NOT_FOUND
     case USER_ALREADY_EXISTS
