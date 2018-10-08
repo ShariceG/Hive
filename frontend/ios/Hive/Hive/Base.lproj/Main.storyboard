@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -67,11 +68,74 @@
                         <outlet property="postBn" destination="r9K-mV-2fh" id="xvc-WJ-6zB"/>
                         <outlet property="postTableView" destination="BWj-g3-gHc" id="JTn-eu-ER3"/>
                         <outlet property="postTv" destination="Rua-I2-fns" id="3x9-c4-LAz"/>
+                        <segue destination="o5x-Wz-56f" kind="show" identifier="seeCommentsSegue" id="AZh-Dt-8IT"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="228.75" y="1.056338028169014"/>
+        </scene>
+        <!--Comments View Controller-->
+        <scene sceneID="ika-lA-gvW">
+            <objects>
+                <viewController id="o5x-Wz-56f" customClass="CommentsViewController" customModule="Hive" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="oGp-pO-hsd"/>
+                        <viewControllerLayoutGuide type="bottom" id="aGU-ti-R0s"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kSJ-yq-4eD">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bR2-Vc-Cik">
+                                <rect key="frame" x="16" y="20" width="288" height="106"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="106" id="Coe-Ld-XN0"/>
+                                    <constraint firstAttribute="width" constant="288" id="HrF-yg-Cuo"/>
+                                </constraints>
+                            </view>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Comment" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="sfF-sZ-vdr">
+                                <rect key="frame" x="16" y="459" width="288" height="61"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="288" id="JqL-fi-EcS"/>
+                                    <constraint firstAttribute="height" constant="61" id="r2h-NM-ZM2"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XJV-l0-v3o">
+                                <rect key="frame" x="101" y="528" width="119" height="30"/>
+                                <state key="normal" title="Comment"/>
+                            </button>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="PDC-3x-Ve3">
+                                <rect key="frame" x="16" y="146" width="288" height="305"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="XJV-l0-v3o" firstAttribute="top" secondItem="sfF-sZ-vdr" secondAttribute="bottom" constant="8" symbolic="YES" id="3c6-wD-Uum"/>
+                            <constraint firstItem="XJV-l0-v3o" firstAttribute="leading" secondItem="kSJ-yq-4eD" secondAttribute="leadingMargin" constant="85" id="Gu5-GR-m8a"/>
+                            <constraint firstItem="bR2-Vc-Cik" firstAttribute="top" secondItem="oGp-pO-hsd" secondAttribute="bottom" id="Qrg-qu-Hgy"/>
+                            <constraint firstItem="sfF-sZ-vdr" firstAttribute="leading" secondItem="kSJ-yq-4eD" secondAttribute="leadingMargin" id="Zwc-x4-UMg"/>
+                            <constraint firstItem="sfF-sZ-vdr" firstAttribute="top" secondItem="bR2-Vc-Cik" secondAttribute="bottom" constant="333" id="bFr-ns-bMo"/>
+                            <constraint firstItem="bR2-Vc-Cik" firstAttribute="trailing" secondItem="kSJ-yq-4eD" secondAttribute="trailingMargin" id="ea5-uD-CSX"/>
+                            <constraint firstItem="bR2-Vc-Cik" firstAttribute="leading" secondItem="kSJ-yq-4eD" secondAttribute="leadingMargin" id="hkq-l2-hmv"/>
+                            <constraint firstItem="sfF-sZ-vdr" firstAttribute="trailing" secondItem="kSJ-yq-4eD" secondAttribute="trailingMargin" id="iZl-Gz-gwN"/>
+                            <constraint firstItem="XJV-l0-v3o" firstAttribute="centerX" secondItem="sfF-sZ-vdr" secondAttribute="centerX" id="oaq-6r-OVR"/>
+                            <constraint firstItem="sfF-sZ-vdr" firstAttribute="top" secondItem="bR2-Vc-Cik" secondAttribute="bottom" constant="333" id="tOf-TH-Vxa"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="postView" destination="bR2-Vc-Cik" id="O8g-ni-mK2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="PWt-9p-sTC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1297.5" y="-1.056338028169014"/>
         </scene>
     </scenes>
 </document>

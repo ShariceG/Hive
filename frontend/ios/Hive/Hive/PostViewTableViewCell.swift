@@ -16,15 +16,19 @@ class PostViewTableViewCell: UITableViewCell {
     @IBOutlet weak var commentBn: UIButton!
     @IBOutlet weak var likeBn: UIButton!
     
-    public func configure(post: Post) {
+    var feedViewController: ViewController? = nil
+    var post: Post? = nil
+    
+    public func configure(post: Post, feedViewController: ViewController) {
         userLabel.text = post.username
         postTextView.text = post.postText
         dislikeBn.setTitle("Dislike: " + String(post.dislikes), for: UIControlState.normal)
         likeBn.setTitle("Like: " + String(post.likes), for: UIControlState.normal)
+        self.feedViewController = feedViewController
+        self.post = post
     }
     
     @IBAction func commentBnAction(_ sender: UIButton) {
-//        let secondViewController = self.storyboard?.instantiateViewController(withIdentifier: "secondViewController") as! secondViewController
-//        self.navigationController.pushViewController(secondViewController, animated: true)
+        feedViewController?.performSegue(withIdentifier: "seeCommentsSegue", sender: self)
     }
 }

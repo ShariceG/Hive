@@ -10,15 +10,15 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    var client: ServerClient = ServerClient()
-    // All posts around user.
-//    var allPostsByUser: Array<Post> = []
-    var allPostsAroundUser: Array<Post> = []
-    
-    
     @IBOutlet weak var postTv: UITextView!
     @IBOutlet weak var postBn: UIButton!
     @IBOutlet weak var postTableView: UITableView!
+    
+    var client: ServerClient = ServerClient()
+    // All posts around user.
+    //    var allPostsByUser: Array<Post> = []
+    var allPostsAroundUser: Array<Post> = []
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -140,6 +140,14 @@ class ViewController: UIViewController {
     private func fetchPostsAroundUser() {
         client.getAllPostsAroundUser(username: "userC", location: getTestLocation(), completion:fetchPostsAroundUserCompletion)
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "seeCommentsSegue") {
+            let commentsViewController: CommentsViewController = segue.destination as! CommentsViewController
+            let postViewTableCell: PostViewTableViewCell = sender as! PostViewTableViewCell
+            commentsViewController.shareData(postViewTableCell: postViewTableCell)
+        }
+    }
 }
 
 // --------------- Extensions ----------------
@@ -161,7 +169,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "postViewCell") as! PostViewTableViewCell
-        cell.configure(post: allPostsAroundUser[indexPath.section])
+        cell.configure(post: allPostsAroundUser[indexPath.section], feedViewController: self)
         cell.layer.borderWidth = 2
         cell.layer.cornerRadius = 5
         cell.layer.borderColor = UIColor.blue.cgColor

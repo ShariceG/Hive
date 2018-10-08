@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		138E934D216B318B003DC7FA /* CommentsView.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 138E934C216B318B003DC7FA /* CommentsView.storyboard */; };
 		138E934F216B31B5003DC7FA /* CommentsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 138E934E216B31B5003DC7FA /* CommentsViewController.swift */; };
 		13A3771F2167417A001EA8A2 /* ServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A3771E2167417A001EA8A2 /* ServerClient.swift */; };
 		13A5CC802166E5B10026F7C7 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A5CC7F2166E5B00026F7C7 /* Response.swift */; };
@@ -29,7 +28,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		138E934C216B318B003DC7FA /* CommentsView.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CommentsView.storyboard; sourceTree = "<group>"; };
 		138E934E216B31B5003DC7FA /* CommentsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentsViewController.swift; sourceTree = "<group>"; };
 		13A3771E2167417A001EA8A2 /* ServerClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerClient.swift; sourceTree = "<group>"; };
 		13A5CC7F2166E5B00026F7C7 /* Response.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
@@ -63,6 +61,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		138E9350216B34EF003DC7FA /* storybords */ = {
+			isa = PBXGroup;
+			children = (
+				13AE7A432165F182003C898A /* Main.storyboard */,
+				13AE7A482165F182003C898A /* LaunchScreen.storyboard */,
+			);
+			name = storybords;
+			sourceTree = "<group>";
+		};
+		138E9351216B350A003DC7FA /* controllers */ = {
+			isa = PBXGroup;
+			children = (
+				13AE7A412165F182003C898A /* ViewController.swift */,
+				138E934E216B31B5003DC7FA /* CommentsViewController.swift */,
+			);
+			name = controllers;
+			sourceTree = "<group>";
+		};
+		138E9352216B3518003DC7FA /* xibs */ = {
+			isa = PBXGroup;
+			children = (
+				13B74A71216ABF4C00A64216 /* PostView.xib */,
+			);
+			name = xibs;
+			sourceTree = "<group>";
+		};
 		13AE7A332165F182003C898A = {
 			isa = PBXGroup;
 			children = (
@@ -82,17 +106,14 @@
 		13AE7A3E2165F182003C898A /* Hive */ = {
 			isa = PBXGroup;
 			children = (
+				138E9352216B3518003DC7FA /* xibs */,
+				138E9351216B350A003DC7FA /* controllers */,
+				138E9350216B34EF003DC7FA /* storybords */,
 				13CA13072168B57C001DFD2B /* customViews */,
 				13AE7A512165F30E003C898A /* client */,
 				13AE7A3F2165F182003C898A /* AppDelegate.swift */,
-				13AE7A412165F182003C898A /* ViewController.swift */,
-				13AE7A432165F182003C898A /* Main.storyboard */,
 				13AE7A462165F182003C898A /* Assets.xcassets */,
-				13AE7A482165F182003C898A /* LaunchScreen.storyboard */,
 				13AE7A4B2165F182003C898A /* Info.plist */,
-				13B74A71216ABF4C00A64216 /* PostView.xib */,
-				138E934C216B318B003DC7FA /* CommentsView.storyboard */,
-				138E934E216B31B5003DC7FA /* CommentsViewController.swift */,
 			);
 			path = Hive;
 			sourceTree = "<group>";
@@ -183,7 +204,6 @@
 			files = (
 				13AE7A4A2165F182003C898A /* LaunchScreen.storyboard in Resources */,
 				13AE7A472165F182003C898A /* Assets.xcassets in Resources */,
-				138E934D216B318B003DC7FA /* CommentsView.storyboard in Resources */,
 				13B74A72216ABF4D00A64216 /* PostView.xib in Resources */,
 				13AE7A452165F182003C898A /* Main.storyboard in Resources */,
 			);
