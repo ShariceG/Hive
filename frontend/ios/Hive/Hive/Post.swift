@@ -37,6 +37,17 @@ class Post {
         self.jsonPost = jsonPost
     }
     
+    public func toString() -> String {
+        let str1: String = "Username: " + username
+        + "\nPostID: " + postId
+        + "\nPostText: " + postText
+        
+        let str2: String = "\nLocation: " + location
+            + "\nLikes: " + String(likes)
+        
+        return str1 + str2 + "\nDislikes: " + String(dislikes) + "\n"
+    }
+    
     public static func jsonToPost(jsonPost: [String: Any]) -> Post {
         let likes = jsonPost["likes"] == nil ? 0 : Int(jsonPost["likes"] as! String)
         let dislikes = jsonPost["dislikes"] == nil ? 0 : Int(jsonPost["dislikes"] as! String)

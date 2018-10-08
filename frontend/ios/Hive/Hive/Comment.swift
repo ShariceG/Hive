@@ -30,6 +30,16 @@ class Comment {
         self.jsonComment = jsonComment
     }
     
+    public func toString() -> String {
+        let str1: String = "Username: " + username
+            + "\nPostID: " + postId
+            + "\nCommentId: " + String(commentId)
+        
+        let str2: String = "\nCommentText: " + commentText
+        
+        return str1 + str2 + "\n"
+    }
+    
     public static func jsonToComment(jsonComment: [String: Any]) -> Comment {
         return Comment(commentId: jsonComment["comment_id"]  as! String,
                        username: jsonComment["username"] as! String,

@@ -46,6 +46,8 @@ class ServiceHandler(object):
         loc_long = self._truncate_float(loc_long, dec_places)
         loc_lat = self._truncate_float(loc_lat, dec_places)
         post_id = uuid.uuid4().hex
+
+        # Store a version of the location thats only up to 2 decimal places.
         model.PostModel(
             id=post_id,
             PostText=request.post.post_text,
@@ -133,11 +135,15 @@ class ServiceHandler(object):
             return GetAllPostsAroundUserResponse(
                 status=Status(status_code=StatusCode.NO_LOCATION_PROVIDED))
         location = user.location.split(':')
+
+        # Truncate user location before querying.
+        loc_long = self._truncate_float(location[0], 2)
+        loc_lat = self._truncate_float(location[1], 2)
         results = ndb.gql(('SELECT * FROM PostModel '
                           'WHERE '
                           'LocationLongitude = :1 AND '
                           'LocationLatitude = :2'),
-                          location[0], location[1])
+                          loc_long, loc_lat)
 
         post_list = []
         helper = service_helper.ServiceHelper

@@ -18,4 +18,13 @@ enum ServerStatusCode: Int {
     case UNSUPPORTED_ACTION_TYPE
     case INTERNAL_ERROR
     case NO_LOCATION_PROVIDED
+    
+    static func enumFromString(string:String) -> ServerStatusCode? {
+        var i = 0
+        while let item = ServerStatusCode(rawValue: i) {
+            if String(describing: item) == string { return item }
+            i += 1
+        }
+        return nil
+    }
 }

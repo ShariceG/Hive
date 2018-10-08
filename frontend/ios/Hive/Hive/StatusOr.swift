@@ -41,7 +41,7 @@ class StatusOr<T> {
     
     public func hasError() -> Bool {
         // Error is never nil... but sometimes you just never know.
-        return error != nil || error! != StatusError.NO_ERROR
+        return error != nil && error! != StatusError.NO_ERROR
     }
     
     public func getStatusError() -> StatusError {
