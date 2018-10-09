@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PostViewTableViewCell: UITableViewCell {
+class PostView: UITableViewCell {
     
     @IBOutlet weak var userLabel: UILabel!
     @IBOutlet weak var postTextView: UITextView!
@@ -19,7 +19,7 @@ class PostViewTableViewCell: UITableViewCell {
     var feedViewController: ViewController? = nil
     var post: Post? = nil
     
-    public func configure(post: Post, feedViewController: ViewController) {
+    public func configure(post: Post, feedViewController: ViewController?) {
         userLabel.text = post.username
         postTextView.text = post.postText
         dislikeBn.setTitle("Dislike: " + String(post.dislikes), for: UIControlState.normal)

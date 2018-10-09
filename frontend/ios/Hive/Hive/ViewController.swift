@@ -69,6 +69,7 @@ class ViewController: UIViewController {
         DispatchQueue.main.async {
             self.postTv.isEditable = false
             self.postTv.isSelectable = false
+            sender.isEnabled = false
         }
         client.insertPost(username: "userC", postText: postTv.text, location: getTestLocation(), completion: insertPostCompletion)
     }
@@ -90,6 +91,7 @@ class ViewController: UIViewController {
             self.postTv.isEditable = true
             self.postTv.isSelectable = true
             self.postTv.text = ""
+            self.postBn.isEnabled = true
             self.postTableView.reloadData()
         }
     }
@@ -142,24 +144,15 @@ class ViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let postView: PostView = sender as! PostView
         if (segue.identifier == "seeCommentsSegue") {
             let commentsViewController: CommentsViewController = segue.destination as! CommentsViewController
-            let postViewTableCell: PostViewTableViewCell = sender as! PostViewTableViewCell
-            commentsViewController.shareData(postViewTableCell: postViewTableCell)
+            commentsViewController.shareData(post: postView.post!)
         }
     }
 }
 
 // --------------- Extensions ----------------
-
-extension UIView {
-    class func loadFromNibNamed(nibNamed: String, bundle: Bundle? = nil) -> UIView? {
-        return UINib(
-            nibName: nibNamed,
-            bundle: bundle
-            ).instantiate(withOwner: nil, options: nil)[0] as? UIView
-    }
-}
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     
@@ -168,7 +161,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "postViewCell") as! PostViewTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "postViewCell") as! PostView
         cell.configure(post: allPostsAroundUser[indexPath.section], feedViewController: self)
         cell.layer.borderWidth = 2
         cell.layer.cornerRadius = 5
@@ -187,6 +180,5 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
         return self.allPostsAroundUser.count
     }
-    
 }
 
