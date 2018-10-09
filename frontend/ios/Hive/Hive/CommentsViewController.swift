@@ -71,19 +71,22 @@ class CommentsViewController: UIViewController {
     }
     
     private func getAllPostCommentsCompletion(response: StatusOr<Response>) {
+        var error:Bool = false
         if (response.hasError()) {
             // Handle likley connection error
             print("Connection Failure: " + response.getErrorMessage())
-            return
+            error = true
         }
         if (response.get().serverStatusCode != ServerStatusCode.OK) {
             // Handle server error
             print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
-            return
+            error = true
         }
-        allPostComments.removeAll()
-        allPostComments.append(contentsOf: response.get().comments)
-        print("Got post comments: " + String(allPostComments.count))
+        if (!error) {
+            allPostComments.removeAll()
+            allPostComments.append(contentsOf: response.get().comments)
+            print("Got post comments: " + String(allPostComments.count))
+        }
         DispatchQueue.main.async {
             self.commentTableView.reloadData()
             if (self.commentTableView.refreshControl != nil) {
@@ -105,21 +108,23 @@ class CommentsViewController: UIViewController {
     }
     
     private func insertCommentCompletion(response: StatusOr<Response>) {
+        var error: Bool = false
         if (response.hasError()) {
             // Handle likley connection error
             print("Connection Failure: " + response.getErrorMessage())
-            return
+            error = true
         }
         if (response.get().serverStatusCode != ServerStatusCode.OK) {
             // Handle server error
             print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
-            return
+            error = true
         }
-        print("Inserted comment.. ")
         DispatchQueue.main.async {
             self.commentTextView.isEditable = true
             self.commentTextView.isSelectable = true
-            self.commentTextView.text = ""
+            if (!error) {
+                self.commentTextView.text = ""
+            }
             self.commentBn.isEnabled = true
         }
     }
@@ -140,6 +145,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if (tableView == postTableView && self.post != nil) {
             let cell: PostView = tableView.dequeueReusableCell(withIdentifier: "postViewCell") as! PostView
+            print(self.post?.toString() ?? "??")
             cell.configure(post: self.post!, feedViewController: nil)
             cell.layer.borderWidth = 2
             cell.layer.cornerRadius = 5
@@ -156,7 +162,6 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
             cell.layer.borderColor = UIColor.blue.cgColor
             return cell
         }
-//        return UITableViewCell()
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

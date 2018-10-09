@@ -17,7 +17,8 @@ class ServiceHelper(object):
             username=post_model.Username,
             post_text=post_model.PostText,
             location='%s:%s' % (str(post_model.LocationLongitude),
-                        str(post_model.LocationLatitude)))
+                        str(post_model.LocationLatitude)),
+            creation_timestamp_sec=post_model.CreationTimestampSec)
             # likes=post_model.Likes,
             # dislikes=post_model.Dislikes,
             # number_of_comments=post_model.NumbersOfComments)
@@ -28,4 +29,5 @@ class ServiceHelper(object):
             comment_id=comment_model.key.id(),
             username=comment_model.Username,
             post_id=comment_model.PostID,
-            comment_text=comment_model.CommentText)
+            comment_text=comment_model.CommentText,
+            creation_timestamp_sec=comment_model.CreationTimestampSec)

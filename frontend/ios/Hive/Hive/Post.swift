@@ -15,25 +15,29 @@ class Post {
     private(set) var location: String
     private(set) var likes: Int
     private(set) var dislikes: Int
+    private(set) var creationTimestampSec: Float
     private(set) var jsonPost: [String: Any]?
     
-    init(username: String, postId: String, postText: String, location: String, likes: Int, dislikes: Int) {
+    init(username: String, postId: String, postText: String, location: String, likes: Int, dislikes: Int,
+         creationTimestampSec: Float) {
         self.username = username
         self.postId = postId
         self.postText = postText
         self.location = location
         self.likes = likes
         self.dislikes = dislikes
+        self.creationTimestampSec = creationTimestampSec
         self.jsonPost = Optional.none
     }
     
-    convenience init(username: String, postId: String, postText: String, location: String, likes: Int, dislikes: Int, jsonPost: [String: Any]) {
+    convenience init(username: String, postId: String, postText: String, location: String, likes: Int, dislikes: Int, creationTimestampSec: Float, jsonPost: [String: Any]) {
         self.init(username: username,
                   postId: postId,
                   postText: postText,
                   location: location,
                   likes: likes,
-                  dislikes: dislikes)
+                  dislikes: dislikes,
+                  creationTimestampSec: creationTimestampSec)
         self.jsonPost = jsonPost
     }
     
@@ -57,6 +61,7 @@ class Post {
                     location: jsonPost["location"] as! String,
                     likes: likes!,
                     dislikes: dislikes!,
+                    creationTimestampSec: jsonPost["creation_timestamp_sec"] as! Float,
                     jsonPost: jsonPost)
     }
 }

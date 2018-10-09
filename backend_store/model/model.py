@@ -15,14 +15,13 @@ class PostModel(ndb.Model):
     LocationLatitude = ndb.StringProperty(required=False)
     TrendingLongitude = ndb.StringProperty(required=False)
     TrendingLatitude = ndb.StringProperty(required=False)
-    CreationDT = ndb.DateTimeProperty(required=False, auto_now_add=True)
+    CreationTimestampSec = ndb.FloatProperty(required=False)
 
 class CommentModel(ndb.Model):
     Username = ndb.StringProperty(required=False)
     PostID = ndb.StringProperty(required=False)
     CommentText = ndb.StringProperty(required=False)
-    CreationDT = ndb.DateTimeProperty(required=False, auto_now_add=True)
-    CreationTimeSec = ndb.FloatProperty(required=False)
+    CreationTimestampSec = ndb.FloatProperty(required=False)
 
 class ActionModel(ndb.Model):
     Username = ndb.StringProperty(required=False)

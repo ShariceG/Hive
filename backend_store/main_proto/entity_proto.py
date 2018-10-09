@@ -13,12 +13,14 @@ class Post(messages.Message):
     likes = messages.IntegerField(5, required=False)
     dislikes = messages.IntegerField(6, required=False)
     number_of_comments = messages.IntegerField(7, required=False)
+    creation_timestamp_sec = messages.FloatField(8, required=False)
 
 class Comment(messages.Message):
     comment_id = messages.StringField(1, required=False)
     username = messages.StringField(2, required=False)
     post_id = messages.StringField(3, required=False)
     comment_text = messages.StringField(4, required=False)
+    creation_timestamp_sec = messages.FloatField(5, required=False)
 
 class ActionType(messages.Enum):
     NO_ACTION = 0

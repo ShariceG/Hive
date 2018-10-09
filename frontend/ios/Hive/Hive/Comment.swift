@@ -14,19 +14,23 @@ class Comment {
     private(set) var username: String
     private(set) var postId: String
     private(set) var commentText: String
+    private(set) var creationTimestampSec: Float
     private(set) var jsonComment: [String: Any]?
     
-    init(commentId: String, username: String, postId: String, commentText: String) {
+    init(commentId: String, username: String, postId: String, commentText: String, creationTimestampSec: Float) {
         self.commentId = commentId
         self.username = username
         self.postId = postId
         self.commentText = commentText
+        self.creationTimestampSec = creationTimestampSec
         self.jsonComment = Optional.none
     }
     
     convenience init(commentId: String, username: String, postId: String, commentText: String,
+                     creationTimestampSec: Float,
                      jsonComment: [String: Any]) {
-        self.init(commentId: commentId, username: username, postId: postId, commentText: commentText)
+        self.init(commentId: commentId, username: username, postId: postId, commentText: commentText,
+                  creationTimestampSec: creationTimestampSec)
         self.jsonComment = jsonComment
     }
     
@@ -44,6 +48,8 @@ class Comment {
         return Comment(commentId: jsonComment["comment_id"]  as! String,
                        username: jsonComment["username"] as! String,
                        postId: jsonComment["post_id"] as! String,
-                       commentText: jsonComment["comment_text"] as! String)
+                       commentText: jsonComment["comment_text"] as! String,
+        creationTimestampSec: jsonComment["creation_timestamp_sec"] as! Float,
+        jsonComment: jsonComment)
     }
 }

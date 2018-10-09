@@ -75,22 +75,25 @@ class ViewController: UIViewController {
     }
     
     private func insertPostCompletion(response: StatusOr<Response>) {
+        var error: Bool = false
         if (response.hasError()) {
             // Handle likley connection error
             print("Connection Failure: " + response.getErrorMessage())
-            return
+            error = true
         }
         if (response.get().serverStatusCode != ServerStatusCode.OK) {
             // Handle server error
             print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
-            return
+            error = true
         }
         print("Inserted post successfully!")
         
         DispatchQueue.main.async {
             self.postTv.isEditable = true
             self.postTv.isSelectable = true
-            self.postTv.text = ""
+            if (!error) {
+                self.postTv.text = ""
+            }
             self.postBn.isEnabled = true
             self.postTableView.reloadData()
         }
@@ -116,19 +119,22 @@ class ViewController: UIViewController {
 //    }
     
     private func fetchPostsAroundUserCompletion(response: StatusOr<Response>) {
+        var error: Bool = false
         if (response.hasError()) {
             // Handle likley connection error
             print("Connection Failure: " + response.getErrorMessage())
-            return
+            error = true
         }
         if (response.get().serverStatusCode != ServerStatusCode.OK) {
             // Handle server error
             print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
-            return
+            error = true
         }
-        allPostsAroundUser.removeAll()
-        allPostsAroundUser.append(contentsOf: response.get().posts)
-        print("Got posts around user after fetch..." + String(allPostsAroundUser.count))
+        if (!error) {
+            allPostsAroundUser.removeAll()
+            allPostsAroundUser.append(contentsOf: response.get().posts)
+            print("Got posts around user after fetch..." + String(allPostsAroundUser.count))
+        }
         
         DispatchQueue.main.async {
             self.postTableView.reloadData()

@@ -46,9 +46,10 @@ class ServiceHandler(object):
         loc_long = self._truncate_float(loc_long, dec_places)
         loc_lat = self._truncate_float(loc_lat, dec_places)
         post_id = uuid.uuid4().hex
+        timestamp = time.time()
 
         # Store a version of the location thats only up to 2 decimal places.
-        model.PostModel(
+        new_model = model.PostModel(
             id=post_id,
             PostText=request.post.post_text,
             Username=username,
@@ -57,9 +58,12 @@ class ServiceHandler(object):
             LocationLongitude=self._truncate_float(loc_long, 2),
             LocationLatitude=self._truncate_float(loc_lat, 2),
             TrendingLongitude=self._truncate_float(loc_long, 1),
-            TrendingLatitude=self._truncate_float(loc_lat, 1)).put()
+            TrendingLatitude=self._truncate_float(loc_lat, 1),
+            CreationTimestampSec=timestamp)
+        new_model.put()
 
         post.post_id = post_id
+        post.creation_timestamp_sec = timestamp
         return InsertPostResponse(
             status=Status(status_code=StatusCode.OK), posts=[post])
 
@@ -114,15 +118,19 @@ class ServiceHandler(object):
         if not self._post_exists(comment.post_id):
             return InsertCommentResponse(
                 status=Status(status_code=StatusCode.POST_NOT_FOUND))
+
         comment_id = uuid.uuid4().hex
-        model.CommentModel(
+        timestamp = time.time()
+        new_model = model.CommentModel(
             id=comment_id,
             Username=comment.username,
             PostID=comment.post_id,
             CommentText=comment.comment_text,
-            CreationTimeSec=time.time()).put()
+            CreationTimestampSec=timestamp)
+        new_model.put()
 
         comment.comment_id = comment_id
+        comment.creation_timestamp_sec = timestamp
         return InsertCommentResponse(
             status=Status(status_code=StatusCode.OK), comments=[comment])
 
@@ -151,6 +159,7 @@ class ServiceHandler(object):
             the_post = helper.post_model_to_proto(post_model)
             self._fill_post_likes_dislikes_comment_count(the_post)
             post_list.append(the_post)
+        print post_list
         return GetAllPostsAroundUserResponse(
             posts=post_list, status=Status(status_code=StatusCode.OK))
 
