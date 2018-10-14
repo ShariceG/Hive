@@ -23,4 +23,17 @@ extension UIView {
     func copyView() -> UIView? {
         return NSKeyedUnarchiver.unarchiveObject(with: NSKeyedArchiver.archivedData(withRootObject: self)) as? UIView
     }
+    
+    func timestampToDate(timestampSec: Decimal) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(Decimal.toFloat(dec: timestampSec)))
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM:dd:yyyy HH:mm"
+        return dateFormatter.string(from: date)
+    }
+}
+
+extension Decimal {
+    static func toFloat(dec: Decimal) -> Float {
+        return (dec as NSNumber).floatValue;
+    }
 }

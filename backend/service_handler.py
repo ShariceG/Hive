@@ -12,6 +12,9 @@ from backend_store.model import model
 
 import uuid
 
+POST_QUERY_LIMIT = 3
+COMMENT_QUERY_LIMIT = 3
+
 class ServiceHandler(object):
 
     def handle_create_user(self, request):
@@ -135,6 +138,8 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK), comments=[comment])
 
     def handle_get_all_posts_around_user(self, request):
+        before = request.timestamp_before_sec
+        after = request.timestamp_after_sec
         user = request.user
         if not self._user_exists(user.username):
             return GetAllPostsAroundUserResponse(
@@ -147,11 +152,40 @@ class ServiceHandler(object):
         # Truncate user location before querying.
         loc_long = self._truncate_float(location[0], 2)
         loc_lat = self._truncate_float(location[1], 2)
-        results = ndb.gql(('SELECT * FROM PostModel '
+        results = None
+        if before is None and after is None:
+            results = ndb.gql(('SELECT * FROM PostModel '
                           'WHERE '
                           'LocationLongitude = :1 AND '
-                          'LocationLatitude = :2'),
+                          'LocationLatitude = :2 '
+                          'LIMIT %d') % (POST_QUERY_LIMIT),
                           loc_long, loc_lat)
+        elif before is not None:
+            results = ndb.gql(('SELECT * FROM PostModel '
+                          'WHERE '
+                          'LocationLongitude = :1 AND '
+                          'LocationLatitude = :2 AND '
+                          'CreationTimestampSec < :3 '
+                          'ORDER BY CreationTimestampSec DESC '
+                          'LIMIT %d') % (POST_QUERY_LIMIT),
+                          loc_long, loc_lat, before)
+        elif after is not None:
+            results = ndb.gql(('SELECT * FROM PostModel '
+                          'WHERE '
+                          'LocationLongitude = :1 AND '
+                          'LocationLatitude = :2 AND '
+                          'CreationTimestampSec > :3 '
+                          'ORDER BY CreationTimestampSec ASC '
+                          'LIMIT %d') % (POST_QUERY_LIMIT),
+                          loc_long, loc_lat, after)
+        else:
+            results = ndb.gql(('SELECT * FROM PostModel '
+                          'WHERE '
+                          'LocationLongitude = :1 AND '
+                          'LocationLatitude = :2 AND '
+                          'CreationTimestampSec < :3 AND '
+                          'CreationTimestampSec > :4 '),
+                          loc_long, loc_lat, before, after)
 
         post_list = []
         helper = service_helper.ServiceHelper
@@ -159,17 +193,42 @@ class ServiceHandler(object):
             the_post = helper.post_model_to_proto(post_model)
             self._fill_post_likes_dislikes_comment_count(the_post)
             post_list.append(the_post)
-        print post_list
         return GetAllPostsAroundUserResponse(
             posts=post_list, status=Status(status_code=StatusCode.OK))
 
     def handle_get_all_posts_by_user(self, request):
+        before = request.timestamp_before_sec
+        after = request.timestamp_after_sec
         user = request.user
         if not self._user_exists(user.username):
             return GetAllPostsByUserResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
-        results = ndb.gql(('SELECT * FROM PostModel '
-                          'WHERE Username = :1'), user.username)
+
+        results = None
+        if before is None and after is None:
+            results = ndb.gql(('SELECT * FROM PostModel '
+                              'WHERE Username = :1 '
+                              'LIMIT %d') % (POST_QUERY_LIMIT),
+                              user.username)
+        elif before is not None:
+            results = ndb.gql(('SELECT * FROM PostModel '
+                              'WHERE Username = :1 AND '
+                              'CreationTimestampSec < :2 '
+                              'LIMIT %d') % (POST_QUERY_LIMIT),
+                              user.username, before)
+        elif after is not None:
+            results = ndb.gql(('SELECT * FROM PostModel '
+                              'WHERE Username = :1 AND '
+                              'CreationTimestampSec > :2 '
+                              'LIMIT %d') % (POST_QUERY_LIMIT),
+                              user.username, after)
+        else:
+            results = ndb.gql(('SELECT * FROM PostModel '
+                              'WHERE Username = :1 AND '
+                              'CreationTimestampSec < :2 AND '
+                              'CreationTimestampSec > :3 '
+                              'LIMIT %d') % (POST_QUERY_LIMIT),
+                              user.username, before, after)
 
         post_list = []
         helper = service_helper.ServiceHelper

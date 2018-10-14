@@ -60,13 +60,25 @@
                     <fontDescription key="fontDescription" type="system" pointSize="10"/>
                     <state key="normal" title="Like"/>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WK7-HC-Zef">
+                    <rect key="frame" x="62" y="11" width="179" height="21"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="179" id="4pL-yP-1Yo"/>
+                        <constraint firstAttribute="height" constant="21" id="F5a-np-NXE"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <constraints>
                 <constraint firstItem="9vH-z9-V5j" firstAttribute="top" secondItem="CuX-vD-1QM" secondAttribute="top" id="04Y-wH-cc4"/>
+                <constraint firstItem="WK7-HC-Zef" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="11" id="5Wn-g7-5vZ"/>
                 <constraint firstItem="CuX-vD-1QM" firstAttribute="baseline" secondItem="9vH-z9-V5j" secondAttribute="firstBaseline" id="6yj-iH-whJ"/>
                 <constraint firstItem="9vH-z9-V5j" firstAttribute="baseline" secondItem="CuX-vD-1QM" secondAttribute="baseline" id="8uv-7g-4fs"/>
                 <constraint firstItem="DCd-vl-DNR" firstAttribute="leading" secondItem="Vsh-qo-etj" secondAttribute="leading" id="BfF-LA-xM2"/>
                 <constraint firstItem="9vH-z9-V5j" firstAttribute="baseline" secondItem="bea-6v-hgG" secondAttribute="firstBaseline" id="CsB-fS-aHK"/>
+                <constraint firstItem="Vsh-qo-etj" firstAttribute="top" secondItem="WK7-HC-Zef" secondAttribute="bottom" constant="8" id="FEz-Zw-96c"/>
                 <constraint firstAttribute="bottom" secondItem="bea-6v-hgG" secondAttribute="bottom" constant="11" id="FfO-8d-ixt"/>
                 <constraint firstAttribute="trailing" secondItem="CuX-vD-1QM" secondAttribute="trailing" constant="20" id="FvV-tg-U7j"/>
                 <constraint firstItem="Vsh-qo-etj" firstAttribute="centerX" secondItem="9vH-z9-V5j" secondAttribute="centerX" id="IRB-Hn-ORG"/>
@@ -74,9 +86,11 @@
                 <constraint firstItem="9vH-z9-V5j" firstAttribute="baseline" secondItem="CuX-vD-1QM" secondAttribute="firstBaseline" id="MLE-B9-XyC"/>
                 <constraint firstItem="Vsh-qo-etj" firstAttribute="top" secondItem="DCd-vl-DNR" secondAttribute="bottom" constant="6" id="Q1u-g6-kBg"/>
                 <constraint firstItem="DCd-vl-DNR" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="ScE-UX-qos"/>
+                <constraint firstItem="WK7-HC-Zef" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="62" id="TeS-IA-JdY"/>
                 <constraint firstItem="9vH-z9-V5j" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Thz-nD-LMO"/>
                 <constraint firstItem="bea-6v-hgG" firstAttribute="baseline" secondItem="9vH-z9-V5j" secondAttribute="baseline" id="Tus-WY-mL5"/>
                 <constraint firstItem="bea-6v-hgG" firstAttribute="top" secondItem="Vsh-qo-etj" secondAttribute="bottom" constant="9" id="XeQ-km-sim"/>
+                <constraint firstAttribute="trailing" secondItem="WK7-HC-Zef" secondAttribute="trailing" constant="60" id="Yy7-DW-MK7"/>
                 <constraint firstItem="bea-6v-hgG" firstAttribute="top" secondItem="9vH-z9-V5j" secondAttribute="top" id="aaQ-Jk-eTB"/>
                 <constraint firstItem="DCd-vl-DNR" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="topMargin" id="vAt-EL-9mU"/>
                 <constraint firstItem="Vsh-qo-etj" firstAttribute="leading" secondItem="bea-6v-hgG" secondAttribute="leading" id="zLq-Ye-Wnr"/>
@@ -84,6 +98,7 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
                 <outlet property="commentBn" destination="9vH-z9-V5j" id="USv-VG-ARJ"/>
+                <outlet property="dateLabel" destination="WK7-HC-Zef" id="4nw-3c-yIz"/>
                 <outlet property="dislikeBn" destination="bea-6v-hgG" id="5rW-0e-P2c"/>
                 <outlet property="likeBn" destination="CuX-vD-1QM" id="v5j-Bd-tKq"/>
                 <outlet property="postTextView" destination="Vsh-qo-etj" id="u5U-8g-NmT"/>

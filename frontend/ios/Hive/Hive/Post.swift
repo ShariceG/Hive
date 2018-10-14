@@ -15,11 +15,11 @@ class Post {
     private(set) var location: String
     private(set) var likes: Int
     private(set) var dislikes: Int
-    private(set) var creationTimestampSec: Float
+    private(set) var creationTimestampSec: Decimal
     private(set) var jsonPost: [String: Any]?
     
     init(username: String, postId: String, postText: String, location: String, likes: Int, dislikes: Int,
-         creationTimestampSec: Float) {
+         creationTimestampSec: Decimal) {
         self.username = username
         self.postId = postId
         self.postText = postText
@@ -30,7 +30,7 @@ class Post {
         self.jsonPost = Optional.none
     }
     
-    convenience init(username: String, postId: String, postText: String, location: String, likes: Int, dislikes: Int, creationTimestampSec: Float, jsonPost: [String: Any]) {
+    convenience init(username: String, postId: String, postText: String, location: String, likes: Int, dislikes: Int, creationTimestampSec: Decimal, jsonPost: [String: Any]) {
         self.init(username: username,
                   postId: postId,
                   postText: postText,
@@ -61,7 +61,7 @@ class Post {
                     location: jsonPost["location"] as! String,
                     likes: likes!,
                     dislikes: dislikes!,
-                    creationTimestampSec: jsonPost["creation_timestamp_sec"] as! Float,
+                    creationTimestampSec: (jsonPost["creation_timestamp_sec"] as! NSNumber).decimalValue,
                     jsonPost: jsonPost)
     }
 }

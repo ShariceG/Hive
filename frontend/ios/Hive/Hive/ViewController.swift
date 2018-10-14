@@ -25,7 +25,7 @@ class ViewController: UIViewController {
         setupPostTv()
         setupPostBn()
         setupPostTableView()
-        fetchPostsAroundUser()
+        fetchPostsAroundUser(before: nil, after: nil)
     }
     
     private func setupPostBn() {
@@ -55,7 +55,10 @@ class ViewController: UIViewController {
     
     @objc func refreshPostTableView(_ refreshControl: UIRefreshControl) {
         // This fetch should also end the refresh.
-        fetchPostsAroundUser()
+        let newestPost: Post? = allPostsAroundUser.count == 0 ?
+            nil : allPostsAroundUser[0]
+        fetchPostsAroundUser(before: nil,
+                             after: newestPost != nil ? newestPost?.creationTimestampSec : nil)
     }
     
     private func getTestLocation() -> String {
@@ -131,8 +134,8 @@ class ViewController: UIViewController {
             error = true
         }
         if (!error) {
-            allPostsAroundUser.removeAll()
             allPostsAroundUser.append(contentsOf: response.get().posts)
+            allPostsAroundUser = allPostsAroundUser.sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
             print("Got posts around user after fetch..." + String(allPostsAroundUser.count))
         }
         
@@ -145,8 +148,10 @@ class ViewController: UIViewController {
         }
     }
     
-    private func fetchPostsAroundUser() {
-        client.getAllPostsAroundUser(username: "userC", location: getTestLocation(), completion:fetchPostsAroundUserCompletion)
+    // todo: calll this
+    private func fetchPostsAroundUser(before: Decimal?, after: Decimal?) {
+        client.getAllPostsAroundUser(username: "userC", location: getTestLocation(),
+                                     before: before, after: after, completion:fetchPostsAroundUserCompletion)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

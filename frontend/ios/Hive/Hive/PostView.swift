@@ -15,6 +15,7 @@ class PostView: UITableViewCell {
     @IBOutlet weak var dislikeBn: UIButton!
     @IBOutlet weak var commentBn: UIButton!
     @IBOutlet weak var likeBn: UIButton!
+    @IBOutlet weak var dateLabel: UILabel!
     
     var feedViewController: ViewController? = nil
     var post: Post? = nil
@@ -24,6 +25,7 @@ class PostView: UITableViewCell {
         postTextView.text = post.postText
         dislikeBn.setTitle("Dislike: " + String(post.dislikes), for: UIControlState.normal)
         likeBn.setTitle("Like: " + String(post.likes), for: UIControlState.normal)
+        dateLabel.text = self.timestampToDate(timestampSec: post.creationTimestampSec)
         self.feedViewController = feedViewController
         self.post = post
     }

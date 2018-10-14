@@ -62,6 +62,8 @@ class InsertCommentResponse(messages.Message):
 '''Only need username'''
 class GetAllPostsAroundUserRequest(messages.Message):
     user = messages.MessageField(entity_proto.User, 1, required=False)
+    timestamp_before_sec = messages.FloatField(2, required = False)
+    timestamp_after_sec = messages.FloatField(3, required=False)
 
 class GetAllPostsAroundUserResponse(messages.Message):
     posts = messages.MessageField(entity_proto.Post, 1, repeated=True)

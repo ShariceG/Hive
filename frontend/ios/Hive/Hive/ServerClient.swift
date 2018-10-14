@@ -44,12 +44,21 @@ class ServerClient {
         executeGet(targetUrl: path, jsonParams: request, completion: completion)
     }
     
-    public func getAllPostsAroundUser(username: String, location: String, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func getAllPostsAroundUser(username: String, location: String,
+                                      before: Decimal?, after: Decimal?,
+                                      completion:@escaping (StatusOr<Response>) -> ()) {
         var user: [String:Any] = [String:Any]()
         user["username"] = username
         user["location"] = location
         var request: [String:Any] = [String:Any]()
         request["user"] = user
+        if (before != nil) {
+            print("Sending THIS over: " + before!.description)
+            request["timestamp_before_sec"] = before!.description
+        }
+        if (after != nil) {
+            request["timestamp_after_sec"] = after!.description
+        }
 
         let path: String = constructIncompleteUrlPath() + ServerClient.GET_ALL_POSTS_AROUND_USER_PATH
         executeGet(targetUrl: path, jsonParams: request, completion: completion)
