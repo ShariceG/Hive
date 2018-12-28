@@ -24,20 +24,31 @@ class CommentsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTapped()
         setupTables()
         setupExitGesture()
-    
+        setupCommentTv()
         DispatchQueue.main.async {
             self.postTableView.reloadData()
         }
         getAllPostComments()
     }
     
+    public func controllerInit(post: Post) {
+        self.post = post
+    }
+    
+    private func setupCommentTv() {
+        commentTextView.layer.cornerRadius = 10.0
+        commentTextView.layer.borderWidth = 1.0
+        commentTextView.layer.borderColor = UIColor.black.cgColor
+    }
+    
     private func setupExitGesture() {
         let gesture = UISwipeGestureRecognizer(target: self, action: #selector(exitViewController))
         gesture.numberOfTouchesRequired = 1
         gesture.direction = .down
-        postTableView.subviews[0].addGestureRecognizer(gesture)
+        postTableView.addGestureRecognizer(gesture)
     }
     
     private func setupTables() {
@@ -128,10 +139,6 @@ class CommentsViewController: UIViewController {
             self.commentBn.isEnabled = true
         }
     }
-    
-    public func shareData(post: Post) {
-        self.post = post
-    }
 }
 
 // --------------- Extensions ----------------
@@ -145,7 +152,6 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if (tableView == postTableView && self.post != nil) {
             let cell: PostView = tableView.dequeueReusableCell(withIdentifier: "postViewCell") as! PostView
-            print(self.post?.toString() ?? "??")
             cell.configure(post: self.post!, feedViewController: nil)
             cell.layer.borderWidth = 2
             cell.layer.cornerRadius = 5
@@ -165,11 +171,11 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 10
+        return 0
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
+        return tableView == postTableView ? tableView.layer.bounds.height : 120
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

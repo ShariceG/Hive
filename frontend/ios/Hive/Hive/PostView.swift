@@ -21,12 +21,16 @@ class PostView: UITableViewCell {
     var post: Post? = nil
     
     public func configure(post: Post, feedViewController: ViewController?) {
+        self.feedViewController = feedViewController
+        self.configure(post: post)
+    }
+    
+    public func configure(post: Post) {
         userLabel.text = post.username
         postTextView.text = post.postText
         dislikeBn.setTitle("Dislike: " + String(post.dislikes), for: UIControlState.normal)
         likeBn.setTitle("Like: " + String(post.likes), for: UIControlState.normal)
         dateLabel.text = self.timestampToDate(timestampSec: post.creationTimestampSec)
-        self.feedViewController = feedViewController
         self.post = post
     }
     

@@ -22,6 +22,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.hideKeyboardWhenTapped()
         setupPostTv()
         setupPostBn()
         setupPostTableView()
@@ -84,12 +85,15 @@ class ViewController: UIViewController {
             print("Connection Failure: " + response.getErrorMessage())
             error = true
         }
-        if (response.get().serverStatusCode != ServerStatusCode.OK) {
+        if (!error && response.get().serverStatusCode != ServerStatusCode.OK) {
             // Handle server error
             print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
             error = true
         }
-        print("Inserted post successfully!")
+        
+        if (!error) {
+            print("Inserted post successfully!")
+        }
         
         DispatchQueue.main.async {
             self.postTv.isEditable = true
@@ -128,7 +132,7 @@ class ViewController: UIViewController {
             print("Connection Failure: " + response.getErrorMessage())
             error = true
         }
-        if (response.get().serverStatusCode != ServerStatusCode.OK) {
+        if (!error && response.get().serverStatusCode != ServerStatusCode.OK) {
             // Handle server error
             print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
             error = true
@@ -158,7 +162,7 @@ class ViewController: UIViewController {
         let postView: PostView = sender as! PostView
         if (segue.identifier == "seeCommentsSegue") {
             let commentsViewController: CommentsViewController = segue.destination as! CommentsViewController
-            commentsViewController.shareData(post: postView.post!)
+            commentsViewController.controllerInit(post: postView.post!)
         }
     }
 }

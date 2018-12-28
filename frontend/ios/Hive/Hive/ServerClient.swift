@@ -13,7 +13,8 @@ class ServerClient {
     private static let CONNECTION_TIMEOUT_MS: Int = 5000
     private static let READ_TIMEOUT_MS: Int = 55000
     
-    private static let SERVER_DOMAIN: String = "http://localhost:8080"
+//    private static let SERVER_DOMAIN: String = "http://localhost:8080"
+    private static let SERVER_DOMAIN: String = "http://10.0.0.52:8080"
     private static let COMMON_PATH: String = "/_ah/api/media_api/v1/"
     private static let CREATE_USER_PATH: String = "app.create_user?"
     private static let INSERT_COMMENT_PATH: String = "app.insert_comment?"

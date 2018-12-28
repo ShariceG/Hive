@@ -14,10 +14,10 @@ class Comment {
     private(set) var username: String
     private(set) var postId: String
     private(set) var commentText: String
-    private(set) var creationTimestampSec: Float
+    private(set) var creationTimestampSec: Decimal
     private(set) var jsonComment: [String: Any]?
     
-    init(commentId: String, username: String, postId: String, commentText: String, creationTimestampSec: Float) {
+    init(commentId: String, username: String, postId: String, commentText: String, creationTimestampSec: Decimal) {
         self.commentId = commentId
         self.username = username
         self.postId = postId
@@ -27,7 +27,7 @@ class Comment {
     }
     
     convenience init(commentId: String, username: String, postId: String, commentText: String,
-                     creationTimestampSec: Float,
+                     creationTimestampSec: Decimal,
                      jsonComment: [String: Any]) {
         self.init(commentId: commentId, username: username, postId: postId, commentText: commentText,
                   creationTimestampSec: creationTimestampSec)
@@ -49,7 +49,7 @@ class Comment {
                        username: jsonComment["username"] as! String,
                        postId: jsonComment["post_id"] as! String,
                        commentText: jsonComment["comment_text"] as! String,
-        creationTimestampSec: jsonComment["creation_timestamp_sec"] as! Float,
+        creationTimestampSec: (jsonComment["creation_timestamp_sec"] as! NSNumber).decimalValue,
         jsonComment: jsonComment)
     }
 }
