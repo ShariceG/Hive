@@ -2,6 +2,4 @@
 bin/
 .recommenders/
 .settings/
-.classpath
-.project
 *.pyc

@@ -12,8 +12,8 @@ public class ServerClientMain {
 
 	public static void main(String[] args) {
 		madePosts = new ArrayList<Post>();
-//		createUsers(USER_COUNT);
-		makePosts(1);
+		createUsers(USER_COUNT);
+//		makePosts(1);
 //		makeComments(100);
 //		makePostUpdates(100);
 //		StatusOr<Response> response = client.getAllPostComments("f7e29db07ff845e6a001583949d32b6a", ServerClient.NO_CALLBACK);
