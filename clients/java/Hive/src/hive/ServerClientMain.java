@@ -7,7 +7,7 @@ import java.util.Random;
 public class ServerClientMain {
 	
 	private static ServerClient client = ServerClient.newServerClient();
-	private final static int USER_COUNT = 1;
+	private final static int USER_COUNT = 10;
 	private static ArrayList<Post> madePosts;
 
 	public static void main(String[] args) {

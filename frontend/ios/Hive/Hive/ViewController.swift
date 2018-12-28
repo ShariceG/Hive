@@ -63,7 +63,12 @@ class ViewController: UIViewController {
     }
     
     private func getTestLocation() -> String {
-        return "47.608013:-122.335167"  // Seattle
+//        return "47.608013:-122.335167"  // Seattle
+        return "33.844847:-116.549069"
+    }
+    
+    private func getTestUser() -> String {
+        return "user1"
     }
     
     @IBAction func postBnAction(_ sender: UIButton) {
@@ -75,7 +80,7 @@ class ViewController: UIViewController {
             self.postTv.isSelectable = false
             sender.isEnabled = false
         }
-        client.insertPost(username: "userC", postText: postTv.text, location: getTestLocation(), completion: insertPostCompletion)
+        client.insertPost(username: getTestUser(), postText: postTv.text, location: getTestLocation(), completion: insertPostCompletion)
     }
     
     private func insertPostCompletion(response: StatusOr<Response>) {
@@ -154,7 +159,7 @@ class ViewController: UIViewController {
     
     // todo: calll this
     private func fetchPostsAroundUser(before: Decimal?, after: Decimal?) {
-        client.getAllPostsAroundUser(username: "userC", location: getTestLocation(),
+        client.getAllPostsAroundUser(username: getTestUser(), location: getTestLocation(),
                                      before: before, after: after, completion:fetchPostsAroundUserCompletion)
     }
     
