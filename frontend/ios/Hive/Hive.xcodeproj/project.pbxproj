@@ -28,6 +28,7 @@
 		13AE7A6521661419003C898A /* ServerStatusCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE7A6421661419003C898A /* ServerStatusCode.swift */; };
 		13B74A70216AA4F100A64216 /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13B74A6F216AA4F100A64216 /* PostView.swift */; };
 		13B74A72216ABF4D00A64216 /* PostView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B74A71216ABF4C00A64216 /* PostView.xib */; };
+		E067E56721D6A52600D3095D /* PopularViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E067E56621D6A52600D3095D /* PopularViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +55,7 @@
 		13AE7A6421661419003C898A /* ServerStatusCode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerStatusCode.swift; sourceTree = "<group>"; };
 		13B74A6F216AA4F100A64216 /* PostView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		13B74A71216ABF4C00A64216 /* PostView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PostView.xib; sourceTree = "<group>"; };
+		E067E56621D6A52600D3095D /* PopularViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 			children = (
 				13AE7A412165F182003C898A /* ViewController.swift */,
 				138E934E216B31B5003DC7FA /* CommentsViewController.swift */,
+				E067E56621D6A52600D3095D /* PopularViewController.swift */,
 			);
 			name = controllers;
 			sourceTree = "<group>";
@@ -242,6 +245,7 @@
 				13AE7A572165FBE7003C898A /* Post.swift in Sources */,
 				13B74A70216AA4F100A64216 /* PostView.swift in Sources */,
 				13AE7A5D216606D0003C898A /* StatusOr.swift in Sources */,
+				E067E56721D6A52600D3095D /* PopularViewController.swift in Sources */,
 				13AE7A5B21660522003C898A /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

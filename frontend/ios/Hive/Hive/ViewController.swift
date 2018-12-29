@@ -27,6 +27,14 @@ class ViewController: UIViewController {
         setupPostBn()
         setupPostTableView()
         fetchPostsAroundUser(before: nil, after: nil)
+        setupGestureToPopularView()
+    }
+    
+    private func setupGestureToPopularView() {
+        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(gestureToPopularViewAction))
+        gesture.numberOfTouchesRequired = 1
+        gesture.direction = .left
+        postTableView.addGestureRecognizer(gesture)
     }
     
     private func setupPostBn() {
@@ -81,6 +89,10 @@ class ViewController: UIViewController {
             sender.isEnabled = false
         }
         client.insertPost(username: getTestUser(), postText: postTv.text, location: getTestLocation(), completion: insertPostCompletion)
+    }
+    
+    @objc func gestureToPopularViewAction(recognizer: UISwipeGestureRecognizer) {
+        self.performSegue(withIdentifier: "seePopularSegue", sender: self)
     }
     
     private func insertPostCompletion(response: StatusOr<Response>) {
@@ -164,10 +176,15 @@ class ViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let postView: PostView = sender as! PostView
+        if (segue.identifier == "seePopularSegue") {
+            // Do something here, maybe...
+            return
+        }
         if (segue.identifier == "seeCommentsSegue") {
+            let postView: PostView = sender as! PostView
             let commentsViewController: CommentsViewController = segue.destination as! CommentsViewController
             commentsViewController.controllerInit(post: postView.post!)
+            return
         }
     }
 }

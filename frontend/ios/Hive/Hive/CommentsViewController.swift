@@ -11,7 +11,6 @@ import UIKit
 
 class CommentsViewController: UIViewController {
     
-    
     @IBOutlet weak var commentTableView: UITableView!
     @IBOutlet weak var postTableView: UITableView!
     @IBOutlet weak var commentBn: UIButton!

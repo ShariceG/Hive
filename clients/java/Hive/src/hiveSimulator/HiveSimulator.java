@@ -43,7 +43,10 @@ public class HiveSimulator {
 					user.writeComment();
 				} else if (randomNum < 750) {
 					user.changeLocation(randomLocation());
-					user.writePost();
+					user.performActionOnAPost();
+				} else {
+					user.performActionOnAPost();
+					user.changeLocation(randomLocation());
 				}
 			}
 			

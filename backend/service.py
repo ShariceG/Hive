@@ -91,4 +91,25 @@ class LocationBasedSocialMediaAPI(remote.Service):
     def get_all_comments_for_post(self, request):
         return self._handler.handle_get_all_comments_for_post(request)
 
+    @endpoints.method(server_proto.GetAllPopularPostsAtLocationRequest,
+        server_proto.GetAllPopularPostsAtLocationResponse,
+        name='get_all_popular_posts_at_location',
+        path='app.get_all_popular_posts_at_location', http_method='GET')
+    def get_all_popular_posts_at_location(self, request):
+        return self._handler.handle_get_all_popular_posts_at_location(request)
+
+    @endpoints.method(server_proto.GetTrendingLocationsRequest,
+        server_proto.GetTrendingLocationsResponse,
+        name='get_trending_locations',
+        path='app.get_trending_locations', http_method='GET')
+    def get_trending_locations(self, request):
+        return self._handler.handle_get_trending_locations(request)
+
+    @endpoints.method(server_proto.CalculateAllPopularityIndexRequest,
+        server_proto.CalculateAllPopularityIndexResponse,
+        name='calculate_all_popularity_index',
+        path='app.calculate_all_popularity_index', http_method='POST')
+    def calculate_all_popularity_index(self, request):
+        return self._handler.handle_calculate_all_popularity_index(request)
+
 endpoints_application = endpoints.api_server([LocationBasedSocialMediaAPI])

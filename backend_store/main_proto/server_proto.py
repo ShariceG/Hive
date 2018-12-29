@@ -99,3 +99,23 @@ class GetAllCommentsForPostRequest(messages.Message):
 class GetAllCommentsForPostResponse(messages.Message):
     comments = messages.MessageField(entity_proto.Comment, 1, repeated=True)
     status = messages.MessageField(Status, 2, required=False)
+
+class GetAllPopularPostsAtLocationRequest(messages.Message):
+    user = messages.MessageField(entity_proto.User, 1, required=False)
+
+class GetAllPopularPostsAtLocationResponse(messages.Message):
+    posts = messages.MessageField(entity_proto.Post, 1, repeated=True)
+    status = messages.MessageField(Status, 2, required=False)
+
+class GetTrendingLocationsRequest(messages.Message):
+    pass
+
+class GetTrendingLocationsResponse(messages.Message):
+    locations = messages.StringField(1, repeated=True)
+    status = messages.MessageField(Status, 2, required=False)
+
+class CalculateAllPopularityIndexRequest(messages.Message):
+    pass
+
+class CalculateAllPopularityIndexResponse(messages.Message):
+    status = messages.MessageField(Status, 2, required=False)

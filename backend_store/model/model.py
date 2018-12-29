@@ -13,9 +13,10 @@ class PostModel(ndb.Model):
     OriginalLatitude = ndb.StringProperty(required=False)
     LocationLongitude = ndb.StringProperty(required=False)
     LocationLatitude = ndb.StringProperty(required=False)
-    TrendingLongitude = ndb.StringProperty(required=False)
-    TrendingLatitude = ndb.StringProperty(required=False)
+    TrendingLongitude = ndb.StringProperty(required=False) # remove
+    TrendingLatitude = ndb.StringProperty(required=False) # remove
     CreationTimestampSec = ndb.FloatProperty(required=False)
+    PopularityIndex = ndb.IntegerProperty(required=False)
 
 class CommentModel(ndb.Model):
     Username = ndb.StringProperty(required=False)
@@ -27,12 +28,12 @@ class ActionModel(ndb.Model):
     Username = ndb.StringProperty(required=False)
     PostID = ndb.StringProperty(required=False)
     ActionType = ndb.StringProperty(required=False)
-    TrendingLongitude = ndb.StringProperty(required=False)
-    TrendingLatitude = ndb.StringProperty(required=False)
+    TrendingLongitude = ndb.StringProperty(required=False) # remove
+    TrendingLatitude = ndb.StringProperty(required=False) # remove
     CreationDT = ndb.DateTimeProperty(required=False, auto_now_add=True)
     CreationTimeSec = ndb.FloatProperty(required=False)
 
-class TrendingModel(ndb.Model):
+class PopularityModel(ndb.Model):
     RegionName = ndb.StringProperty(required=False)
     RegionLongitude = ndb.StringProperty(required=False)
     RegionLatitude = ndb.StringProperty(required=False)

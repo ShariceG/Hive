@@ -12,10 +12,10 @@ public class ServerClientMain {
 
 	public static void main(String[] args) {
 		madePosts = new ArrayList<Post>();
-		createUsers(USER_COUNT);
+//		createUsers(USER_COUNT);
 //		makePosts(1);
 //		makeComments(100);
-//		makePostUpdates(100);
+//		makePostUpdates(1);
 //		StatusOr<Response> response = client.getAllPostComments("f7e29db07ff845e6a001583949d32b6a", ServerClient.NO_CALLBACK);
 //		printArrayList(response.get().getComments());
 		client.shutdown();
@@ -61,7 +61,8 @@ public class ServerClientMain {
 	}
 	
 	public static String getRandomPostId() {
-		return madePosts.get(new Random().nextInt(madePosts.size())).getPostId();
+		return "1";
+//		return madePosts.get(new Random().nextInt(madePosts.size())).getPostId();
 	}
 	
 	public static String getRandomLocation() {

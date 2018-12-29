@@ -14,6 +14,7 @@ import uuid
 
 POST_QUERY_LIMIT = 3
 COMMENT_QUERY_LIMIT = 3
+LOCATION_QUERY_DECIMAL_PLACES = 2
 
 class ServiceHandler(object):
 
@@ -37,17 +38,12 @@ class ServiceHandler(object):
         if not self._user_exists(username):
             return InsertPostResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
-        if post.location is None or not ':' in post.location:
+        ok, lat, lon = self._verify_and_get_latitude_longitude(post.location)
+        if not ok:
             return InsertPostResponse(
                 status=Status(status_code=StatusCode.NO_LOCATION_PROVIDED))
-
-        location = request.post.location.split(':')
-        loc_long = location[0]
-        loc_lat = location[1]
-        # Truncate such that both quanties have the same decimal places.
-        dec_places = max(len(loc_long), len(loc_lat))
-        loc_long = self._truncate_float(loc_long, dec_places)
-        loc_lat = self._truncate_float(loc_lat, dec_places)
+        # Truncate user location before querying.
+        loc_lat, loc_long = self._truncate_latitude_longitude(lat, lon)
         post_id = uuid.uuid4().hex
         timestamp = time.time()
 
@@ -56,12 +52,10 @@ class ServiceHandler(object):
             id=post_id,
             PostText=request.post.post_text,
             Username=username,
-            OriginalLongitude=loc_long,
-            OriginalLatitude=loc_lat,
-            LocationLongitude=self._truncate_float(loc_long, 2),
-            LocationLatitude=self._truncate_float(loc_lat, 2),
-            TrendingLongitude=self._truncate_float(loc_long, 1),
-            TrendingLatitude=self._truncate_float(loc_lat, 1),
+            OriginalLongitude=lon,
+            OriginalLatitude=lat,
+            LocationLongitude=loc_long,
+            LocationLatitude=loc_lat,
             CreationTimestampSec=timestamp)
         new_model.put()
 
@@ -144,14 +138,13 @@ class ServiceHandler(object):
         if not self._user_exists(user.username):
             return GetAllPostsAroundUserResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
-        if user.location is None or not ':' in user.location:
+        ok, lat, lon = self._verify_and_get_latitude_longitude(user.location)
+        if not ok:
             return GetAllPostsAroundUserResponse(
                 status=Status(status_code=StatusCode.NO_LOCATION_PROVIDED))
-        location = user.location.split(':')
-
         # Truncate user location before querying.
-        loc_long = self._truncate_float(location[0], 2)
-        loc_lat = self._truncate_float(location[1], 2)
+        loc_lat, loc_long = self._truncate_latitude_longitude(lat, lon)
+
         results = None
         if before is None and after is None:
             results = ndb.gql(('SELECT * FROM PostModel '
@@ -274,6 +267,59 @@ class ServiceHandler(object):
         return GetAllCommentsForPostResponse(
             comments=comment_list, status=Status(status_code=StatusCode.OK))
 
+    def handle_get_all_popular_posts_at_location(self, request):
+        user = request.user
+        if not self._user_exists(user.username):
+            return GetAllPopularPostsAtLocationResponse(
+                status=Status(status_code=StatusCode.USER_NOT_FOUND))
+        ok, lat, lon = self._verify_and_get_latitude_longitude(user.location)
+        if not ok:
+            return GetAllPopularPostsAtLocationResponse(
+                status=Status(status_code=StatusCode.NO_LOCATION_PROVIDED))
+        # Truncate user location before querying.
+        loc_lat, loc_long = self._truncate_latitude_longitude(lat, lon)
+
+        results = model.PostModel.query(
+            model.PostModel.PopularityIndex > TRENDING_POPULARITY_INDEX)
+        post_list = []
+        helper = service_helper.ServiceHelper
+        for post_model in results:
+            the_post = helper.post_model_to_proto(post_model)
+            self._fill_post_likes_dislikes_comment_count(the_post)
+            post_list.append(the_post)
+        return GetAllPopularPostsAtLocationResponse(
+            posts=post_list, status=Status(status_code=StatusCode.OK))
+
+    def handle_get_trending_locations(self, request):
+        results = ndb.gql(('SELECT LocationLatitude, LocationLongitude '
+                 'FROM PostModel ORDER BY PopularityIndex DESC LIMIT 5'))
+        locations = []
+        for result in results:
+            locations.append('%s:%s' % (result.LocationLatitude,
+                result.LocationLongitude))
+        return GetTrendingLocationsResponse(locations=locations,
+            status=Status(status_code=StatusCode.OK))
+
+    def handle_calculate_all_popularity_index(self, request):
+        # Let t = last x seconds
+        # Popularity = likes in t + dislikes in t + comments in t
+
+        time_thresh = time.time() - (60 * 60)  # Last hour, in sec
+        results = model.PostModel.query()
+        print("The count: ", results.count())
+        for post in results:
+            id = post.key.id()
+            count = model.ActionModel.query(
+                model.ActionModel.PostID == id,
+                model.ActionModel.CreationTimeSec > time_thresh).count()
+            count += model.CommentModel.query(
+                model.CommentModel.PostID == id,
+                model.CommentModel.CreationTimestampSec > time_thresh).count()
+            post.PopularityIndex = count
+            post.put()
+        return CalculateAllPopularityIndexResponse(
+            status=Status(status_code=StatusCode.OK))
+
     def handle_update_trending_posts(self):
         cut_off_time_sec = time.time() - 1800
         target_long = 98.1
@@ -314,6 +360,21 @@ class ServiceHandler(object):
         post.likes = info[0]
         post.dislikes = info[1]
         post.number_of_comments = info[2]
+
+    def _truncate_latitude_longitude(self, lat, lon):
+        dec = LOCATION_QUERY_DECIMAL_PLACES
+        return self._truncate_float(lat, dec), self._truncate_float(lon, dec)
+
+    def _verify_and_get_latitude_longitude(self, location):
+        if not isinstance(location, basestring) or not ':' in location:
+            return False, None, None
+        # Latitude should be first, then longitude
+        lat_lon = location.split(':')
+        # Truncate such that both quanties have the same decimal places.
+        dec_places = max(len(lat_lon[1]), len(lat_lon[0]))
+        lon = self._truncate_float(lat_lon[1], dec_places)
+        lat = self._truncate_float(lat_lon[0], dec_places)
+        return True, lat, lon
 
     def _post_exists(self, post_id):
         return not ndb.Key('PostModel', post_id).get() is None

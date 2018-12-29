@@ -5,6 +5,7 @@ import java.util.Random;
 
 import javax.management.RuntimeErrorException;
 
+import hive.ActionType;
 import hive.Callback;
 import hive.Response;
 import hive.ServerClient;
@@ -60,6 +61,28 @@ public class SimulatedUser {
 				int randomIndex = new Random().nextInt(response.get().getPosts().size());
 				String postId = response.get().getPosts().get(randomIndex).getPostId();
 				client.insertComment(username, randomComment(), postId, new Callback() {
+					public void serverRequestCallback(StatusOr<Response> response) {
+						// ignore response, assume it worked.
+					}
+				});
+				
+			}
+		});
+	}
+	
+	public void performActionOnAPost() {
+		client.getAllPostsAroundUser(username, location, new Callback() {
+			public void serverRequestCallback(StatusOr<Response> response) {
+				
+				if (response.get().getPosts().size() == 0) {
+					writePost();
+					return;
+				}
+				
+				int randomIndex = new Random().nextInt(response.get().getPosts().size());
+				String postId = response.get().getPosts().get(randomIndex).getPostId();
+				ActionType type = new Random().nextInt(1000) < 500 ? ActionType.LIKE : ActionType.DISLIKE;
+				client.updatePost(username, postId, type, new Callback() {
 					public void serverRequestCallback(StatusOr<Response> response) {
 						// ignore response, assume it worked.
 					}
