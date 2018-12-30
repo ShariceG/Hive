@@ -18,6 +18,12 @@ indexes:
   - name: "LocationLatitude"
   - name: "LocationLongitude"
   - name: "CreationTimestampSec"
+- kind: "PostModel"
+  properties:
+  - name: "LocationLatitude"
+  - name: "LocationLongitude"
+  - name: "PopularityIndex"
+    direction: desc
 - kind: "ActionModel"
   properties:
   - name: "PostID"

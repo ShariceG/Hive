@@ -98,12 +98,12 @@ class LocationBasedSocialMediaAPI(remote.Service):
     def get_all_popular_posts_at_location(self, request):
         return self._handler.handle_get_all_popular_posts_at_location(request)
 
-    @endpoints.method(server_proto.GetTrendingLocationsRequest,
-        server_proto.GetTrendingLocationsResponse,
-        name='get_trending_locations',
-        path='app.get_trending_locations', http_method='GET')
-    def get_trending_locations(self, request):
-        return self._handler.handle_get_trending_locations(request)
+    @endpoints.method(server_proto.GetPopularLocationsRequest,
+        server_proto.GetPopularLocationsResponse,
+        name='get_popular_locations',
+        path='app.get_popular_locations', http_method='GET')
+    def get_popular_locations(self, request):
+        return self._handler.handle_get_popular_locations(request)
 
     @endpoints.method(server_proto.CalculateAllPopularityIndexRequest,
         server_proto.CalculateAllPopularityIndexResponse,

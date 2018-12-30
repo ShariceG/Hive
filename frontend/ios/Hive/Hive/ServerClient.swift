@@ -24,14 +24,33 @@ class ServerClient {
     private static let GET_ALL_POSTS_BY_USER_PATH: String = "app.get_all_posts_by_user?"
     private static let GET_ALL_POSTS_COMMENTED_ON_BY_USER_PATH: String = "app.get_all_posts_commented_on_by_user?"
     private static let UPDATE_POST_PATH: String = "app.update_post?"
+    private static let GET_ALL_POPULAR_POSTS_AT_LOCATION: String = "app.get_all_popular_posts_at_location?"
+    private static let GET_POPULAR_LOCATIONS: String = "app.get_popular_locations?"
+    
+    public func getPopularLocations(completion:@escaping (StatusOr<Response>) -> ()) {
+        let request: [String:Any] = [String:Any]()
+        let path = constructIncompleteUrlPath() + ServerClient.GET_POPULAR_LOCATIONS
+        executeGet(targetUrl: path, jsonParams: request, completion: completion)
+    }
+    
+    public func getAllPopularPostsAtLocation(username: String, latitude: String, longitude: String, completion:@escaping (StatusOr<Response>) -> ()) {
+        var user: [String:Any] = [String:Any]()
+        user["username"] = username
+        user["location"] = latitude + ":" + longitude
+        var request: [String:Any] = [String:Any]()
+        request["user"] = user
+        
+        let path = constructIncompleteUrlPath() + ServerClient.GET_ALL_POPULAR_POSTS_AT_LOCATION
+        executeGet(targetUrl: path, jsonParams: request, completion: completion)
+    }
     
     public func getAllPostsCommentedOnByUser(username: String, completion:@escaping (StatusOr<Response>) -> ()){
         var user: [String:Any] = [String:Any]()
         user["username"] = username
         var request: [String:Any] = [String:Any]()
         request["user"] = user
+
         let path = constructIncompleteUrlPath() + ServerClient.GET_ALL_POSTS_COMMENTED_ON_BY_USER_PATH
-        
         executeGet(targetUrl: path, jsonParams: request, completion: completion)
     }
     

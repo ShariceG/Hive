@@ -65,10 +65,6 @@ class CommentsViewController: UIViewController {
         commentTableView.refreshControl = UIRefreshControl()
         commentTableView.refreshControl!.addTarget(self, action: #selector(refreshCommentTableView(_:)), for: .valueChanged)
     }
-    
-    private func getTestUser() -> String {
-        return "user1"
-    }
 
     @objc func exitViewController(recognizer: UISwipeGestureRecognizer) {
         _ = self.navigationController?.popViewController(animated: true)
@@ -118,7 +114,7 @@ class CommentsViewController: UIViewController {
             self.commentTextView.isSelectable = false
             sender.isEnabled = false
         }
-        client.insertComment(username: getTestUser(), commentText: commentTextView.text, postId: (post?.postId)!, completion: insertCommentCompletion)
+        client.insertComment(username: self.getTestUser(), commentText: commentTextView.text, postId: (post?.postId)!, completion: insertCommentCompletion)
     }
     
     private func insertCommentCompletion(response: StatusOr<Response>) {

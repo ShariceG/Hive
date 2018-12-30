@@ -29,6 +29,7 @@
 		13B74A70216AA4F100A64216 /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13B74A6F216AA4F100A64216 /* PostView.swift */; };
 		13B74A72216ABF4D00A64216 /* PostView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B74A71216ABF4C00A64216 /* PostView.xib */; };
 		E067E56721D6A52600D3095D /* PopularViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E067E56621D6A52600D3095D /* PopularViewController.swift */; };
+		E0D91F3621D803F0007E6916 /* PopularCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D91F3521D803F0007E6916 /* PopularCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		13B74A6F216AA4F100A64216 /* PostView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		13B74A71216ABF4C00A64216 /* PostView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PostView.xib; sourceTree = "<group>"; };
 		E067E56621D6A52600D3095D /* PopularViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularViewController.swift; sourceTree = "<group>"; };
+		E0D91F3521D803F0007E6916 /* PopularCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +153,7 @@
 			children = (
 				13B74A6F216AA4F100A64216 /* PostView.swift */,
 				138E9355216C1E58003DC7FA /* CommentView.swift */,
+				E0D91F3521D803F0007E6916 /* PopularCollectionViewCell.swift */,
 			);
 			name = customViews;
 			sourceTree = "<group>";
@@ -236,6 +239,7 @@
 				13AE7A5921660074003C898A /* UtilityBelt.swift in Sources */,
 				13AE7A6521661419003C898A /* ServerStatusCode.swift in Sources */,
 				138E9354216C1B49003DC7FA /* extensions.swift in Sources */,
+				E0D91F3621D803F0007E6916 /* PopularCollectionViewCell.swift in Sources */,
 				13A3771F2167417A001EA8A2 /* ServerClient.swift in Sources */,
 				13AE7A532165F346003C898A /* ActionType.swift in Sources */,
 				13AE7A402165F182003C898A /* AppDelegate.swift in Sources */,

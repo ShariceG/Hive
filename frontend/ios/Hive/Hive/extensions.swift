@@ -48,4 +48,13 @@ extension UIViewController {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
+    
+    func getTestLocation() -> String {
+        //        return "47.608013:-122.335167"  // Seattle
+        return "33.844847:-116.549069"
+    }
+    
+    func getTestUser() -> String {
+        return "user1"
+    }
 }

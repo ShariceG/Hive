@@ -14,10 +14,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var postBn: UIButton!
     @IBOutlet weak var postTableView: UITableView!
     
-    var client: ServerClient = ServerClient()
+    private(set) var client: ServerClient = ServerClient()
     // All posts around user.
     //    var allPostsByUser: Array<Post> = []
-    var allPostsAroundUser: Array<Post> = []
+    public private(set) var allPostsAroundUser: Array<Post> = []
     
 
     override func viewDidLoad() {
@@ -70,15 +70,6 @@ class ViewController: UIViewController {
                              after: newestPost != nil ? newestPost?.creationTimestampSec : nil)
     }
     
-    private func getTestLocation() -> String {
-//        return "47.608013:-122.335167"  // Seattle
-        return "33.844847:-116.549069"
-    }
-    
-    private func getTestUser() -> String {
-        return "user1"
-    }
-    
     @IBAction func postBnAction(_ sender: UIButton) {
         if (postTv.text.isEmpty) {
             return
@@ -88,7 +79,7 @@ class ViewController: UIViewController {
             self.postTv.isSelectable = false
             sender.isEnabled = false
         }
-        client.insertPost(username: getTestUser(), postText: postTv.text, location: getTestLocation(), completion: insertPostCompletion)
+        client.insertPost(username: self.getTestUser(), postText: postTv.text, location: self.getTestLocation(), completion: insertPostCompletion)
     }
     
     @objc func gestureToPopularViewAction(recognizer: UISwipeGestureRecognizer) {
@@ -171,7 +162,7 @@ class ViewController: UIViewController {
     
     // todo: calll this
     private func fetchPostsAroundUser(before: Decimal?, after: Decimal?) {
-        client.getAllPostsAroundUser(username: getTestUser(), location: getTestLocation(),
+        client.getAllPostsAroundUser(username: self.getTestUser(), location: self.getTestLocation(),
                                      before: before, after: after, completion:fetchPostsAroundUserCompletion)
     }
     

@@ -107,10 +107,10 @@ class GetAllPopularPostsAtLocationResponse(messages.Message):
     posts = messages.MessageField(entity_proto.Post, 1, repeated=True)
     status = messages.MessageField(Status, 2, required=False)
 
-class GetTrendingLocationsRequest(messages.Message):
+class GetPopularLocationsRequest(messages.Message):
     pass
 
-class GetTrendingLocationsResponse(messages.Message):
+class GetPopularLocationsResponse(messages.Message):
     locations = messages.StringField(1, repeated=True)
     status = messages.MessageField(Status, 2, required=False)
 

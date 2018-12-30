@@ -279,8 +279,12 @@ class ServiceHandler(object):
         # Truncate user location before querying.
         loc_lat, loc_long = self._truncate_latitude_longitude(lat, lon)
 
-        results = model.PostModel.query(
-            model.PostModel.PopularityIndex > TRENDING_POPULARITY_INDEX)
+        results = ndb.gql(('SELECT * '
+                 'FROM PostModel WHERE LocationLatitude = :1 AND '
+                 'LocationLongitude = :2 AND PopularityIndex > 0 '
+                 'ORDER BY PopularityIndex DESC LIMIT 10'),
+                 loc_lat, loc_long)
+
         post_list = []
         helper = service_helper.ServiceHelper
         for post_model in results:
@@ -290,14 +294,14 @@ class ServiceHandler(object):
         return GetAllPopularPostsAtLocationResponse(
             posts=post_list, status=Status(status_code=StatusCode.OK))
 
-    def handle_get_trending_locations(self, request):
+    def handle_get_popular_locations(self, request):
         results = ndb.gql(('SELECT LocationLatitude, LocationLongitude '
                  'FROM PostModel ORDER BY PopularityIndex DESC LIMIT 5'))
         locations = []
         for result in results:
             locations.append('%s:%s' % (result.LocationLatitude,
                 result.LocationLongitude))
-        return GetTrendingLocationsResponse(locations=locations,
+        return GetPopularLocationsResponse(locations=locations,
             status=Status(status_code=StatusCode.OK))
 
     def handle_calculate_all_popularity_index(self, request):
