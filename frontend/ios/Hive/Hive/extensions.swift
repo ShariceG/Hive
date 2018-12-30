@@ -38,7 +38,11 @@ extension Decimal {
     }
 }
 
-extension UIViewController {
+extension UIViewController: PostViewDelegate {
+    func commentButtonClick(postView: PostView) {
+        self.performSegue(withIdentifier: "seeCommentsSegue", sender: postView)
+    }
+    
     func hideKeyboardWhenTapped() {
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
         tap.cancelsTouchesInView = false

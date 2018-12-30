@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol PostViewDelegate: class {
+    func commentButtonClick(postView: PostView)
+}
+
 class PostView: UITableViewCell {
     
     @IBOutlet weak var userLabel: UILabel!
@@ -17,13 +21,9 @@ class PostView: UITableViewCell {
     @IBOutlet weak var likeBn: UIButton!
     @IBOutlet weak var dateLabel: UILabel!
     
-    var feedViewController: ViewController? = nil
-    var post: Post? = nil
+    weak var delegate: PostViewDelegate?
     
-    public func configure(post: Post, feedViewController: ViewController?) {
-        self.feedViewController = feedViewController
-        self.configure(post: post)
-    }
+    var post: Post? = nil
     
     public func configure(post: Post) {
         userLabel.text = post.username
@@ -35,6 +35,6 @@ class PostView: UITableViewCell {
     }
     
     @IBAction func commentBnAction(_ sender: UIButton) {
-        feedViewController?.performSegue(withIdentifier: "seeCommentsSegue", sender: self)
+        delegate?.commentButtonClick(postView: self)
     }
 }

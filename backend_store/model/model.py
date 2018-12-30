@@ -33,8 +33,8 @@ class ActionModel(ndb.Model):
     CreationDT = ndb.DateTimeProperty(required=False, auto_now_add=True)
     CreationTimeSec = ndb.FloatProperty(required=False)
 
-class PopularityModel(ndb.Model):
-    RegionName = ndb.StringProperty(required=False)
-    RegionLongitude = ndb.StringProperty(required=False)
-    RegionLatitude = ndb.StringProperty(required=False)
-    RegionInteractions = ndb.IntegerProperty(required=False)
+class LocationModel(ndb.Model):
+    LocationLongitude = ndb.StringProperty(required=False)
+    LocationLatitude = ndb.StringProperty(required=False)
+    PopularityIndex = ndb.IntegerProperty(required=False)
+    UpdateKey = ndb.StringProperty(required=False)

@@ -190,7 +190,8 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "postViewCell") as! PostView
-        cell.configure(post: allPostsAroundUser[indexPath.section], feedViewController: self)
+        cell.delegate = self
+        cell.configure(post: allPostsAroundUser[indexPath.section])
         cell.layer.borderWidth = 2
         cell.layer.cornerRadius = 5
         cell.layer.borderColor = UIColor.blue.cgColor

@@ -14,7 +14,7 @@ class PopularViewController: UIViewController {
     
     @IBOutlet weak var popularCollectionView: UICollectionView!
     @IBOutlet weak var postTableView: UITableView!
-    public private(set) var popularLocations: Array<String> = []
+    public private(set) var popularLocations: Array<Location> = []
     public var popularPosts: Array<Post> = []
     var client: ServerClient = ServerClient()
     
@@ -23,7 +23,20 @@ class PopularViewController: UIViewController {
         self.hideKeyboardWhenTapped()
         setupPopularCollectionView()
         setupPostTableView()
+        setupGestureToMainView()
         getPopularLocations()
+    }
+    
+    private func setupGestureToMainView() {
+        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(gestureToMainCompletion))
+        gesture.numberOfTouchesRequired = 1
+        gesture.direction = .right
+        postTableView.addGestureRecognizer(gesture)
+    }
+    
+    @objc func gestureToMainCompletion(recognizer: UISwipeGestureRecognizer) {
+        self.navigationController?.popViewController(animated: true)
+        self.dismiss(animated: true, completion: nil)
     }
     
     private func setupPostTableView() {
@@ -37,10 +50,11 @@ class PopularViewController: UIViewController {
         popularCollectionView.dataSource = self
     }
     
-    public func getPopularPostsFromLocation(location: String) {
-        let lat: String = location.split(separator: ":")[0].description
-        let lon: String = location.split(separator: ":")[1].description
-        client.getAllPopularPostsAtLocation(username: self.getTestUser(), latitude: lat, longitude: lon, completion: getPopularPostsFromLocationCompletion)
+    public func getPopularPostsFromLocation(location: Location) {
+        client.getAllPopularPostsAtLocation(username: self.getTestUser(),
+                                            latitude: location.latStr,
+                                            longitude: location.lonStr,
+                                            completion: getPopularPostsFromLocationCompletion)
     }
     
     private func getPopularPostsFromLocationCompletion(response: StatusOr<Response>) {
@@ -82,23 +96,22 @@ class PopularViewController: UIViewController {
         }
         if (!error) {
             popularLocations.removeAll()
-            popularLocations.append("My Cluster")
-            
-            for location in response.get().locations {
-                CLGeocoder().reverseGeocodeLocation(location) { (placemarks, error) in
-                    if (error == nil) {
-                        print(placemarks?[0])
-                        let loc = (placemarks?[0].locality ?? "???") + ", "
-                            + (placemarks?[0].administrativeArea ?? "???")
-                        self.popularLocations.append(loc)
-                        DispatchQueue.main.async {
-                            self.popularCollectionView.reloadData()
-                        }
-                    } else {
-                        print(error!)
-                    }
-                }
+            let userLocation = Location(locationStr: self.getTestLocation(), label: "My Area")
+            popularLocations.append(userLocation)
+            popularLocations.append(contentsOf: response.get().locations)
+            getPopularPostsFromLocation(location: userLocation)
+            DispatchQueue.main.async {
+                self.popularCollectionView.reloadData()
             }
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "seeCommentsSegue") {
+            let postView: PostView = sender as! PostView
+            let commentsViewController: CommentsViewController = segue.destination as! CommentsViewController
+            commentsViewController.controllerInit(post: postView.post!)
+            return
         }
     }
 
@@ -112,6 +125,7 @@ extension PopularViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "postViewCell") as! PostView
+        cell.delegate = self
         cell.configure(post: popularPosts[indexPath.section])
         cell.layer.borderWidth = 2
         cell.layer.cornerRadius = 5
@@ -135,12 +149,13 @@ extension PopularViewController: UITableViewDataSource, UITableViewDelegate {
 // UIControllerView Extensions
 extension PopularViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        print(self.popularLocations.count)
         return self.popularLocations.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "popularCollectionViewCell", for: indexPath as IndexPath) as! PopularCollectionViewCell
-        cell.configure(label: popularLocations[indexPath.item], viewPosition: indexPath.item)
+        cell.configure(location: popularLocations[indexPath.item], viewPosition: indexPath.item)
         cell.delegate = self
         return cell
     }
@@ -154,16 +169,10 @@ extension PopularViewController: UICollectionViewDataSource, UICollectionViewDel
 // PopularCollectionViewCell Extensions
 extension PopularViewController: PopularCollectionViewCellDelegate {
     func popularButtonClicked(popularCollectionViewCell: PopularCollectionViewCell) {
-        var location: String = ""
-        if (popularCollectionViewCell.viewPosition == 0) {
-            location = self.getTestLocation()
-        } else {
-            location = popularCollectionViewCell.label
-        }
         self.popularPosts.removeAll()
         DispatchQueue.main.async {
             self.postTableView.reloadData()
         }
-        self.getPopularPostsFromLocation(location: location)
+        self.getPopularPostsFromLocation(location: popularCollectionViewCell.location)
     }
 }

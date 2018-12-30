@@ -48,7 +48,7 @@ class ServiceHandler(object):
         timestamp = time.time()
 
         # Store a version of the location thats only up to 2 decimal places.
-        new_model = model.PostModel(
+        model.PostModel(
             id=post_id,
             PostText=request.post.post_text,
             Username=username,
@@ -56,8 +56,8 @@ class ServiceHandler(object):
             OriginalLatitude=lat,
             LocationLongitude=loc_long,
             LocationLatitude=loc_lat,
-            CreationTimestampSec=timestamp)
-        new_model.put()
+            CreationTimestampSec=timestamp
+        ).put()
 
         post.post_id = post_id
         post.creation_timestamp_sec = timestamp
@@ -296,21 +296,21 @@ class ServiceHandler(object):
 
     def handle_get_popular_locations(self, request):
         results = ndb.gql(('SELECT LocationLatitude, LocationLongitude '
-                 'FROM PostModel ORDER BY PopularityIndex DESC LIMIT 5'))
+                 'FROM LocationModel ORDER BY PopularityIndex DESC LIMIT 5'))
         locations = []
         for result in results:
-            locations.append('%s:%s' % (result.LocationLatitude,
-                result.LocationLongitude))
+            locations.append(self._latitude_longitude_to_str(
+                result.LocationLatitude, result.LocationLongitude))
         return GetPopularLocationsResponse(locations=locations,
             status=Status(status_code=StatusCode.OK))
 
     def handle_calculate_all_popularity_index(self, request):
+        update_key = uuid.uuid4().hex
         # Let t = last x seconds
         # Popularity = likes in t + dislikes in t + comments in t
 
-        time_thresh = time.time() - (60 * 60)  # Last hour, in sec
+        time_thresh = 0 # time.time() - (60 * 60)  # Last hour, in sec
         results = model.PostModel.query()
-        print("The count: ", results.count())
         for post in results:
             id = post.key.id()
             count = model.ActionModel.query(
@@ -320,7 +320,24 @@ class ServiceHandler(object):
                 model.CommentModel.PostID == id,
                 model.CommentModel.CreationTimestampSec > time_thresh).count()
             post.PopularityIndex = count
+
+            # Add to the LocationModel
+            location = self._latitude_longitude_to_str(post.LocationLatitude,
+                post.LocationLongitude)
+            location_model = ndb.Key('LocationModel', location).get()
+            if location_model and location_model.UpdateKey == update_key:
+                location_model.PopularityIndex += post.PopularityIndex
+                location_model.put()
+            elif post.PopularityIndex > 0:
+                model.LocationModel(
+                    id=str(location),
+                    LocationLatitude=post.LocationLatitude,
+                    LocationLongitude=post.LocationLongitude,
+                    PopularityIndex=post.PopularityIndex,
+                    UpdateKey=update_key
+                ).put()
             post.put()
+
         return CalculateAllPopularityIndexResponse(
             status=Status(status_code=StatusCode.OK))
 
@@ -379,6 +396,9 @@ class ServiceHandler(object):
         lon = self._truncate_float(lat_lon[1], dec_places)
         lat = self._truncate_float(lat_lon[0], dec_places)
         return True, lat, lon
+
+    def _latitude_longitude_to_str(self, lat, lon):
+        return '%s:%s' % (lat, lon)
 
     def _post_exists(self, post_id):
         return not ndb.Key('PostModel', post_id).get() is None

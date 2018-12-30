@@ -15,8 +15,8 @@ protocol PopularCollectionViewCellDelegate: class {
 
 class PopularCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var popularButton: UIButton!
-    public private(set) var label: String = ""
     public private(set) var viewPosition: Int = 0
+    public private(set) var location: Location = Location()
     
     weak var delegate: PopularCollectionViewCellDelegate?
     
@@ -24,10 +24,10 @@ class PopularCollectionViewCell: UICollectionViewCell {
         delegate?.popularButtonClicked(popularCollectionViewCell: self)
     }
     
-    public func configure(label: String, viewPosition: Int) {
-        self.label = label
+    public func configure(location: Location, viewPosition: Int) {
+        self.location = location
         self.viewPosition = viewPosition
-        self.popularButton.setTitle(label, for: .normal)
+        self.popularButton.setTitle(location.label, for: .normal)
     }
     
 }

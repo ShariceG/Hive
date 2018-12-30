@@ -14,7 +14,7 @@ class Response {
     private(set) var posts: Array<Post>
     private(set) var comments: Array<Comment>
     private(set) var serverStatusCode: ServerStatusCode
-    private(set) var locations: Array<CLLocation>
+    private(set) var locations: Array<Location>
     
 //    init(posts: Array<Post>, comments: Array<Comment>, code: ServerStatusCode) {
 //        self.posts = posts
@@ -73,14 +73,11 @@ class Response {
         return commentList
     }
     
-    private func getLocationList(jsonLocations: Array<Any>) -> Array<CLLocation> {
-        var locations: Array<CLLocation> = []
+    private func getLocationList(jsonLocations: Array<Any>) -> Array<Location> {
+        var locations: Array<Location> = []
         for location in jsonLocations {
             let locString = location as! String
-            let split = locString.split(separator: ":")
-            let lat: Double = Double(split[0].description)!
-            let lon: Double = Double(split[1].description)!
-            locations.append(CLLocation(latitude: lat, longitude: lon))
+            locations.append(Location(locationStr: locString))
         }
         return locations
     }

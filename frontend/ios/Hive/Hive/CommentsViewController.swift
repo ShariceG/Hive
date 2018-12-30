@@ -151,7 +151,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if (tableView == postTableView && self.post != nil) {
             let cell: PostView = tableView.dequeueReusableCell(withIdentifier: "postViewCell") as! PostView
-            cell.configure(post: self.post!, feedViewController: nil)
+            cell.configure(post: self.post!)
             cell.layer.borderWidth = 2
             cell.layer.cornerRadius = 5
             cell.layer.borderColor = UIColor.blue.cgColor

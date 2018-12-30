@@ -182,7 +182,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MBR-CO-I42">
-                                                    <rect key="frame" x="57" y="-1" width="107" height="50"/>
+                                                    <rect key="frame" x="0.0" y="-1" width="220" height="50"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Button">
                                                         <color key="titleShadowColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -213,6 +213,7 @@
                     <connections>
                         <outlet property="popularCollectionView" destination="ag3-AV-esq" id="bGY-3r-qki"/>
                         <outlet property="postTableView" destination="3IC-Fw-f6Z" id="yjO-bL-kUQ"/>
+                        <segue destination="o5x-Wz-56f" kind="show" identifier="seeCommentsSegue" id="JdW-uG-hSR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ldN-t6-p0T" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -220,4 +221,7 @@
             <point key="canvasLocation" x="256.80000000000001" y="718.9655172413793"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="JdW-uG-hSR"/>
+    </inferredMetricsTieBreakers>
 </document>
