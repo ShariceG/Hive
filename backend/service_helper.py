@@ -7,8 +7,7 @@ class ServiceHelper(object):
     def user_model_to_proto(user_model):
         return entity_proto.User(
             username=user_model.Username,
-            phone_number=user_model.PhoneNumber,
-            radius=user_model.Radius)
+            phone_number=user_model.PhoneNumber)
 
     @staticmethod
     def post_model_to_proto(post_model):

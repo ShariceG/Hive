@@ -99,6 +99,11 @@ class PopularViewController: UIViewController {
             let userLocation = Location(locationStr: self.getTestLocation(), label: "My Area")
             popularLocations.append(userLocation)
             popularLocations.append(contentsOf: response.get().locations)
+            
+            print("BLAH BLAH")
+            for location in popularLocations {
+                print("BLAH " + location.label)
+            }
             getPopularPostsFromLocation(location: userLocation)
             DispatchQueue.main.async {
                 self.popularCollectionView.reloadData()
@@ -149,7 +154,6 @@ extension PopularViewController: UITableViewDataSource, UITableViewDelegate {
 // UIControllerView Extensions
 extension PopularViewController: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print(self.popularLocations.count)
         return self.popularLocations.count
     }
     

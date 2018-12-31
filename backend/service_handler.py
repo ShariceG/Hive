@@ -27,7 +27,8 @@ class ServiceHandler(object):
         model.UserModel(
             id=user.username,
             Username=user.username,
-            PhoneNumber=user.phone_number).put()
+            PhoneNumber=user.phone_number,
+            CreationTimestampSec=time.time).put()
 
         return CreateUserResponse(
             status=Status(status_code=StatusCode.OK))
@@ -94,9 +95,7 @@ class ServiceHandler(object):
                     Username=request.user.username,
                     PostID=post.post_id,
                     ActionType=str(action_type),
-                    TrendingLongitude=post_model.TrendingLongitude,
-                    TrendingLatitude=post_model.TrendingLatitude,
-                    CreationTimeSec=time.time()).put()
+                    CreationTimestampSec=time.time()).put()
             else:
                 action_entity.ActionType = str(action_type)
                 action_entity.put()
@@ -315,7 +314,7 @@ class ServiceHandler(object):
             id = post.key.id()
             count = model.ActionModel.query(
                 model.ActionModel.PostID == id,
-                model.ActionModel.CreationTimeSec > time_thresh).count()
+                model.ActionModel.CreationTimestampSec > time_thresh).count()
             count += model.CommentModel.query(
                 model.CommentModel.PostID == id,
                 model.CommentModel.CreationTimestampSec > time_thresh).count()
@@ -340,26 +339,6 @@ class ServiceHandler(object):
 
         return CalculateAllPopularityIndexResponse(
             status=Status(status_code=StatusCode.OK))
-
-    def handle_update_trending_posts(self):
-        cut_off_time_sec = time.time() - 1800
-        target_long = 98.1
-        target_lat = 42.5
-        comment_count = ndb.gql(('SELECT * FROM CommentModel '
-                          'WHERE '
-                          'TrendingLongitude = :1 AND '
-                          'TrendingLatitude = :2 AND '
-                          'CreationTimeSec > :3'),
-                          str(target_long), str(target_lat),
-                          cut_off_time_sec).count()
-        actions_count = ndb.gql(('SELECT * FROM ActionModel '
-                          'WHERE '
-                          'TrendingLongitude = :1 AND '
-                          'TrendingLatitude = :2 AND '
-                          'CreationTimeSec > :3'),
-                          str(target_long), str(target_lat),
-                          cut_off_time_sec).count()
-
 
     def _truncate_float(self, float_str, dec_places):
         float_str = '%s.' % (float_str) if not '.' in float_str else float_str

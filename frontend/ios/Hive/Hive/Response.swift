@@ -79,6 +79,11 @@ class Response {
             let locString = location as! String
             locations.append(Location(locationStr: locString))
         }
+        
+        for location in locations {
+            location.waitUntilGeoLocationIsReversed()
+            print("LMAO: " + location.label)
+        }
         return locations
     }
 }

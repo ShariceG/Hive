@@ -17,9 +17,12 @@ class Location {
     public private(set) var latStr: String
     public private(set) var lonStr: String
     
+    private(set) var EMPTY_LABEL: String = "Somewhere On Earth"
+    private(set) var NOT_FOUND_LABEL: String = "???"
+    
     init() {
         location = CLLocation(latitude: 0, longitude: 0)
-        label = ""
+        label = self.EMPTY_LABEL
         locationStr = ""
         latStr = ""
         lonStr = ""
@@ -44,7 +47,7 @@ class Location {
     }
     
     convenience init(locationStr: String) {
-        self.init(locationStr: locationStr, label: "???")
+        self.init(locationStr: locationStr, label: "")
         self.reverseGeoLocation()  // Fills in label.
     }
     
@@ -52,14 +55,31 @@ class Location {
         self.label = newLabel
     }
     
+    public func waitUntilGeoLocationIsReversed() {
+        while true {
+            if (self.geoCoordinatesAreReversed()) {
+                return
+            }
+        }
+    }
+    
+    private func geoCoordinatesAreReversed() -> Bool {
+        print("LMAO checking: " + self.label)
+        return self.label != self.EMPTY_LABEL
+    }
+    
     private func reverseGeoLocation() {
         CLGeocoder().reverseGeocodeLocation(location) { (placemarks, error) in
             if (error == nil) {
-                let loc = (placemarks?[0].locality ?? "???") + ", "
-                    + (placemarks?[0].administrativeArea ?? "???")
+                var loc: String = ""
+                if (placemarks?[0].locality == nil || placemarks?[0].administrativeArea == nil) {
+                    loc = self.NOT_FOUND_LABEL
+                } else {
+                    loc = (placemarks?[0].locality!)! + ", " + (placemarks?[0].administrativeArea!)!
+                }
                 self.label = loc
             } else {
-                print(error!)
+                self.label = self.NOT_FOUND_LABEL
             }
         }
     }

@@ -3,6 +3,7 @@ from protorpc import messages
 class User(messages.Message):
     username = messages.StringField(1, required=False)
     phone_number = messages.StringField(2, required=False)
+    # Not stored in datastore. Used mainly for transport to client.
     location = messages.StringField(3, required=False)
 
 class Post(messages.Message):
