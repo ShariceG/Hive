@@ -33,3 +33,14 @@ class Action(messages.Message):
     username = messages.StringField(1, required=False)
     post_id = messages.StringField(2, required=False)
     action_type = messages.EnumField(ActionType, 3, required=False);
+
+class QueryParams(messages.Message):
+    get_newer = messages.BooleanField(1, required=False)
+    get_older = messages.BooleanField(2, required=False)
+    curr_top_cursor_str = messages.StringField(3, required=False)
+    curr_bottom_cursor_str = messages.StringField(4, required=False)
+
+class QueryMetadata(messages.Message):
+    new_top_cursor_str = messages.StringField(1, required=False)
+    new_bottom_cursor_str = messages.StringField(2, required=False)
+    has_more_older_data = messages.BooleanField(3, required=False)

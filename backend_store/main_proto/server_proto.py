@@ -64,26 +64,38 @@ class GetAllPostsAroundUserRequest(messages.Message):
     user = messages.MessageField(entity_proto.User, 1, required=False)
     timestamp_before_sec = messages.FloatField(2, required = False)
     timestamp_after_sec = messages.FloatField(3, required=False)
+    query_params = messages.MessageField(
+        entity_proto.QueryParams, 4, required=False)
 
 class GetAllPostsAroundUserResponse(messages.Message):
     posts = messages.MessageField(entity_proto.Post, 1, repeated=True)
-    status = messages.MessageField(Status, 2, required=False)
+    query_metadata = messages.MessageField(
+        entity_proto.QueryMetadata, 2, required=False)
+    status = messages.MessageField(Status, 3, required=False)
 
 '''Only need username'''
 class GetAllPostsByUserRequest(messages.Message):
     user = messages.MessageField(entity_proto.User, 1, required=False)
+    query_params = messages.MessageField(
+        entity_proto.QueryParams, 2, required=False)
 
 class GetAllPostsByUserResponse(messages.Message):
     posts = messages.MessageField(entity_proto.Post, 1, repeated=True)
     status = messages.MessageField(Status, 2, required=False)
+    query_metadata = messages.MessageField(
+        entity_proto.QueryMetadata, 3, required=False)
 
 '''Only need username'''
 class GetAllPostsCommentedOnByUserRequest(messages.Message):
     user = messages.MessageField(entity_proto.User, 1, required=False)
+    query_params = messages.MessageField(
+        entity_proto.QueryParams, 2, required=False)
 
 class GetAllPostsCommentedOnByUserResponse(messages.Message):
     posts = messages.MessageField(entity_proto.Post, 1, repeated=True)
     status = messages.MessageField(Status, 2, required=False)
+    query_metadata = messages.MessageField(
+        entity_proto.QueryMetadata, 3, required=False)
 
 # '''Only need post id'''
 # class GetPostRequest(messages.Message):
@@ -95,17 +107,25 @@ class GetAllPostsCommentedOnByUserResponse(messages.Message):
 '''Only need post id'''
 class GetAllCommentsForPostRequest(messages.Message):
     post = messages.MessageField(entity_proto.Post, 1, required=False)
+    query_params = messages.MessageField(
+        entity_proto.QueryParams, 2, required=False)
 
 class GetAllCommentsForPostResponse(messages.Message):
     comments = messages.MessageField(entity_proto.Comment, 1, repeated=True)
     status = messages.MessageField(Status, 2, required=False)
+    query_metadata = messages.MessageField(
+        entity_proto.QueryMetadata, 3, required=False)
 
 class GetAllPopularPostsAtLocationRequest(messages.Message):
     user = messages.MessageField(entity_proto.User, 1, required=False)
+    query_params = messages.MessageField(
+        entity_proto.QueryParams, 2, required=False)
 
 class GetAllPopularPostsAtLocationResponse(messages.Message):
     posts = messages.MessageField(entity_proto.Post, 1, repeated=True)
     status = messages.MessageField(Status, 2, required=False)
+    query_metadata = messages.MessageField(
+        entity_proto.QueryMetadata, 3, required=False)
 
 class GetPopularLocationsRequest(messages.Message):
     pass

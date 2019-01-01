@@ -9,11 +9,14 @@ from backend_store.main_proto.server_proto import StatusCode
 from backend_store.main_proto.server_proto import *
 from backend_store.main_proto.entity_proto import *
 from backend_store.model import model
+from google.appengine.datastore.datastore_query import Cursor
 
 import uuid
+import sys
 
 POST_QUERY_LIMIT = 3
 COMMENT_QUERY_LIMIT = 3
+POPULAR_POST_QUERY_LIMIT = 10
 LOCATION_QUERY_DECIMAL_PLACES = 2
 
 class ServiceHandler(object):
@@ -144,40 +147,12 @@ class ServiceHandler(object):
         # Truncate user location before querying.
         loc_lat, loc_long = self._truncate_latitude_longitude(lat, lon)
 
-        results = None
-        if before is None and after is None:
-            results = ndb.gql(('SELECT * FROM PostModel '
-                          'WHERE '
-                          'LocationLongitude = :1 AND '
-                          'LocationLatitude = :2 '
-                          'LIMIT %d') % (POST_QUERY_LIMIT),
-                          loc_long, loc_lat)
-        elif before is not None:
-            results = ndb.gql(('SELECT * FROM PostModel '
-                          'WHERE '
-                          'LocationLongitude = :1 AND '
-                          'LocationLatitude = :2 AND '
-                          'CreationTimestampSec < :3 '
-                          'ORDER BY CreationTimestampSec DESC '
-                          'LIMIT %d') % (POST_QUERY_LIMIT),
-                          loc_long, loc_lat, before)
-        elif after is not None:
-            results = ndb.gql(('SELECT * FROM PostModel '
-                          'WHERE '
-                          'LocationLongitude = :1 AND '
-                          'LocationLatitude = :2 AND '
-                          'CreationTimestampSec > :3 '
-                          'ORDER BY CreationTimestampSec ASC '
-                          'LIMIT %d') % (POST_QUERY_LIMIT),
-                          loc_long, loc_lat, after)
-        else:
-            results = ndb.gql(('SELECT * FROM PostModel '
-                          'WHERE '
-                          'LocationLongitude = :1 AND '
-                          'LocationLatitude = :2 AND '
-                          'CreationTimestampSec < :3 AND '
-                          'CreationTimestampSec > :4 '),
-                          loc_long, loc_lat, before, after)
+        query = model.PostModel.query().filter(
+            model.PostModel.LocationLatitude == loc_lat).filter(
+            model.PostModel.LocationLongitude == loc_long).order(
+            -model.PostModel.CreationTimestampSec)
+        results, metadata = self._run_query_with_cursor(query=query,
+            params=request.query_params, fetch_limit=POST_QUERY_LIMIT)
 
         post_list = []
         helper = service_helper.ServiceHelper
@@ -186,41 +161,20 @@ class ServiceHandler(object):
             self._fill_post_likes_dislikes_comment_count(the_post)
             post_list.append(the_post)
         return GetAllPostsAroundUserResponse(
-            posts=post_list, status=Status(status_code=StatusCode.OK))
+            posts=post_list, query_metadata=metadata,
+            status=Status(status_code=StatusCode.OK))
 
     def handle_get_all_posts_by_user(self, request):
-        before = request.timestamp_before_sec
-        after = request.timestamp_after_sec
         user = request.user
         if not self._user_exists(user.username):
             return GetAllPostsByUserResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
 
-        results = None
-        if before is None and after is None:
-            results = ndb.gql(('SELECT * FROM PostModel '
-                              'WHERE Username = :1 '
-                              'LIMIT %d') % (POST_QUERY_LIMIT),
-                              user.username)
-        elif before is not None:
-            results = ndb.gql(('SELECT * FROM PostModel '
-                              'WHERE Username = :1 AND '
-                              'CreationTimestampSec < :2 '
-                              'LIMIT %d') % (POST_QUERY_LIMIT),
-                              user.username, before)
-        elif after is not None:
-            results = ndb.gql(('SELECT * FROM PostModel '
-                              'WHERE Username = :1 AND '
-                              'CreationTimestampSec > :2 '
-                              'LIMIT %d') % (POST_QUERY_LIMIT),
-                              user.username, after)
-        else:
-            results = ndb.gql(('SELECT * FROM PostModel '
-                              'WHERE Username = :1 AND '
-                              'CreationTimestampSec < :2 AND '
-                              'CreationTimestampSec > :3 '
-                              'LIMIT %d') % (POST_QUERY_LIMIT),
-                              user.username, before, after)
+        query = model.PostModel.query().filter(
+            model.PostModel.Username == user.username).order(
+            -model.PostModel.CreationTimestampSec)
+        results, metadata = self._run_query_with_cursor(query=query,
+            params=request.query_params, fetch_limit=POST_QUERY_LIMIT)
 
         post_list = []
         helper = service_helper.ServiceHelper
@@ -229,15 +183,20 @@ class ServiceHandler(object):
             self._fill_post_likes_dislikes_comment_count(the_post)
             post_list.append(the_post)
         return GetAllPostsByUserResponse(
-            posts=post_list, status=Status(status_code=StatusCode.OK))
+            posts=post_list, query_metadata=metadata,
+            status=Status(status_code=StatusCode.OK))
 
     def handle_get_all_posts_commented_on_by_user(self, request):
         user = request.user
         if not self._user_exists(user.username):
             return GetAllPostsCommentedOnByUserResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
-        comments = ndb.gql(('SELECT * FROM CommentModel '
-                          'WHERE Username = :1'), user.username)
+        query = ndb.gql(('SELECT DISTINCT PostID FROM CommentModel '
+                          'WHERE Username = :1 '
+                          'ORDER BY CreationTimestampSec DESC'), user.username)
+        comments, metadata = self._run_query_with_cursor(query=query,
+            params=request.query_params, fetch_limit=COMMENT_QUERY_LIMIT)
+
         results = []
         for comment_model in comments:
             results.append(ndb.Key('PostModel', comment_model.PostID).get())
@@ -249,22 +208,28 @@ class ServiceHandler(object):
             self._fill_post_likes_dislikes_comment_count(the_post)
             post_list.append(the_post)
         return GetAllPostsCommentedOnByUserResponse(
-            posts=post_list, status=Status(status_code=StatusCode.OK))
+            posts=post_list, query_metadata=metadata,
+            status=Status(status_code=StatusCode.OK))
 
     def handle_get_all_comments_for_post(self, request):
         post = request.post
         if not self._post_exists(post.post_id):
             return GetAllCommentsForPostResponse(
                 status=Status(status_code=StatusCode.POST_NOT_FOUND))
-        comments = ndb.gql(('SELECT * FROM CommentModel '
-                          'WHERE PostID = :1'), post.post_id)
+        query = ndb.gql(('SELECT * FROM CommentModel '
+                          'WHERE PostID = :1 '
+                          'ORDER BY CreationTimestampSec'), post.post_id)
+        comments, metadata = self._run_query_with_cursor(query=query,
+            params=request.query_params, fetch_limit=COMMENT_QUERY_LIMIT)
 
         comment_list = []
         helper = service_helper.ServiceHelper
         for comment_model in comments:
             comment_list.append(helper.comment_model_to_proto(comment_model))
         return GetAllCommentsForPostResponse(
-            comments=comment_list, status=Status(status_code=StatusCode.OK))
+            comments=comment_list,
+            query_metadata=metadata,
+            status=Status(status_code=StatusCode.OK))
 
     def handle_get_all_popular_posts_at_location(self, request):
         user = request.user
@@ -278,11 +243,13 @@ class ServiceHandler(object):
         # Truncate user location before querying.
         loc_lat, loc_long = self._truncate_latitude_longitude(lat, lon)
 
-        results = ndb.gql(('SELECT * '
+        query = ndb.gql(('SELECT * '
                  'FROM PostModel WHERE LocationLatitude = :1 AND '
                  'LocationLongitude = :2 AND PopularityIndex > 0 '
-                 'ORDER BY PopularityIndex DESC LIMIT 10'),
+                 'ORDER BY PopularityIndex DESC'),
                  loc_lat, loc_long)
+        results, metadata = self._run_query_with_cursor(query=query,
+            params=request.query_params, fetch_limit=POST_QUERY_LIMIT)
 
         post_list = []
         helper = service_helper.ServiceHelper
@@ -294,10 +261,10 @@ class ServiceHandler(object):
             posts=post_list, status=Status(status_code=StatusCode.OK))
 
     def handle_get_popular_locations(self, request):
-        results = ndb.gql(('SELECT LocationLatitude, LocationLongitude '
-                 'FROM LocationModel ORDER BY PopularityIndex DESC LIMIT 5'))
+        query = ndb.gql(('SELECT LocationLatitude, LocationLongitude '
+                 'FROM LocationModel ORDER BY PopularityIndex DESC'))
         locations = []
-        for result in results:
+        for result in query.fetch(POPULAR_POST_QUERY_LIMIT):
             locations.append(self._latitude_longitude_to_str(
                 result.LocationLatitude, result.LocationLongitude))
         return GetPopularLocationsResponse(locations=locations,
@@ -339,6 +306,33 @@ class ServiceHandler(object):
 
         return CalculateAllPopularityIndexResponse(
             status=Status(status_code=StatusCode.OK))
+
+    def _run_query_with_cursor(self, query, params, fetch_limit):
+        query_metadata = QueryMetadata()
+        results = None
+        if params.get_newer:
+            if not params.curr_top_cursor_str:
+                first_result, top_cursor, _ = query.fetch_page(1)
+                results, bottom_cursor, more = query.fetch_page(
+                    POST_QUERY_LIMIT-1, start_cursor=top_cursor)
+                results = first_result + results
+                query_metadata.new_top_cursor_str = top_cursor.urlsafe()
+                query_metadata.new_bottom_cursor_str = bottom_cursor.urlsafe()
+                query_metadata.has_more_older_data = more
+            else:
+                cursor = Cursor(urlsafe=params.curr_top_cursor_str)
+                results, new_top_cursor, _ = query.fetch_page(
+                    POST_QUERY_LIMIT, end_cursor=cursor)
+                results = results if len(results) > 1 else []
+                query_metadata.new_top_cursor_str = new_top_cursor.urlsafe()
+        elif params.get_older:
+            cursor = Cursor(urlsafe=params.curr_bottom_cursor_str)
+            results, new_bottom_cusor, more = query.fetch_page(
+                POST_QUERY_LIMIT, start_cursor=cursor)
+            results = results if len(results) > 1 else []
+            query_metadata.new_bottom_cursor_str = new_bottom_cusor.urlsafe()
+            query_metadata.has_more_older_data = more
+        return results, query_metadata
 
     def _truncate_float(self, float_str, dec_places):
         float_str = '%s.' % (float_str) if not '.' in float_str else float_str
