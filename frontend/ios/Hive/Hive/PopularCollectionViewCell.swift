@@ -17,7 +17,7 @@ class PopularCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var popularButton: UIButton!
     public private(set) var viewPosition: Int = 0
     public private(set) var location: Location = Location()
-    
+    private(set) var fetchPostsMetadata: QueryMetadata = QueryMetadata()
     weak var delegate: PopularCollectionViewCellDelegate?
     
     @IBAction func popularButtonAction(_ sender: UIButton) {

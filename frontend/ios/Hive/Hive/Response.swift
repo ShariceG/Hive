@@ -9,12 +9,50 @@
 import Foundation
 import CoreLocation
 
+class QueryMetadata {
+    var newTopCursorStr: String?
+    var newBottomCursorStr: String?
+    var hasMoreOlderData: Bool?
+    
+    init() {
+        newTopCursorStr = nil
+        newBottomCursorStr = nil
+        hasMoreOlderData = nil
+    }
+   
+    init(jsonMetadata: [String: Any]) {
+        if jsonMetadata["new_top_cursor_str"] != nil {
+            newTopCursorStr = jsonMetadata["new_top_cursor_str"] as? String
+        }
+        if jsonMetadata["new_bottom_cursor_str"] != nil {
+            newBottomCursorStr = jsonMetadata["new_bottom_cursor_str"] as? String
+
+        }
+        if jsonMetadata["has_more_older_data"] != nil {
+            hasMoreOlderData = jsonMetadata["has_more_older_data"] as? Bool
+        }
+    }
+    
+    func newMetadata(newMetadata: QueryMetadata) {
+        if (newMetadata.newTopCursorStr != nil) {
+            newTopCursorStr = newMetadata.newTopCursorStr
+        }
+        if (newMetadata.newBottomCursorStr != nil) {
+            newBottomCursorStr = newMetadata.newBottomCursorStr
+        }
+        if (newMetadata.hasMoreOlderData != nil) {
+            hasMoreOlderData = newMetadata.hasMoreOlderData
+        }
+    }
+}
+
 class Response {
     
     private(set) var posts: Array<Post>
     private(set) var comments: Array<Comment>
     private(set) var serverStatusCode: ServerStatusCode
     private(set) var locations: Array<Location>
+    private(set) var queryMetadata: QueryMetadata
     
 //    init(posts: Array<Post>, comments: Array<Comment>, code: ServerStatusCode) {
 //        self.posts = posts
@@ -28,6 +66,7 @@ class Response {
         self.comments = []
         self.serverStatusCode = ServerStatusCode.UNKNOWN_ERROR
         self.locations = []
+        self.queryMetadata = QueryMetadata()
 
         if (jsonObject["posts"] != nil) {
             self.posts = getPostList(jsonPosts: jsonObject["posts"] as! [[String:Any]])
@@ -42,6 +81,9 @@ class Response {
         if (jsonObject["locations"] != nil) {
             self.locations = getLocationList(jsonLocations: jsonObject["locations"] as! Array<Any>)
         }
+        if (jsonObject["query_metadata"] != nil) {
+            self.queryMetadata = QueryMetadata(jsonMetadata: jsonObject["query_metadata"] as! [String : Any])
+        }
     }
     
     public func firstPost() -> Optional<Post> {
@@ -50,6 +92,10 @@ class Response {
     
     public func firstComment() -> Optional<Comment> {
         return comments.isEmpty ? Optional.none : Optional<Comment>(comments[0])
+    }
+    
+    public func ok() -> Bool {
+        return serverStatusCode == ServerStatusCode.OK
     }
     
     private func getServerStatusCodeFromJson(jsonObject: [String: Any]) -> ServerStatusCode {

@@ -15,7 +15,7 @@ import uuid
 import sys
 
 POST_QUERY_LIMIT = 3
-COMMENT_QUERY_LIMIT = 3
+COMMENT_QUERY_LIMIT = 6
 POPULAR_POST_QUERY_LIMIT = 10
 LOCATION_QUERY_DECIMAL_PLACES = 2
 
@@ -218,7 +218,7 @@ class ServiceHandler(object):
                 status=Status(status_code=StatusCode.POST_NOT_FOUND))
         query = ndb.gql(('SELECT * FROM CommentModel '
                           'WHERE PostID = :1 '
-                          'ORDER BY CreationTimestampSec'), post.post_id)
+                          'ORDER BY CreationTimestampSec DESC'), post.post_id)
         comments, metadata = self._run_query_with_cursor(query=query,
             params=request.query_params, fetch_limit=COMMENT_QUERY_LIMIT)
 
@@ -309,29 +309,34 @@ class ServiceHandler(object):
 
     def _run_query_with_cursor(self, query, params, fetch_limit):
         query_metadata = QueryMetadata()
-        results = None
+        results = []
         if params.get_newer:
             if not params.curr_top_cursor_str:
                 first_result, top_cursor, _ = query.fetch_page(1)
                 results, bottom_cursor, more = query.fetch_page(
-                    POST_QUERY_LIMIT-1, start_cursor=top_cursor)
-                results = first_result + results
-                query_metadata.new_top_cursor_str = top_cursor.urlsafe()
-                query_metadata.new_bottom_cursor_str = bottom_cursor.urlsafe()
-                query_metadata.has_more_older_data = more
+                    fetch_limit-1, start_cursor=top_cursor)
+                if bottom_cursor:  # If there are results to show
+                    results = first_result + results
+                    query_metadata.new_top_cursor_str = top_cursor.urlsafe()
+                    query_metadata.new_bottom_cursor_str = bottom_cursor.urlsafe()
+                    query_metadata.has_more_older_data = more
             else:
                 cursor = Cursor(urlsafe=params.curr_top_cursor_str)
                 results, new_top_cursor, _ = query.fetch_page(
-                    POST_QUERY_LIMIT, end_cursor=cursor)
-                results = results if len(results) > 1 else []
-                query_metadata.new_top_cursor_str = new_top_cursor.urlsafe()
-        elif params.get_older:
-            cursor = Cursor(urlsafe=params.curr_bottom_cursor_str)
-            results, new_bottom_cusor, more = query.fetch_page(
-                POST_QUERY_LIMIT, start_cursor=cursor)
-            results = results if len(results) > 1 else []
-            query_metadata.new_bottom_cursor_str = new_bottom_cusor.urlsafe()
-            query_metadata.has_more_older_data = more
+                    fetch_limit, end_cursor=cursor)
+                if new_top_cursor:  # If there are results to show
+                    results = results if len(results) > 1 else []
+                    query_metadata.new_top_cursor_str = new_top_cursor.urlsafe()
+        else:
+            if params.curr_bottom_cursor_str:
+                cursor = Cursor(urlsafe=params.curr_bottom_cursor_str)
+                results, new_bottom_cusor, more = query.fetch_page(
+                    POST_QUERY_LIMIT, start_cursor=cursor)
+                if new_bottom_cusor:  # If there are results to show
+                    results = results if len(results) > 1 else []
+                    query_metadata.new_bottom_cursor_str = \
+                        new_bottom_cusor.urlsafe()
+                    query_metadata.has_more_older_data = more
         return results, query_metadata
 
     def _truncate_float(self, float_str, dec_places):

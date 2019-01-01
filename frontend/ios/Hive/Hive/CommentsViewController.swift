@@ -19,6 +19,7 @@ class CommentsViewController: UIViewController {
     private(set) var post: Post? = nil
     
     private let client: ServerClient = ServerClient()
+    private(set) var fetchCommentsMetadata: QueryMetadata = QueryMetadata()
     private(set) var allPostComments: Array<Comment> = []
     
     override func viewDidLoad() {
@@ -30,7 +31,7 @@ class CommentsViewController: UIViewController {
         DispatchQueue.main.async {
             self.postTableView.reloadData()
         }
-        getAllPostComments()
+        getAllPostComments(getNewComments: true)
     }
     
     public func controllerInit(post: Post) {
@@ -73,30 +74,31 @@ class CommentsViewController: UIViewController {
 
     @objc func refreshCommentTableView(_ refreshControl: UIRefreshControl) {
         // This should also end the refresh.
-        getAllPostComments()
+        getAllPostComments(getNewComments: false)
     }
     
-    private func getAllPostComments() {
-        client.getAllCommentsForPost(postId: (post?.postId)!, completion: getAllPostCommentsCompletion)
+    public func getAllPostComments(getNewComments: Bool) {
+        let params: QueryParams = QueryParams(getNewer: getNewComments, currTopCursorStr: self.fetchCommentsMetadata.newTopCursorStr, currBottomCursorStr: self.fetchCommentsMetadata.newBottomCursorStr)
+        client.getAllCommentsForPost(postId: (post?.postId)!, queryParams: params, completion: getAllPostCommentsCompletion)
     }
     
-    private func getAllPostCommentsCompletion(response: StatusOr<Response>) {
-        var error:Bool = false
-        if (response.hasError()) {
+    private func getAllPostCommentsCompletion(responseOr: StatusOr<Response>) {
+        if (responseOr.hasError()) {
             // Handle likley connection error
-            print("Connection Failure: " + response.getErrorMessage())
-            error = true
+            print("Connection Failure: " + responseOr.getErrorMessage())
+            return
         }
-        if (response.get().serverStatusCode != ServerStatusCode.OK) {
+        if (!responseOr.get().ok()) {
             // Handle server error
-            print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
-            error = true
+            print("ServerStatusCode: " + String(describing: responseOr.get().serverStatusCode))
+            return
         }
-        if (!error) {
-            allPostComments.removeAll()
-            allPostComments.append(contentsOf: response.get().comments)
-            print("Got post comments: " + String(allPostComments.count))
-        }
+
+        fetchCommentsMetadata.newMetadata(newMetadata: responseOr.get().queryMetadata)
+        allPostComments.append(contentsOf: responseOr.get().comments)
+        allPostComments = allPostComments.sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
+        print("Got post comments: ", responseOr.get().comments)
+    
         DispatchQueue.main.async {
             self.commentTableView.reloadData()
             if (self.commentTableView.refreshControl != nil) {
@@ -179,5 +181,14 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return tableView == postTableView ? 1 : self.allPostComments.count
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.section == tableView.numberOfSections - 1 &&
+            indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
+            if (!allPostComments.isEmpty) {
+                self.getAllPostComments(getNewComments: true)
+            }
+        }
     }
 }

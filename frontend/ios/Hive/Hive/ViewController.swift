@@ -15,8 +15,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var postTableView: UITableView!
     
     private(set) var client: ServerClient = ServerClient()
-    // All posts around user.
-    //    var allPostsByUser: Array<Post> = []
+    private(set) var fetchPostsMetadata: QueryMetadata = QueryMetadata()
     public private(set) var allPostsAroundUser: Array<Post> = []
     
 
@@ -26,7 +25,7 @@ class ViewController: UIViewController {
         setupPostTv()
         setupPostBn()
         setupPostTableView()
-        fetchPostsAroundUser(before: nil, after: nil)
+        fetchPostsAroundUser(getNewPosts: true)
         setupGestureToPopularView()
     }
     
@@ -64,10 +63,7 @@ class ViewController: UIViewController {
     
     @objc func refreshPostTableView(_ refreshControl: UIRefreshControl) {
         // This fetch should also end the refresh.
-        let newestPost: Post? = allPostsAroundUser.count == 0 ?
-            nil : allPostsAroundUser[0]
-        fetchPostsAroundUser(before: nil,
-                             after: newestPost != nil ? newestPost?.creationTimestampSec : nil)
+        fetchPostsAroundUser(getNewPosts: true)
     }
     
     @IBAction func postBnAction(_ sender: UIButton) {
@@ -133,23 +129,22 @@ class ViewController: UIViewController {
 //        }
 //    }
     
-    private func fetchPostsAroundUserCompletion(response: StatusOr<Response>) {
-        var error: Bool = false
-        if (response.hasError()) {
+    private func fetchPostsAroundUserCompletion(responseOr: StatusOr<Response>) {
+        if (responseOr.hasError()) {
             // Handle likley connection error
-            print("Connection Failure: " + response.getErrorMessage())
-            error = true
+            print("Connection Failure: " + responseOr.getErrorMessage())
+            return
         }
-        if (!error && response.get().serverStatusCode != ServerStatusCode.OK) {
+        if (!responseOr.get().ok()) {
             // Handle server error
-            print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
-            error = true
+            print("ServerStatusCode: " + String(describing: responseOr.get().serverStatusCode))
+            return
         }
-        if (!error) {
-            allPostsAroundUser.append(contentsOf: response.get().posts)
-            allPostsAroundUser = allPostsAroundUser.sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
-            print("Got posts around user after fetch..." + String(allPostsAroundUser.count))
-        }
+
+        fetchPostsMetadata.newMetadata(newMetadata: responseOr.get().queryMetadata)
+        allPostsAroundUser.append(contentsOf: responseOr.get().posts)
+        allPostsAroundUser = allPostsAroundUser.sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
+        print("Got posts around user after fetch..." + String(responseOr.get().posts.count))
         
         DispatchQueue.main.async {
             self.postTableView.reloadData()
@@ -160,10 +155,10 @@ class ViewController: UIViewController {
         }
     }
     
-    // todo: calll this
-    private func fetchPostsAroundUser(before: Decimal?, after: Decimal?) {
+    public func fetchPostsAroundUser(getNewPosts: Bool) {
+        let params: QueryParams = QueryParams(getNewer: getNewPosts, currTopCursorStr: self.fetchPostsMetadata.newTopCursorStr, currBottomCursorStr: self.fetchPostsMetadata.newBottomCursorStr)
         client.getAllPostsAroundUser(username: self.getTestUser(), location: self.getTestLocation(),
-                                     before: before, after: after, completion:fetchPostsAroundUserCompletion)
+                                     queryParams: params, completion:fetchPostsAroundUserCompletion)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -180,8 +175,7 @@ class ViewController: UIViewController {
     }
 }
 
-// --------------- Extensions ----------------
-
+// Post TableView Extensions
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -209,5 +203,16 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
         return self.allPostsAroundUser.count
     }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.section == tableView.numberOfSections - 1 &&
+            indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
+            if (!allPostsAroundUser.isEmpty) {
+                self.fetchPostsAroundUser(getNewPosts: false)
+            }
+        }
+    }
 }
+
+//
 

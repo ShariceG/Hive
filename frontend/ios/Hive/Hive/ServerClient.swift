@@ -8,6 +8,38 @@
 
 import Foundation
 
+class QueryParams {
+    public private(set) var getNewer: Bool?
+    public private(set) var currTopCursorStr: String?
+    public private(set) var currBottomCursorStr: String?
+    
+    init() {
+        getNewer = true
+        currTopCursorStr = ""
+        currBottomCursorStr = ""
+    }
+    
+    init(getNewer: Bool?, currTopCursorStr: String?, currBottomCursorStr: String?) {
+        self.getNewer = getNewer
+        self.currTopCursorStr = currTopCursorStr
+        self.currBottomCursorStr = currBottomCursorStr
+    }
+    
+    func toJson() -> [String:Any] {
+        var params: [String:Any] = [String:Any]()
+        if (getNewer != nil) {
+            params["get_newer"] = getNewer! ? "true" : "false"
+        }
+        if (currTopCursorStr != nil) {
+            params["curr_top_cursor_str"] = currTopCursorStr!
+        }
+        if (currBottomCursorStr != nil) {
+            params["curr_bottom_cursor_str"] = currBottomCursorStr!
+        }
+        return params
+    }
+}
+
 class ServerClient {
     
     private static let CONNECTION_TIMEOUT_MS: Int = 5000
@@ -33,62 +65,60 @@ class ServerClient {
         executeGet(targetUrl: path, jsonParams: request, completion: completion)
     }
     
-    public func getAllPopularPostsAtLocation(username: String, latitude: String, longitude: String, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func getAllPopularPostsAtLocation(username: String, queryParams: QueryParams, latitude: String, longitude: String, completion:@escaping (StatusOr<Response>) -> ()) {
         var user: [String:Any] = [String:Any]()
         user["username"] = username
         user["location"] = latitude + ":" + longitude
         var request: [String:Any] = [String:Any]()
         request["user"] = user
+        request["query_params"] = queryParams.toJson()
         
         let path = constructIncompleteUrlPath() + ServerClient.GET_ALL_POPULAR_POSTS_AT_LOCATION
         executeGet(targetUrl: path, jsonParams: request, completion: completion)
     }
     
-    public func getAllPostsCommentedOnByUser(username: String, completion:@escaping (StatusOr<Response>) -> ()){
+    public func getAllPostsCommentedOnByUser(username: String, queryParams: QueryParams, completion:@escaping (StatusOr<Response>) -> ()){
         var user: [String:Any] = [String:Any]()
         user["username"] = username
         var request: [String:Any] = [String:Any]()
         request["user"] = user
+        request["query_params"] = queryParams.toJson()
 
         let path = constructIncompleteUrlPath() + ServerClient.GET_ALL_POSTS_COMMENTED_ON_BY_USER_PATH
         executeGet(targetUrl: path, jsonParams: request, completion: completion)
     }
     
-    public func getAllPostsByUser(username: String, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func getAllPostsByUser(username: String, queryParams: QueryParams, completion:@escaping (StatusOr<Response>) -> ()) {
         var user: [String:Any] = [String:Any]()
         user["username"] = username
         var request: [String:Any] = [String:Any]()
         request["user"] = user
+        request["query_params"] = queryParams.toJson()
     
         let path: String = constructIncompleteUrlPath() + ServerClient.GET_ALL_POSTS_BY_USER_PATH
         executeGet(targetUrl: path, jsonParams: request, completion: completion)
     }
     
     public func getAllPostsAroundUser(username: String, location: String,
-                                      before: Decimal?, after: Decimal?,
+                                      queryParams: QueryParams,
                                       completion:@escaping (StatusOr<Response>) -> ()) {
         var user: [String:Any] = [String:Any]()
         user["username"] = username
         user["location"] = location
         var request: [String:Any] = [String:Any]()
         request["user"] = user
-        if (before != nil) {
-            print("Sending THIS over: " + before!.description)
-            request["timestamp_before_sec"] = before!.description
-        }
-        if (after != nil) {
-            request["timestamp_after_sec"] = after!.description
-        }
+        request["query_params"] = queryParams.toJson()
 
         let path: String = constructIncompleteUrlPath() + ServerClient.GET_ALL_POSTS_AROUND_USER_PATH
         executeGet(targetUrl: path, jsonParams: request, completion: completion)
     }
     
-    public func getAllCommentsForPost(postId: String, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func getAllCommentsForPost(postId: String, queryParams: QueryParams, completion:@escaping (StatusOr<Response>) -> ()) {
         var post: [String:Any] = [String:Any]()
         post["post_id"] = postId
         var request: [String:Any] = [String:Any]()
         request["post"] = post
+        request["query_params"] = queryParams.toJson()
     
         let path: String = constructIncompleteUrlPath() + ServerClient.GET_ALL_POST_COMMENTS_PATH
         executeGet(targetUrl: path, jsonParams: request, completion: completion)

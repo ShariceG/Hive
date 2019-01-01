@@ -17,6 +17,7 @@ class PopularViewController: UIViewController {
     public private(set) var popularLocations: Array<Location> = []
     public var popularPosts: Array<Post> = []
     var client: ServerClient = ServerClient()
+    private(set) var fetchPostsMetadata: QueryMetadata = QueryMetadata()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,30 +52,30 @@ class PopularViewController: UIViewController {
     }
     
     public func getPopularPostsFromLocation(location: Location) {
-        client.getAllPopularPostsAtLocation(username: self.getTestUser(),
+        let params: QueryParams = QueryParams(getNewer: true, currTopCursorStr: self.fetchPostsMetadata.newTopCursorStr, currBottomCursorStr: self.fetchPostsMetadata.newBottomCursorStr)
+        client.getAllPopularPostsAtLocation(username: self.getTestUser(), queryParams: params,
                                             latitude: location.latStr,
                                             longitude: location.lonStr,
                                             completion: getPopularPostsFromLocationCompletion)
     }
     
-    private func getPopularPostsFromLocationCompletion(response: StatusOr<Response>) {
-        var error: Bool = false
-        if (response.hasError()) {
+    private func getPopularPostsFromLocationCompletion(responseOr: StatusOr<Response>) {
+        if (responseOr.hasError()) {
             // Handle likley connection error
-            print("Connection Failure: " + response.getErrorMessage())
-            error = true
+            print("Connection Failure: " + responseOr.getErrorMessage())
+            return
         }
-        if (!error && response.get().serverStatusCode != ServerStatusCode.OK) {
+        if (!responseOr.get().ok()) {
             // Handle server error
-            print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
-            error = true
+            print("ServerStatusCode: " + String(describing: responseOr.get().serverStatusCode))
+            return
         }
-        if (!error) {
-            popularPosts.removeAll()
-            popularPosts.append(contentsOf: response.get().posts)
-            DispatchQueue.main.async {
-                self.postTableView.reloadData()
-            }
+        
+        fetchPostsMetadata = responseOr.get().queryMetadata
+        popularPosts.removeAll()
+        popularPosts.append(contentsOf: responseOr.get().posts)
+        DispatchQueue.main.async {
+            self.postTableView.reloadData()
         }
     }
     
