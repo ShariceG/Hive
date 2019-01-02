@@ -134,8 +134,6 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK), comments=[comment])
 
     def handle_get_all_posts_around_user(self, request):
-        before = request.timestamp_before_sec
-        after = request.timestamp_after_sec
         user = request.user
         if not self._user_exists(user.username):
             return GetAllPostsAroundUserResponse(

@@ -65,10 +65,10 @@ class ServerClient {
         executeGet(targetUrl: path, jsonParams: request, completion: completion)
     }
     
-    public func getAllPopularPostsAtLocation(username: String, queryParams: QueryParams, latitude: String, longitude: String, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func getAllPopularPostsAtLocation(username: String, queryParams: QueryParams, locationStr: String, completion:@escaping (StatusOr<Response>) -> ()) {
         var user: [String:Any] = [String:Any]()
         user["username"] = username
-        user["location"] = latitude + ":" + longitude
+        user["location"] = locationStr
         var request: [String:Any] = [String:Any]()
         request["user"] = user
         request["query_params"] = queryParams.toJson()

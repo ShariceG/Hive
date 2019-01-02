@@ -12,13 +12,23 @@ public class ServerClientMain {
 
 	public static void main(String[] args) {
 		madePosts = new ArrayList<Post>();
+		client.getPopularLocations(new Callback() {
+			public void serverRequestCallback(StatusOr<Response> responseOr) {
+				System.out.println(responseOr.toString());
+			}
+		});
+		client.getAllPopularPostsAtLocation("user1", "33.75:-116.35", new QueryParams(true, "", ""), new Callback() {
+			public void serverRequestCallback(StatusOr<Response> responseOr) {
+				System.out.println(responseOr.toString());
+			}
+		});
 //		createUsers(USER_COUNT);
 //		makePosts(1);
 //		makeComments(100);
 //		makePostUpdates(1);
 //		StatusOr<Response> response = client.getAllPostComments("f7e29db07ff845e6a001583949d32b6a", ServerClient.NO_CALLBACK);
 //		printArrayList(response.get().getComments());
-		client.shutdown();
+//		client.shutdown();
 	}
 	
 	public static void makePostUpdates(int amount) {
@@ -26,8 +36,8 @@ public class ServerClientMain {
 		for (int i = 0; i < amount; i++) {
 			ActionType type = new Random().nextInt(1000) < 500 ? ActionType.LIKE : ActionType.DISLIKE;
 			client.updatePost(getRandomUsername(), getRandomPostId(), type, new Callback() {
-				public void serverRequestCallback(StatusOr<Response> response) {
-					System.out.println(response.toString());
+				public void serverRequestCallback(StatusOr<Response> responseOr) {
+					System.out.println(responseOr.toString());
 				}
 			});
 		}
@@ -39,8 +49,8 @@ public class ServerClientMain {
 			String username = getRandomUsername();
 			String comment = "Comment by " + username;
 			client.insertComment(username, comment, getRandomPostId(), new Callback() {
-				public void serverRequestCallback(StatusOr<Response> response) {
-					System.out.println(response.toString());
+				public void serverRequestCallback(StatusOr<Response> responseOr) {
+					System.out.println(responseOr.toString());
 				}
 			});
 		}
@@ -53,8 +63,8 @@ public class ServerClientMain {
 			String post = "Post by " + username;
 			String location = getRandomLocation();
 			client.insertPost(username, post, location, new Callback() {
-				public void serverRequestCallback(StatusOr<Response> response) {
-					madePosts.add(response.get().getPost().get());
+				public void serverRequestCallback(StatusOr<Response> responseOr) {
+					madePosts.add(responseOr.get().getPost().get());
 				}
 			});
 		}
@@ -80,12 +90,12 @@ public class ServerClientMain {
 		System.out.println("Creating " + amount + " users.");
 		for (int i = 0; i < amount; i++) {
 			client.createUser("user"+i, i+""+i+""+i, new Callback() {
-				public void serverRequestCallback(StatusOr<Response> response) {
-					if (response.hasError()) {
-						System.err.println(response.getErrorMessage());
+				public void serverRequestCallback(StatusOr<Response> responseOr) {
+					if (responseOr.hasError()) {
+						System.err.println(responseOr.getErrorMessage());
 					}
-					if (response.get().serverReturnedWithError()) {
-						System.out.println(response.get().getServerStatusCode().name());
+					if (responseOr.get().serverReturnedWithError()) {
+						System.out.println(responseOr.get().getServerStatusCode().name());
 					}
 				}
 			});

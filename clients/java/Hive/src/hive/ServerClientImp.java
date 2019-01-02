@@ -17,6 +17,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class ServerClientImp implements ServerClient {
+	
 	private static final int CONNECTION_TIMEOUT_MS = 5000;
 	private static final int READ_TIMEOUT_MS = 55000;
 	
@@ -31,6 +32,8 @@ public class ServerClientImp implements ServerClient {
 	private static final String GET_ALL_POSTS_BY_USER_PATH = "app.get_all_posts_by_user?";
 	private static final String GET_ALL_POSTS_COMMENTED_ON_BY_USER_PATH = "app.get_all_posts_commented_on_by_user?";
 	private static final String UPDATE_POST_PATH = "app.update_post?";
+	private static final String GET_ALL_POPULAR_POSTS_AT_LOCATION_PATH = "app.get_all_popular_posts_at_location?";
+    private static final String GET_POPULAR_LOCATIONS_PATH = "app.get_popular_locations?";
 	
 	private ExecutorService threadPool;
 	
@@ -43,46 +46,68 @@ public class ServerClientImp implements ServerClient {
 		threadPool.shutdownNow();
 	}
 	
+	public void getPopularLocations(Callback callback) {
+		JSONObject request = new JSONObject();
+		String path = constructIncompleteUrlPath() + GET_POPULAR_LOCATIONS_PATH;
+		executeHttpRequestAsync("GET", path, request, callback);
+	}
+	
+	public void getAllPopularPostsAtLocation(String username, String locationStr, QueryParams params, Callback callback) {
+		JSONObject user = new JSONObject();
+		user.put("username", username);
+		user.put("location", locationStr);
+		JSONObject request = new JSONObject();
+		request.put("user", user);
+		request.put("query_params", params.toJson());
+		
+		String path = constructIncompleteUrlPath() + GET_ALL_POPULAR_POSTS_AT_LOCATION_PATH;
+		executeHttpRequestAsync("GET", path, request, callback);
+	}
+	
 	@SuppressWarnings("unchecked")
-	public void getAllPostsCommentedOnByUser(String username, Callback callback) {
+	public void getAllPostsCommentedOnByUser(String username, QueryParams params, Callback callback) {
 		JSONObject user = new JSONObject();
 		user.put("username", username);
 		JSONObject request = new JSONObject();
 		request.put("user", user);
+		request.put("query_params", params.toJson());
 		
 		String path = constructIncompleteUrlPath() + GET_ALL_POSTS_COMMENTED_ON_BY_USER_PATH;
 		executeHttpRequestAsync("GET", path, request, callback);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void getAllPostsByUser(String username, Callback callback) {
+	public void getAllPostsByUser(String username, QueryParams params, Callback callback) {
 		JSONObject user = new JSONObject();
 		user.put("username", username);
 		JSONObject request = new JSONObject();
 		request.put("user", user);
+		request.put("query_params", params.toJson());
 		
 		String path = constructIncompleteUrlPath() + GET_ALL_POSTS_BY_USER_PATH;
 		executeHttpRequestAsync("GET", path, request, callback);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void getAllPostsAroundUser(String username, String location, Callback callback) {
+	public void getAllPostsAroundUser(String username, String locationStr, QueryParams params, Callback callback) {
 		JSONObject user = new JSONObject();
 		user.put("username", username);
-		user.put("location", location);
+		user.put("location", locationStr);
 		JSONObject request = new JSONObject();
 		request.put("user", user);
+		request.put("query_params", params.toJson());
 		
 		String path = constructIncompleteUrlPath() + GET_ALL_POSTS_AROUND_USER_PATH;
 		executeHttpRequestAsync("GET", path, request, callback);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void getAllPostComments(String postId, Callback callback) {
+	public void getAllPostComments(String postId, QueryParams params, Callback callback) {
 		JSONObject post = new JSONObject();
 		post.put("post_id", postId);
 		JSONObject request = new JSONObject();
 		request.put("post", post);
+		request.put("query_params", params.toJson());
 		
 		String path = constructIncompleteUrlPath() + GET_ALL_POST_COMMENTS_PATH;
 		executeHttpRequestAsync("GET", path, request, callback);
@@ -157,7 +182,10 @@ public class ServerClientImp implements ServerClient {
 	
 	public String jsonObjectToUrlParameter(JSONObject jsonRequest) {
 		String urlParams = jsonObjectToUrlParameterImp(jsonRequest, "");
-		return urlParams.substring(0, urlParams.length()-1);
+		if (!urlParams.isEmpty()) {
+			return urlParams.substring(0, urlParams.length()-1);
+		}
+		return "";
 	}
 		
 	private String jsonObjectToUrlParameterImp(JSONObject jsonObj, String path) {
@@ -191,6 +219,7 @@ public class ServerClientImp implements ServerClient {
 	  try {
 	    //Create connection
 	    URL url = new URL(targetURL);
+
 	    connection = (HttpURLConnection) url.openConnection();
 	    connection.setRequestMethod("POST");
 	    connection.setRequestProperty("Content-Type", "application/json");

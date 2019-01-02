@@ -27,7 +27,7 @@ class Location {
         latStr = ""
         lonStr = ""
     }
-    
+
     init(locationStr: String, label: String) {
         if (!locationStr.contains(":")) {
             print("Invalid locationStr, no ':'")

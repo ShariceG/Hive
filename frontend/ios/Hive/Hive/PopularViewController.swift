@@ -54,8 +54,7 @@ class PopularViewController: UIViewController {
     public func getPopularPostsFromLocation(location: Location) {
         let params: QueryParams = QueryParams(getNewer: true, currTopCursorStr: self.fetchPostsMetadata.newTopCursorStr, currBottomCursorStr: self.fetchPostsMetadata.newBottomCursorStr)
         client.getAllPopularPostsAtLocation(username: self.getTestUser(), queryParams: params,
-                                            latitude: location.latStr,
-                                            longitude: location.lonStr,
+                                            locationStr: location.locationStr
                                             completion: getPopularPostsFromLocationCompletion)
     }
     

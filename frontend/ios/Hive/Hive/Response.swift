@@ -54,12 +54,6 @@ class Response {
     private(set) var locations: Array<Location>
     private(set) var queryMetadata: QueryMetadata
     
-//    init(posts: Array<Post>, comments: Array<Comment>, code: ServerStatusCode) {
-//        self.posts = posts
-//        self.comments = comments
-//        self.serverStatusCode = code
-//    }
-    
     init(jsonObject: [String: Any]) {
         // Must initialize all member variables before calling class helper functions
         self.posts = []
