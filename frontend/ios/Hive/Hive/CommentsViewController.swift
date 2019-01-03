@@ -74,10 +74,13 @@ class CommentsViewController: UIViewController {
 
     @objc func refreshCommentTableView(_ refreshControl: UIRefreshControl) {
         // This should also end the refresh.
-        getAllPostComments(getNewComments: false)
+        getAllPostComments(getNewComments: true)
     }
     
     public func getAllPostComments(getNewComments: Bool) {
+        if (!getNewComments && !(fetchCommentsMetadata.hasMoreOlderData ?? true)) {
+            return
+        }
         let params: QueryParams = QueryParams(getNewer: getNewComments, currTopCursorStr: self.fetchCommentsMetadata.newTopCursorStr, currBottomCursorStr: self.fetchCommentsMetadata.newBottomCursorStr)
         client.getAllCommentsForPost(postId: (post?.postId)!, queryParams: params, completion: getAllPostCommentsCompletion)
     }
@@ -94,7 +97,7 @@ class CommentsViewController: UIViewController {
             return
         }
 
-        fetchCommentsMetadata.newMetadata(newMetadata: responseOr.get().queryMetadata)
+        fetchCommentsMetadata.updateMetadata(newMetadata: responseOr.get().queryMetadata)
         allPostComments.append(contentsOf: responseOr.get().comments)
         allPostComments = allPostComments.sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
         print("Got post comments: ", responseOr.get().comments)
@@ -187,7 +190,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
         if indexPath.section == tableView.numberOfSections - 1 &&
             indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
             if (!allPostComments.isEmpty) {
-                self.getAllPostComments(getNewComments: true)
+                self.getAllPostComments(getNewComments: false)
             }
         }
     }

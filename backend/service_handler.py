@@ -14,8 +14,8 @@ from google.appengine.datastore.datastore_query import Cursor
 import uuid
 import sys
 
-POST_QUERY_LIMIT = 3
-COMMENT_QUERY_LIMIT = 6
+POST_QUERY_LIMIT = 10
+COMMENT_QUERY_LIMIT = 10
 POPULAR_POST_QUERY_LIMIT = 10
 LOCATION_QUERY_DECIMAL_PLACES = 2
 
@@ -147,10 +147,10 @@ class ServiceHandler(object):
 
         query = model.PostModel.query().filter(
             model.PostModel.LocationLatitude == loc_lat).filter(
-            model.PostModel.LocationLongitude == loc_long).order(
-            -model.PostModel.CreationTimestampSec)
+            model.PostModel.LocationLongitude == loc_long)
         results, metadata = self._run_query_with_cursor(query=query,
-            params=request.query_params, fetch_limit=POST_QUERY_LIMIT)
+            params=request.query_params, fetch_limit=POST_QUERY_LIMIT,
+            order_property=model.PostModel.CreationTimestampSec)
 
         post_list = []
         helper = service_helper.ServiceHelper
@@ -169,10 +169,10 @@ class ServiceHandler(object):
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
 
         query = model.PostModel.query().filter(
-            model.PostModel.Username == user.username).order(
-            -model.PostModel.CreationTimestampSec)
+            model.PostModel.Username == user.username)
         results, metadata = self._run_query_with_cursor(query=query,
-            params=request.query_params, fetch_limit=POST_QUERY_LIMIT)
+            params=request.query_params, fetch_limit=POST_QUERY_LIMIT,
+            order_property=model.PostModel.CreationTimestampSec)
 
         post_list = []
         helper = service_helper.ServiceHelper
@@ -190,10 +190,10 @@ class ServiceHandler(object):
             return GetAllPostsCommentedOnByUserResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
         query = ndb.gql(('SELECT DISTINCT PostID FROM CommentModel '
-                          'WHERE Username = :1 '
-                          'ORDER BY CreationTimestampSec DESC'), user.username)
+                          'WHERE Username = :1'), user.username)
         comments, metadata = self._run_query_with_cursor(query=query,
-            params=request.query_params, fetch_limit=COMMENT_QUERY_LIMIT)
+            params=request.query_params, fetch_limit=COMMENT_QUERY_LIMIT,
+            order_property=model.CommentModel.CreationTimestampSec)
 
         results = []
         for comment_model in comments:
@@ -215,10 +215,10 @@ class ServiceHandler(object):
             return GetAllCommentsForPostResponse(
                 status=Status(status_code=StatusCode.POST_NOT_FOUND))
         query = ndb.gql(('SELECT * FROM CommentModel '
-                          'WHERE PostID = :1 '
-                          'ORDER BY CreationTimestampSec DESC'), post.post_id)
+                          'WHERE PostID = :1 '), post.post_id)
         comments, metadata = self._run_query_with_cursor(query=query,
-            params=request.query_params, fetch_limit=COMMENT_QUERY_LIMIT)
+            params=request.query_params, fetch_limit=COMMENT_QUERY_LIMIT,
+            order_property=model.CommentModel.CreationTimestampSec)
 
         comment_list = []
         helper = service_helper.ServiceHelper
@@ -243,11 +243,11 @@ class ServiceHandler(object):
 
         query = ndb.gql(('SELECT * '
                  'FROM PostModel WHERE LocationLatitude = :1 AND '
-                 'LocationLongitude = :2 AND PopularityIndex > 0 '
-                 'ORDER BY PopularityIndex DESC'),
+                 'LocationLongitude = :2 AND PopularityIndex > 0 '),
                  loc_lat, loc_long)
         results, metadata = self._run_query_with_cursor(query=query,
-            params=request.query_params, fetch_limit=POST_QUERY_LIMIT)
+            params=request.query_params, fetch_limit=POST_QUERY_LIMIT,
+            order_property=model.PostModel.PopularityIndex)
 
         post_list = []
         helper = service_helper.ServiceHelper
@@ -305,37 +305,58 @@ class ServiceHandler(object):
         return CalculateAllPopularityIndexResponse(
             status=Status(status_code=StatusCode.OK))
 
-    def _run_query_with_cursor(self, query, params, fetch_limit):
-        query_metadata = QueryMetadata()
+    def _run_query_with_cursor(self, query, params, fetch_limit,
+        order_property):
+        qm = QueryMetadata()
         results = []
+        forward_query = query.order(order_property)  # Sort ascending
+        reverse_query = query.order(-order_property)  # Sort descending
+        # By default, set new cursors to old cursors, to begin
+        qm.new_top_cursor_str = params.curr_top_cursor_str
+        qm.new_bottom_cursor_str = params.curr_bottom_cursor_str
         if params.get_newer:
             if not params.curr_top_cursor_str:
-                first_result, top_cursor, _ = query.fetch_page(1)
-                results, bottom_cursor, more = query.fetch_page(
-                    fetch_limit-1, start_cursor=top_cursor)
-                if bottom_cursor:  # If there are results to show
-                    results = first_result + results
-                    query_metadata.new_top_cursor_str = top_cursor.urlsafe()
-                    query_metadata.new_bottom_cursor_str = bottom_cursor.urlsafe()
-                    query_metadata.has_more_older_data = more
+                # If we do not get a top cursor from the client, we assume
+                # that they want the first fetch_limit results.
+                results, bottom_cursor, more = reverse_query.fetch_page(
+                    fetch_limit)
+                if bottom_cursor:
+                    _, top_cursor, _ = forward_query.fetch_page(fetch_limit,
+                        start_cursor=bottom_cursor)
+                    qm.new_top_cursor_str = top_cursor.urlsafe()
+                    qm.new_bottom_cursor_str = bottom_cursor.urlsafe()
+                    qm.has_more_older_data = more
             else:
                 cursor = Cursor(urlsafe=params.curr_top_cursor_str)
-                results, new_top_cursor, _ = query.fetch_page(
-                    fetch_limit, end_cursor=cursor)
-                if new_top_cursor:  # If there are results to show
-                    results = results if len(results) > 1 else []
-                    query_metadata.new_top_cursor_str = new_top_cursor.urlsafe()
+                # With a forward_query, the bottom_cursor is the new top.
+                results, bottom_cursor, _ = forward_query.fetch_page(
+                    fetch_limit, start_cursor=cursor)
+                # According to GAE docs, there's a chance that a None cursor can
+                # be returned if query reaches end of results. So this accounts
+                # for that. Normally, a None cursor would indicates that there
+                # aren't results, period, but in this case, we have to check
+                # the results list explicitly.
+                if not bottom_cursor:
+                    if not result:
+                        results = []
+                elif not self._cursors_are_eq(cursor, bottom_cursor):
+                    qm.new_top_cursor_str = bottom_cursor.urlsafe()
+                else:
+                    results = []
         else:
             if params.curr_bottom_cursor_str:
                 cursor = Cursor(urlsafe=params.curr_bottom_cursor_str)
-                results, new_bottom_cusor, more = query.fetch_page(
-                    POST_QUERY_LIMIT, start_cursor=cursor)
-                if new_bottom_cusor:  # If there are results to show
-                    results = results if len(results) > 1 else []
-                    query_metadata.new_bottom_cursor_str = \
-                        new_bottom_cusor.urlsafe()
-                    query_metadata.has_more_older_data = more
-        return results, query_metadata
+                results, new_bottom_cursor, more = reverse_query.fetch_page(
+                    fetch_limit, start_cursor=cursor)
+                # If there are actual results
+                if new_bottom_cursor and not self._cursors_are_eq(
+                    new_bottom_cursor, cursor):
+                    qm.new_bottom_cursor_str = new_bottom_cursor.urlsafe()
+                qm.has_more_older_data = more
+        return results, qm
+
+    def _cursors_are_eq(self, c1, c2):
+        return c1.urlsafe() == c2.urlsafe()
 
     def _truncate_float(self, float_str, dec_places):
         float_str = '%s.' % (float_str) if not '.' in float_str else float_str

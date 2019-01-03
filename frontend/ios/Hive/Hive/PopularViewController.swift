@@ -54,7 +54,7 @@ class PopularViewController: UIViewController {
     public func getPopularPostsFromLocation(location: Location) {
         let params: QueryParams = QueryParams(getNewer: true, currTopCursorStr: self.fetchPostsMetadata.newTopCursorStr, currBottomCursorStr: self.fetchPostsMetadata.newBottomCursorStr)
         client.getAllPopularPostsAtLocation(username: self.getTestUser(), queryParams: params,
-                                            locationStr: location.locationStr
+                                            locationStr: location.locationStr,
                                             completion: getPopularPostsFromLocationCompletion)
     }
     
@@ -99,11 +99,6 @@ class PopularViewController: UIViewController {
             let userLocation = Location(locationStr: self.getTestLocation(), label: "My Area")
             popularLocations.append(userLocation)
             popularLocations.append(contentsOf: response.get().locations)
-            
-            print("BLAH BLAH")
-            for location in popularLocations {
-                print("BLAH " + location.label)
-            }
             getPopularPostsFromLocation(location: userLocation)
             DispatchQueue.main.async {
                 self.popularCollectionView.reloadData()

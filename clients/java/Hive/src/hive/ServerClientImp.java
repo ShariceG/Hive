@@ -52,6 +52,7 @@ public class ServerClientImp implements ServerClient {
 		executeHttpRequestAsync("GET", path, request, callback);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void getAllPopularPostsAtLocation(String username, String locationStr, QueryParams params, Callback callback) {
 		JSONObject user = new JSONObject();
 		user.put("username", username);

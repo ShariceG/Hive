@@ -71,8 +71,7 @@ public class ServerClientMain {
 	}
 	
 	public static String getRandomPostId() {
-		return "1";
-//		return madePosts.get(new Random().nextInt(madePosts.size())).getPostId();
+		return madePosts.get(new Random().nextInt(madePosts.size())).getPostId();
 	}
 	
 	public static String getRandomLocation() {

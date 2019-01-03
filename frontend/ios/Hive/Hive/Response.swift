@@ -33,7 +33,7 @@ class QueryMetadata {
         }
     }
     
-    func newMetadata(newMetadata: QueryMetadata) {
+    func updateMetadata(newMetadata: QueryMetadata) {
         if (newMetadata.newTopCursorStr != nil) {
             newTopCursorStr = newMetadata.newTopCursorStr
         }

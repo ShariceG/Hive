@@ -141,7 +141,7 @@ class ViewController: UIViewController {
             return
         }
 
-        fetchPostsMetadata.newMetadata(newMetadata: responseOr.get().queryMetadata)
+        fetchPostsMetadata.updateMetadata(newMetadata: responseOr.get().queryMetadata)
         allPostsAroundUser.append(contentsOf: responseOr.get().posts)
         allPostsAroundUser = allPostsAroundUser.sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
         print("Got posts around user after fetch..." + String(responseOr.get().posts.count))
@@ -156,6 +156,9 @@ class ViewController: UIViewController {
     }
     
     public func fetchPostsAroundUser(getNewPosts: Bool) {
+        if (!getNewPosts && !(fetchPostsMetadata.hasMoreOlderData ?? true)) {
+            return
+        }
         let params: QueryParams = QueryParams(getNewer: getNewPosts, currTopCursorStr: self.fetchPostsMetadata.newTopCursorStr, currBottomCursorStr: self.fetchPostsMetadata.newBottomCursorStr)
         client.getAllPostsAroundUser(username: self.getTestUser(), location: self.getTestLocation(),
                                      queryParams: params, completion:fetchPostsAroundUserCompletion)
