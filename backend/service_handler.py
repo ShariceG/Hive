@@ -337,7 +337,7 @@ class ServiceHandler(object):
                 # aren't results, period, but in this case, we have to check
                 # the results list explicitly.
                 if not bottom_cursor:
-                    if not result:
+                    if not results:
                         results = []
                 elif not self._cursors_are_eq(cursor, bottom_cursor):
                     qm.new_top_cursor_str = bottom_cursor.urlsafe()
