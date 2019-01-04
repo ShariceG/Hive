@@ -2,8 +2,6 @@ package hiveSimulator;
 
 import java.util.Random;
 
-import javax.management.RuntimeErrorException;
-
 import hive.ActionType;
 import hive.Callback;
 import hive.QueryParams;
@@ -32,13 +30,17 @@ public class SimulatedUser {
 	public void createNewUser() {
 		client.createUser(username, phoneNumber, new Callback() {
 			public void serverRequestCallback(StatusOr<Response> responseOr) {
-				if (responseOr.hasError()) {
-					throw new RuntimeErrorException(null, responseOr.toString());
+				try {
+					if (responseOr.hasError()) {
+						throw new RuntimeException(responseOr.toString());
+					}
+					if (responseOr.get().serverReturnedWithError()) {
+						throw new RuntimeException(responseOr.get().getServerStatusCode().name());
+					}
+					System.out.println(username + " has been created.");
+				} catch (RuntimeException e) {
+					
 				}
-				if (responseOr.get().serverReturnedWithError()) {
-					throw new RuntimeErrorException(null, responseOr.get().getServerStatusCode().name());
-				}
-				System.out.println(username + " has been created.");
 			}
 		});
 	}

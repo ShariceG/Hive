@@ -54,4 +54,8 @@ public class Location {
 		return lonStr;
 	}
 	
+	public String toString() {
+		return locationStr;
+	}
+	
 }

@@ -9,18 +9,25 @@ public final class Comment {
 	private String username;
 	private String postId;
 	private String commentText;
+	private double creationTimestampSec;
 	private JSONObject jsonComment;
 	
-	public Comment(String commentId, String username, String postId, String commentText) {
+	private Comment(String commentId, String username, String postId, String commentText, 
+			double creationTimestampSec, JSONObject jsonComment) {
 		this.commentId = commentId;
 		this.username = username;
 		this.postId = postId;
 		this.commentText = commentText;
+		this.creationTimestampSec = creationTimestampSec;
+		this.jsonComment = jsonComment;
 	}
 	
-	public Comment(String commentId, String username, String postId, String commentText, JSONObject jsonComment) {
-		this(commentId, username, postId, commentText);
-		this.jsonComment = jsonComment;
+	public Double getCreationTimestampSec() {
+		return creationTimestampSec;
+	}
+	
+	public long getCreationTimestampSecAsLong() {
+		return Double.valueOf(creationTimestampSec).longValue();
 	}
 
 	public String getCommentId() {
@@ -44,7 +51,10 @@ public final class Comment {
 	}
 	
 	public static Comment jsonToComment(JSONObject jsonComment) {
+		double timestamp = Double.parseDouble((String)jsonComment.get("creation_timestamp_sec"));
+		System.out.println(timestamp);
 		return new Comment((String)jsonComment.get("comment_id"), (String)jsonComment.get("username"), 
-				(String)jsonComment.get("post_id"), (String)jsonComment.get("comment_text"), jsonComment);
+				(String)jsonComment.get("post_id"), (String)jsonComment.get("comment_text"), 
+				timestamp, jsonComment);
 	}
 }

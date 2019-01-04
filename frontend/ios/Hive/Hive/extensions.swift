@@ -38,6 +38,16 @@ extension Decimal {
     }
 }
 
+extension Date {
+    func getCurrentTimeMs()-> Double {
+        return self.timeIntervalSince1970 * 1000
+    }
+    
+    func getCurrentTimeSec()-> Double {
+        return self.timeIntervalSince1970
+    }
+}
+
 extension UIViewController: PostViewDelegate {
     func commentButtonClick(postView: PostView) {
         self.performSegue(withIdentifier: "seeCommentsSegue", sender: postView)

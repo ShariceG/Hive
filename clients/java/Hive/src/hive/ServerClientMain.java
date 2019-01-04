@@ -12,14 +12,16 @@ public class ServerClientMain {
 
 	public static void main(String[] args) {
 		madePosts = new ArrayList<Post>();
-		client.getPopularLocations(new Callback() {
-			public void serverRequestCallback(StatusOr<Response> responseOr) {
-				System.out.println(responseOr.toString());
-			}
-		});
+//		client.getPopularLocations(new Callback() {
+//			public void serverRequestCallback(StatusOr<Response> responseOr) {
+//				System.out.println(responseOr.toString());
+//			}
+//		});
 		client.getAllPopularPostsAtLocation("user1", "33.75:-116.35", new QueryParams(true, "", ""), new Callback() {
 			public void serverRequestCallback(StatusOr<Response> responseOr) {
-				System.out.println(responseOr.toString());
+				System.out.println("BLAH BLAH BLAH ");
+				Post p = responseOr.get().getPosts().get(0);
+				System.out.println(p.getCreationTimestampSecAsLong() + " " + p.getCreationTimestampSec() + " " + p.isExpired());
 			}
 		});
 //		createUsers(USER_COUNT);

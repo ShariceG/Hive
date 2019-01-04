@@ -36,7 +36,8 @@ public class StatusOr<T> {
 	
 	public T get() {
 		if (hasError()) {
-			throw new RuntimeException("Unhandled error: \n" + getErrorMessage() + "\n");
+			RuntimeException e = new RuntimeException("Unhandled error: \n" + getErrorMessage() + "\n");
+			e.printStackTrace();
 		}
 		return value;
 	}

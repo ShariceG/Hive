@@ -5,12 +5,12 @@ import org.json.simple.JSONObject;
 /**
  * 
  * @author
- * This is a class representing a post by a user. This object may be
- * used as part of a request to the server or as part of a response from
- * the server.
+ * This is a class representing a post by a user.
  *
  */
 public final class Post {
+	
+	private static long POST_LIFESPAN_SEC = 24 * 60 * 60;
 	
 	// Username of whoever made the post
 	private String username;
@@ -18,23 +18,30 @@ public final class Post {
 	private String postId;
 	private String postText;
 	// Location of the user when post was made
-	private String location;
+	private Location location;
 	private int likes;
 	private int dislikes;
+	private double creationTimestampSec;
 	private JSONObject jsonPost;
 	
-	public Post(String username, String postId, String postText, String location, int likes, int dislikes) {
+	private Post(String username, String postId, String postText, Location location, int likes, int dislikes, 
+			double creationTimestampSec, JSONObject jsonPost) {
 		this.username = username;
 		this.postText = postText;
 		this.postId = postId;
 		this.location = location;
 		this.likes = likes;
 		this.dislikes = dislikes;
+		this.creationTimestampSec = creationTimestampSec;
+		this.jsonPost = jsonPost;
 	}
 	
-	public Post(String username, String postId, String postText, String location, int likes, int dislikes, JSONObject jsonPost) {
-		this(username, postId, postText, location, likes, dislikes);
-		this.jsonPost = jsonPost;
+	public double getCreationTimestampSec() {
+		return creationTimestampSec;
+	}
+	
+	public long getCreationTimestampSecAsLong() {
+		return Double.valueOf(creationTimestampSec).longValue();
 	}
 
 	public String getUsername() {
@@ -49,7 +56,7 @@ public final class Post {
 		return postText;
 	}
 
-	public String getLocation() {
+	public Location getLocation() {
 		return location;
 	}
 
@@ -61,6 +68,11 @@ public final class Post {
 		return dislikes;
 	}
 	
+	public boolean isExpired() {
+		double currentTimeSec = System.currentTimeMillis() / 1000;
+		return creationTimestampSec + POST_LIFESPAN_SEC < currentTimeSec;
+	}
+	
 	public String toString() {
 		return jsonPost.toJSONString();
 	}
@@ -68,9 +80,10 @@ public final class Post {
 	public static Post jsonToPost(JSONObject jsonPost) {
 		int likes = jsonPost.get("likes") == null ? 0 : Integer.parseInt((String)jsonPost.get("likes"));
 		int dislikes = jsonPost.get("dislikes") == null ? 0 : Integer.parseInt((String)jsonPost.get("dislikes"));
+		double timestamp = Double.parseDouble(jsonPost.get("creation_timestamp_sec")+"");
 		return new Post((String)jsonPost.get("username"), (String)jsonPost.get("post_id"), (String)jsonPost.get("post_text"), 
-				(String)jsonPost.get("location"), 
-				likes, dislikes, jsonPost);
+				Location.jsonToLocation((String)jsonPost.get("location")), 
+				likes, dislikes, timestamp, jsonPost);
 	}
 
 }

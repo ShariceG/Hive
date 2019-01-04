@@ -9,6 +9,7 @@
 import Foundation
 
 class Post {
+    private static let POST_LIFESPAN_SEC : Double = 24 * 60 * 60  // 24 hours
     private(set) var username: String
     private(set) var postId: String
     private(set) var postText: String
@@ -18,8 +19,7 @@ class Post {
     private(set) var creationTimestampSec: Decimal
     private(set) var jsonPost: [String: Any]?
     
-    init(username: String, postId: String, postText: String, location: String, likes: Int, dislikes: Int,
-         creationTimestampSec: Decimal) {
+    init(username: String, postId: String, postText: String, location: String, likes: Int, dislikes: Int, creationTimestampSec: Decimal, jsonPost: [String: Any]) {
         self.username = username
         self.postId = postId
         self.postText = postText
@@ -27,18 +27,12 @@ class Post {
         self.likes = likes
         self.dislikes = dislikes
         self.creationTimestampSec = creationTimestampSec
-        self.jsonPost = Optional.none
+        self.jsonPost = jsonPost
     }
     
-    convenience init(username: String, postId: String, postText: String, location: String, likes: Int, dislikes: Int, creationTimestampSec: Decimal, jsonPost: [String: Any]) {
-        self.init(username: username,
-                  postId: postId,
-                  postText: postText,
-                  location: location,
-                  likes: likes,
-                  dislikes: dislikes,
-                  creationTimestampSec: creationTimestampSec)
-        self.jsonPost = jsonPost
+    public func isExpired() -> Bool {
+        let currentTimeSec: Double = Date().getCurrentTimeSec() / 1000
+        return Double(self.creationTimestampSec as NSNumber) + Post.POST_LIFESPAN_SEC < currentTimeSec
     }
     
     public func toString() -> String {

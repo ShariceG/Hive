@@ -52,6 +52,11 @@ indexes:
     direction: desc
 - kind: "PostModel"
   properties:
+  - name: "LocationLatitude"
+  - name: "LocationLongitude"
+  - name: "PopularityIndex"
+- kind: "PostModel"
+  properties:
   - name: "Username"
   - name: "CreationTimestampSec"
     direction: desc

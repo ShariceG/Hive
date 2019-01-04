@@ -299,15 +299,19 @@ public class ServerClientImp implements ServerClient {
 			JSONObject jsonResponse = jsonStringToObject(response.toString());
 			return new StatusOr<Response>(new Response(jsonResponse));
 		} catch (FileNotFoundException fnfe) {
+			fnfe.printStackTrace();
 			return new StatusOr<Response>(StatusError.SERVER_NOT_FOUND, 
 					  fnfe.getMessage()); 
 		} catch (SocketTimeoutException timeoutExcep) {
+			timeoutExcep.printStackTrace();
 			return new StatusOr<Response>(StatusError.CONNECTION_TIMEOUT_ERROR, 
 				  timeoutExcep.getMessage()); 
 		} catch (IOException e) {
+			e.printStackTrace();
 			return new StatusOr<Response>(StatusError.GENERIC_CONNECTION_ERROR, 
 					  e.getMessage());
 		} catch (Exception exc) {
+			exc.printStackTrace();
 			 return new StatusOr<Response>(StatusError.GENERIC_SERVER_ERROR, 
 					 exc.getMessage());
 		} finally {
