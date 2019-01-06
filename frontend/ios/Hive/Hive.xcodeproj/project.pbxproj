@@ -31,6 +31,8 @@
 		E067E56721D6A52600D3095D /* PopularViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E067E56621D6A52600D3095D /* PopularViewController.swift */; };
 		E0D91F3621D803F0007E6916 /* PopularCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D91F3521D803F0007E6916 /* PopularCollectionViewCell.swift */; };
 		E0D91F3821D8A1C9007E6916 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D91F3721D8A1C9007E6916 /* Location.swift */; };
+		E0D91F3C21DFEF43007E6916 /* UIPostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D91F3B21DFEF43007E6916 /* UIPostView.swift */; };
+		E0D91F3E21DFF141007E6916 /* UIPostView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E0D91F3D21DFF141007E6916 /* UIPostView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -60,6 +62,8 @@
 		E067E56621D6A52600D3095D /* PopularViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularViewController.swift; sourceTree = "<group>"; };
 		E0D91F3521D803F0007E6916 /* PopularCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularCollectionViewCell.swift; sourceTree = "<group>"; };
 		E0D91F3721D8A1C9007E6916 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
+		E0D91F3B21DFEF43007E6916 /* UIPostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIPostView.swift; sourceTree = "<group>"; };
+		E0D91F3D21DFF141007E6916 /* UIPostView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIPostView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +101,7 @@
 			children = (
 				138E9356216C1E58003DC7FA /* CommentView.xib */,
 				13B74A71216ABF4C00A64216 /* PostView.xib */,
+				E0D91F3D21DFF141007E6916 /* UIPostView.xib */,
 			);
 			name = xibs;
 			sourceTree = "<group>";
@@ -157,6 +162,7 @@
 				13B74A6F216AA4F100A64216 /* PostView.swift */,
 				138E9355216C1E58003DC7FA /* CommentView.swift */,
 				E0D91F3521D803F0007E6916 /* PopularCollectionViewCell.swift */,
+				E0D91F3B21DFEF43007E6916 /* UIPostView.swift */,
 			);
 			name = customViews;
 			sourceTree = "<group>";
@@ -221,6 +227,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E0D91F3E21DFF141007E6916 /* UIPostView.xib in Resources */,
 				13AE7A4A2165F182003C898A /* LaunchScreen.storyboard in Resources */,
 				138E9358216C1E58003DC7FA /* CommentView.xib in Resources */,
 				13AE7A472165F182003C898A /* Assets.xcassets in Resources */,
@@ -242,6 +249,7 @@
 				13AE7A5921660074003C898A /* UtilityBelt.swift in Sources */,
 				13AE7A6521661419003C898A /* ServerStatusCode.swift in Sources */,
 				138E9354216C1B49003DC7FA /* extensions.swift in Sources */,
+				E0D91F3C21DFEF43007E6916 /* UIPostView.swift in Sources */,
 				E0D91F3621D803F0007E6916 /* PopularCollectionViewCell.swift in Sources */,
 				13A3771F2167417A001EA8A2 /* ServerClient.swift in Sources */,
 				13AE7A532165F346003C898A /* ActionType.swift in Sources */,

@@ -69,6 +69,6 @@ extension UIViewController: PostViewDelegate {
     }
     
     func getTestUser() -> String {
-        return "user1"
+        return "user2"
     }
 }

@@ -14,8 +14,8 @@ from google.appengine.datastore.datastore_query import Cursor
 import uuid
 import sys
 
-POST_QUERY_LIMIT = 10
-COMMENT_QUERY_LIMIT = 10
+POST_QUERY_LIMIT = 10000
+COMMENT_QUERY_LIMIT = 10000
 POPULAR_POST_QUERY_LIMIT = 10
 LOCATION_QUERY_DECIMAL_PLACES = 2
 
@@ -31,7 +31,7 @@ class ServiceHandler(object):
             id=user.username,
             Username=user.username,
             PhoneNumber=user.phone_number,
-            CreationTimestampSec=time.time).put()
+            CreationTimestampSec=time.time()).put()
 
         return CreateUserResponse(
             status=Status(status_code=StatusCode.OK))

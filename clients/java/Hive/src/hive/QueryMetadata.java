@@ -5,23 +5,23 @@ import org.json.simple.JSONObject;
 public class QueryMetadata {
 	private String newTopCursorStr;
 	private String newBottomCursorStr;
-	private String hasMoreOlderData;
+	private Boolean hasMoreOlderData;
     
     public QueryMetadata() {
         newTopCursorStr = "";
         newBottomCursorStr = "";
-        hasMoreOlderData = "";
-    }
-   
-    private QueryMetadata(JSONObject jsonMetadata) {
+        hasMoreOlderData = true;
+    } 
+
+	private QueryMetadata(JSONObject jsonMetadata) {
         if (jsonMetadata.containsKey("new_top_cursor_str")) {
             newTopCursorStr = (String) jsonMetadata.get("new_top_cursor_str");
         }
         if (jsonMetadata.containsKey("new_bottom_cursor_str")) {
-            newTopCursorStr = (String) jsonMetadata.get("new_bottom_cursor_str");
+        	newBottomCursorStr = (String) jsonMetadata.get("new_bottom_cursor_str");
         }
         if (jsonMetadata.containsKey("has_more_older_data")) {
-            newTopCursorStr = (String) jsonMetadata.get("has_more_older_data");
+        	hasMoreOlderData = (Boolean) jsonMetadata.get("has_more_older_data");
         }
     }
     
@@ -40,4 +40,16 @@ public class QueryMetadata {
             hasMoreOlderData = newMetadata.hasMoreOlderData;
         }
     }
+    
+    public String getNewTopCursorStr() {
+		return newTopCursorStr;
+	}
+
+	public String getNewBottomCursorStr() {
+		return newBottomCursorStr;
+	}
+
+	public boolean hasMoreOlderData() {
+		return hasMoreOlderData;
+	}
 }
