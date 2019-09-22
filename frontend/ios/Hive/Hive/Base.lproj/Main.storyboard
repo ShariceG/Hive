@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina5_9" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -35,22 +33,6 @@
                                 </attributedString>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" pagingEnabled="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="3" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="BWj-g3-gHc">
-                                <rect key="frame" x="16" y="200" width="343" height="570"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="postViewCell" rowHeight="3" id="L9f-KR-Moh" customClass="PostView" customModule="Hive" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="343" height="3"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="L9f-KR-Moh" id="ghz-to-UVb">
-                                            <rect key="frame" x="0.0" y="0.0" width="343" height="3"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </prototypes>
-                                <sections/>
-                            </tableView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r9K-mV-2fh">
                                 <rect key="frame" x="285" y="125" width="74" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -59,21 +41,27 @@
                                     <action selector="postBnAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="JU3-RX-49x"/>
                                 </connections>
                             </button>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="SEc-dv-adM">
+                                <rect key="frame" x="16" y="204" width="343" height="608"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <gestureRecognizers/>
                     </view>
                     <connections>
                         <outlet property="postBn" destination="r9K-mV-2fh" id="xvc-WJ-6zB"/>
-                        <outlet property="postTableView" destination="BWj-g3-gHc" id="JTn-eu-ER3"/>
+                        <outlet property="postFeedTable" destination="SEc-dv-adM" id="qKv-by-qVS"/>
                         <outlet property="postTv" destination="Rua-I2-fns" id="3x9-c4-LAz"/>
                         <segue destination="o5x-Wz-56f" kind="show" identifier="seeCommentsSegue" id="AZh-Dt-8IT"/>
                         <segue destination="NX4-XG-Pu2" kind="show" identifier="seePopularSegue" id="LyA-ay-Ndi"/>
+                        <segue destination="ySL-8N-dSu" kind="show" identifier="seeMenuViewSegue" id="XH5-Gd-wr8"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="228" y="0.73891625615763545"/>
+            <point key="canvasLocation" x="-735.20000000000005" y="-251.23152709359607"/>
         </scene>
         <!--Comments View Controller-->
         <scene sceneID="ika-lA-gvW">
@@ -84,57 +72,58 @@
                         <viewControllerLayoutGuide type="bottom" id="aGU-ti-R0s"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="kSJ-yq-4eD">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="758"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="BkP-im-cAW" userLabel="Post Table View">
+                                <rect key="frame" x="16" y="51" width="343" height="162"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </tableView>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tFm-hL-kDD" customClass="CommentFeedView" customModule="Hive" customModuleProvider="target">
+                                <rect key="frame" x="16" y="285" width="343" height="457"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="iA2-eg-atC">
+                                        <rect key="frame" x="0.0" y="0.0" width="343" height="457"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                    </tableView>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <connections>
+                                    <outlet property="commentTableView" destination="iA2-eg-atC" id="30Q-rx-l25"/>
+                                </connections>
+                            </view>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" text="Comment" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="sfF-sZ-vdr">
-                                <rect key="frame" x="16" y="251" width="243" height="45"/>
+                                <rect key="frame" x="20" y="230" width="198" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XJV-l0-v3o">
-                                <rect key="frame" x="256" y="258" width="103" height="30"/>
+                                <rect key="frame" x="236" y="230" width="119" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Comment"/>
                                 <connections>
                                     <action selector="commentBnAction:" destination="o5x-Wz-56f" eventType="touchUpInside" id="vhP-SE-0Bw"/>
                                 </connections>
                             </button>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="BkP-im-cAW" userLabel="Post Table View">
-                                <rect key="frame" x="16" y="81" width="343" height="162"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="postViewCell" id="MZA-3g-JwX" customClass="PostView" customModule="Hive" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="343" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="MZA-3g-JwX" id="gJI-1w-vR9">
-                                            <rect key="frame" x="0.0" y="0.0" width="343" height="43.666666666666664"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </prototypes>
-                            </tableView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="PDC-3x-Ve3">
-                                <rect key="frame" x="16" y="345" width="343" height="425"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                            </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
+                    <navigationItem key="navigationItem" id="lHm-NS-9ZA"/>
                     <connections>
                         <outlet property="commentBn" destination="XJV-l0-v3o" id="eqk-xh-cR9"/>
-                        <outlet property="commentTableView" destination="PDC-3x-Ve3" id="cyM-3y-NeF"/>
+                        <outlet property="commentFeedView" destination="tFm-hL-kDD" id="d0H-O8-HsH"/>
                         <outlet property="commentTextView" destination="sfF-sZ-vdr" id="u2w-id-WE0"/>
                         <outlet property="postTableView" destination="BkP-im-cAW" id="o8b-l4-26d"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PWt-9p-sTC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1296.8" y="-1.4778325123152709"/>
+            <point key="canvasLocation" x="1378" y="-251"/>
         </scene>
         <!--Popular View Controller-->
         <scene sceneID="nWk-ec-D4e">
@@ -145,24 +134,9 @@
                         <viewControllerLayoutGuide type="bottom" id="IUU-53-d8f"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="BaK-GD-xRb">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="758"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="3IC-Fw-f6Z">
-                                <rect key="frame" x="16" y="207" width="343" height="563"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="postViewCell" id="byA-FZ-Jeu" customClass="PostView" customModule="Hive" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="343" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="byA-FZ-Jeu" id="VjE-b6-WmM">
-                                            <rect key="frame" x="0.0" y="0.0" width="343" height="44"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </prototypes>
-                            </tableView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="ag3-AV-esq">
                                 <rect key="frame" x="16" y="129" width="343" height="51"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -207,21 +181,136 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="3IC-Fw-f6Z">
+                                <rect key="frame" x="8" y="188" width="359" height="536"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <connections>
                         <outlet property="popularCollectionView" destination="ag3-AV-esq" id="bGY-3r-qki"/>
-                        <outlet property="postTableView" destination="3IC-Fw-f6Z" id="yjO-bL-kUQ"/>
+                        <outlet property="postFeedTable" destination="3IC-Fw-f6Z" id="Lh1-PS-STk"/>
                         <segue destination="o5x-Wz-56f" kind="show" identifier="seeCommentsSegue" id="JdW-uG-hSR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ldN-t6-p0T" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="256.80000000000001" y="718.9655172413793"/>
+            <point key="canvasLocation" x="322" y="490"/>
+        </scene>
+        <!--Menu View Controller-->
+        <scene sceneID="x1F-xM-cYh">
+            <objects>
+                <viewController id="ySL-8N-dSu" customClass="MenuViewController" customModule="Hive" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="rHz-SU-Ev6"/>
+                        <viewControllerLayoutGuide type="bottom" id="5XM-Ir-d4Z"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ede-Zc-gGg">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="758"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dKu-W3-AVY">
+                                <rect key="frame" x="81" y="241" width="230" height="80"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="My Rank"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jla-Sv-lF4">
+                                <rect key="frame" x="81" y="437" width="230" height="80"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Help And FAQ"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0RS-zN-6pG">
+                                <rect key="frame" x="81" y="339" width="230" height="80"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Map"/>
+                                <connections>
+                                    <action selector="mapButtonAction:" destination="ySL-8N-dSu" eventType="touchUpInside" id="0Ji-jk-pAa"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="9fW-Ri-67K"/>
+                    <connections>
+                        <outlet property="mapButton" destination="0RS-zN-6pG" id="Bu8-aV-RZ4"/>
+                        <segue destination="9bE-mo-tTZ" kind="show" identifier="seeMapViewSegue" id="Gj1-zU-Wd0"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ecx-fL-C9x" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-735.20000000000005" y="718.9655172413793"/>
+        </scene>
+        <!--Map View Controller-->
+        <scene sceneID="BTq-yd-fsW">
+            <objects>
+                <viewController id="9bE-mo-tTZ" customClass="MapViewController" customModule="Hive" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="L5m-rk-tOq"/>
+                        <viewControllerLayoutGuide type="bottom" id="BvO-86-V8f"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="SBk-Ok-gBN">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="758"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" rotateEnabled="NO" pitchEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m3s-sb-f19">
+                                <rect key="frame" x="0.0" y="140" width="398" height="690"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </mapView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ery-8j-lCZ">
+                                <rect key="frame" x="16" y="690" width="139" height="68"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" weight="black" pointSize="15"/>
+                                <state key="normal" title="Back To Menu"/>
+                                <connections>
+                                    <action selector="backToMenuAction:" destination="9bE-mo-tTZ" eventType="touchUpInside" id="5BZ-SA-2Un"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="cl5-e1-lSy"/>
+                    <connections>
+                        <outlet property="mapView" destination="m3s-sb-f19" id="g7j-su-Hzo"/>
+                        <segue destination="vRb-J8-N7N" kind="presentation" identifier="seePostFeedModalViewSegue" id="H75-uo-Jov"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="czD-ch-XVH" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-735.20000000000005" y="1478.5714285714287"/>
+        </scene>
+        <!--Post Feed Modal View Controller-->
+        <scene sceneID="b3v-Nr-iUT">
+            <objects>
+                <viewController id="vRb-J8-N7N" customClass="PostFeedModalViewController" customModule="Hive" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="SZB-5K-JT0"/>
+                        <viewControllerLayoutGuide type="bottom" id="9Oh-L4-XTa"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ohK-Ag-zbK">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="758"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Whb-BU-bMk">
+                                <rect key="frame" x="16" y="135" width="343" height="589"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    </view>
+                    <connections>
+                        <outlet property="postFeedTableView" destination="Whb-BU-bMk" id="vMf-jm-Yql"/>
+                        <segue destination="o5x-Wz-56f" kind="show" identifier="seeCommentsSegue" id="k9L-5g-Ax7"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Qsu-hH-XQb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1727.2" y="1478.5714285714287"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="AZh-Dt-8IT"/>
+        <segue reference="k9L-5g-Ax7"/>
     </inferredMetricsTieBreakers>
 </document>

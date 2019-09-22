@@ -17,12 +17,11 @@ class Location {
     public private(set) var latStr: String
     public private(set) var lonStr: String
     
-    private(set) var EMPTY_LABEL: String = "Somewhere On Earth"
     private(set) var NOT_FOUND_LABEL: String = "???"
     
     init() {
         location = CLLocation(latitude: 0, longitude: 0)
-        label = self.EMPTY_LABEL
+        label = ""
         locationStr = ""
         latStr = ""
         lonStr = ""
@@ -56,32 +55,27 @@ class Location {
     }
     
     public func waitUntilGeoLocationIsReversed() {
-        while true {
-            if (self.geoCoordinatesAreReversed()) {
-                return
-            }
+        while self.label.isEmpty {
         }
     }
-    
-    private func geoCoordinatesAreReversed() -> Bool {
-        print("LMAO checking: " + self.label)
-        return self.label != self.EMPTY_LABEL
-    }
-    
+
     private func reverseGeoLocation() {
+        print("Reversing geo location")
         CLGeocoder().reverseGeocodeLocation(location) { (placemarks, error) in
             if (error == nil) {
-                var loc: String = ""
-                if (placemarks?[0].locality == nil || placemarks?[0].administrativeArea == nil) {
-                    loc = self.NOT_FOUND_LABEL
+                if (placemarks?[0].locality != nil && placemarks?[0].administrativeArea != nil) {
+                    print("Found reverse geo: " + placemarks.debugDescription)
+                    self.label = (placemarks?[0].locality!)! + ", " + (placemarks?[0].administrativeArea!)!
+                    return
                 } else {
-                    loc = (placemarks?[0].locality!)! + ", " + (placemarks?[0].administrativeArea!)!
+                    print("Could not find reverse geo for " + self.locationStr)
                 }
-                self.label = loc
             } else {
-                self.label = self.NOT_FOUND_LABEL
+                print("Error trying to reverse geo for " + self.locationStr + "\nError: " + error.debugDescription)
             }
+            self.label = self.NOT_FOUND_LABEL
         }
+        waitUntilGeoLocationIsReversed()
     }
     
 }

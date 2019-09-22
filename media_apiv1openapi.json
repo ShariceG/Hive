@@ -1,0 +1,537 @@
+{
+  "basePath": "/_ah/api",
+  "consumes": [
+    "application/json"
+  ],
+  "definitions": {
+    "BackendStatusStatus": {
+      "properties": {
+        "is_ok": {
+          "type": "boolean"
+        },
+        "status_code": {
+          "enum": [
+            "OK",
+            "USER_NOT_FOUND",
+            "USER_ALREADY_EXISTS",
+            "POST_NOT_FOUND",
+            "COMMENT_NOT_FOUND",
+            "UNKNOWN_ERROR",
+            "UNSUPPORTED_ACTION_TYPE",
+            "INTERNAL_ERROR",
+            "NO_LOCATION_PROVIDED"
+          ],
+          "type": "string"
+        },
+        "status_message": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoEntityProtoComment": {
+      "properties": {
+        "comment_id": {
+          "type": "string"
+        },
+        "comment_text": {
+          "type": "string"
+        },
+        "creation_timestamp_sec": {
+          "format": "double",
+          "type": "number"
+        },
+        "post_id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoEntityProtoPost": {
+      "properties": {
+        "creation_timestamp_sec": {
+          "format": "double",
+          "type": "number"
+        },
+        "dislikes": {
+          "format": "int64",
+          "type": "string"
+        },
+        "likes": {
+          "format": "int64",
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "number_of_comments": {
+          "format": "int64",
+          "type": "string"
+        },
+        "post_id": {
+          "type": "string"
+        },
+        "post_text": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoEntityProtoQueryMetadata": {
+      "properties": {
+        "has_more_older_data": {
+          "type": "boolean"
+        },
+        "new_bottom_cursor_str": {
+          "type": "string"
+        },
+        "new_top_cursor_str": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoEntityProtoUser": {
+      "properties": {
+        "location": {
+          "type": "string"
+        },
+        "phone_number": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoCalculateAllPopularityIndexRequest": {
+      "properties": {},
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoCalculateAllPopularityIndexResponse": {
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoCreateUserRequest": {
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoUser"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoCreateUserResponse": {
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoGetAllCommentsForPostResponse": {
+      "properties": {
+        "comments": {
+          "items": {
+            "$ref": "#/definitions/BackendStoreMainProtoEntityProtoComment"
+          },
+          "type": "array"
+        },
+        "query_metadata": {
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoQueryMetadata"
+        },
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoGetAllPopularPostsAtLocationResponse": {
+      "properties": {
+        "posts": {
+          "items": {
+            "$ref": "#/definitions/BackendStoreMainProtoEntityProtoPost"
+          },
+          "type": "array"
+        },
+        "query_metadata": {
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoQueryMetadata"
+        },
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoGetAllPostsAroundUserResponse": {
+      "properties": {
+        "posts": {
+          "items": {
+            "$ref": "#/definitions/BackendStoreMainProtoEntityProtoPost"
+          },
+          "type": "array"
+        },
+        "query_metadata": {
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoQueryMetadata"
+        },
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoGetAllPostsByUserResponse": {
+      "properties": {
+        "posts": {
+          "items": {
+            "$ref": "#/definitions/BackendStoreMainProtoEntityProtoPost"
+          },
+          "type": "array"
+        },
+        "query_metadata": {
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoQueryMetadata"
+        },
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoGetAllPostsCommentedOnByUserResponse": {
+      "properties": {
+        "posts": {
+          "items": {
+            "$ref": "#/definitions/BackendStoreMainProtoEntityProtoPost"
+          },
+          "type": "array"
+        },
+        "query_metadata": {
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoQueryMetadata"
+        },
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoGetPopularLocationsResponse": {
+      "properties": {
+        "locations": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoInsertCommentRequest": {
+      "properties": {
+        "comment": {
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoComment"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoInsertCommentResponse": {
+      "properties": {
+        "comments": {
+          "items": {
+            "$ref": "#/definitions/BackendStoreMainProtoEntityProtoComment"
+          },
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoInsertPostRequest": {
+      "properties": {
+        "post": {
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoPost"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoInsertPostResponse": {
+      "properties": {
+        "posts": {
+          "items": {
+            "$ref": "#/definitions/BackendStoreMainProtoEntityProtoPost"
+          },
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoUpdatePostRequest": {
+      "properties": {
+        "action_type": {
+          "enum": [
+            "NO_ACTION",
+            "LIKE",
+            "DISLIKE",
+            "NUMBER_OF_ACTIONS"
+          ],
+          "type": "string"
+        },
+        "post": {
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoPost"
+        },
+        "user": {
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoUser"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoUpdatePostResponse": {
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "host": "http://192.168.0.42:8080",
+  "info": {
+    "description": "The API",
+    "title": "media_api",
+    "version": "v1"
+  },
+  "paths": {
+    "/media_api/v1/app.calculate_all_popularity_index": {
+      "post": {
+        "operationId": "LocationBasedSocialMediaAPI_calculateAllPopularityIndex",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoCalculateAllPopularityIndexRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoCalculateAllPopularityIndexResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.create_user": {
+      "post": {
+        "operationId": "LocationBasedSocialMediaAPI_createUser",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoCreateUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoCreateUserResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.get_all_comments_for_post": {
+      "get": {
+        "operationId": "LocationBasedSocialMediaAPI_getAllCommentsForPost",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoGetAllCommentsForPostResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.get_all_popular_posts_at_location": {
+      "get": {
+        "operationId": "LocationBasedSocialMediaAPI_getAllPopularPostsAtLocation",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoGetAllPopularPostsAtLocationResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.get_all_posts_around_user": {
+      "get": {
+        "operationId": "LocationBasedSocialMediaAPI_getAllPostsAroundUser",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoGetAllPostsAroundUserResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.get_all_posts_by_user": {
+      "get": {
+        "operationId": "LocationBasedSocialMediaAPI_getAllPostsByUser",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoGetAllPostsByUserResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.get_all_posts_commented_on_by_user": {
+      "get": {
+        "operationId": "LocationBasedSocialMediaAPI_getAllPostsCommentedOnByUser",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoGetAllPostsCommentedOnByUserResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.get_popular_locations": {
+      "get": {
+        "operationId": "LocationBasedSocialMediaAPI_getPopularLocations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoGetPopularLocationsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.insert_comment": {
+      "post": {
+        "operationId": "LocationBasedSocialMediaAPI_insertComment",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoInsertCommentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoInsertCommentResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.insert_post": {
+      "post": {
+        "operationId": "LocationBasedSocialMediaAPI_insertPost",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoInsertPostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoInsertPostResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.update_post": {
+      "post": {
+        "operationId": "LocationBasedSocialMediaAPI_updatePost",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoUpdatePostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoUpdatePostResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "securityDefinitions": {
+    "google_id_token": {
+      "authorizationUrl": "",
+      "flow": "implicit",
+      "type": "oauth2",
+      "x-google-issuer": "https://accounts.google.com",
+      "x-google-jwks_uri": "https://www.googleapis.com/oauth2/v3/certs"
+    }
+  },
+  "swagger": "2.0"
+}

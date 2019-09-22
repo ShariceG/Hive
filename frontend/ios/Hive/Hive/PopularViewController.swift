@@ -12,50 +12,47 @@ import CoreLocation
 
 class PopularViewController: UIViewController {
     
+    let COMMENTS_SEGUE_IDENTIFIER = "seeCommentsSegue"
+    
     @IBOutlet weak var popularCollectionView: UICollectionView!
-    @IBOutlet weak var postTableView: UITableView!
+    @IBOutlet weak var postFeedTable: UITableView!
+    
     public private(set) var popularLocations: Array<Location> = []
-    public var popularPosts: Array<Post> = []
-    var client: ServerClient = ServerClient()
+    private var client: ServerClient = ServerClient()
     private(set) var fetchPostsMetadata: QueryMetadata = QueryMetadata()
+    private var postFeedManager = PostFeedManager()
+    private var currLocation: Location?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.hideKeyboardWhenTapped()
         setupPopularCollectionView()
-        setupPostTableView()
-        setupGestureToMainView()
+        setupSwipeGestures()
+        postFeedManager.configure(tableView: postFeedTable, delegate: self)
         getPopularLocations()
     }
     
-    private func setupGestureToMainView() {
-        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(gestureToMainCompletion))
-        gesture.numberOfTouchesRequired = 1
-        gesture.direction = .right
-        postTableView.addGestureRecognizer(gesture)
+    private func setupSwipeGestures() {
+        let swipeDown = UISwipeGestureRecognizer(
+            target: self, action: #selector(swipeGestureAction))
+        swipeDown.direction = .down
+        
+        self.view?.addGestureRecognizer(swipeDown)
     }
     
-    @objc func gestureToMainCompletion(recognizer: UISwipeGestureRecognizer) {
-        self.navigationController?.popViewController(animated: true)
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    private func setupPostTableView() {
-        postTableView.delegate = self
-        postTableView.dataSource = self
-        postTableView.register(UINib(nibName: "PostView", bundle: nil), forCellReuseIdentifier: "postViewCell")
+    @objc func swipeGestureAction(recognizer: UISwipeGestureRecognizer) {
+        switch recognizer.direction {
+        case UISwipeGestureRecognizer.Direction.down:
+            _ = self.navigationController?.popViewController(animated: true)
+            self.dismiss(animated: true, completion: nil)
+        default:
+            break
+        }
     }
     
     private func setupPopularCollectionView() {
         popularCollectionView.delegate = self
         popularCollectionView.dataSource = self
-    }
-    
-    public func getPopularPostsFromLocation(location: Location) {
-        let params: QueryParams = QueryParams(getNewer: true, currTopCursorStr: self.fetchPostsMetadata.newTopCursorStr, currBottomCursorStr: self.fetchPostsMetadata.newBottomCursorStr)
-        client.getAllPopularPostsAtLocation(username: self.getTestUser(), queryParams: params,
-                                            locationStr: location.locationStr,
-                                            completion: getPopularPostsFromLocationCompletion)
     }
     
     private func getPopularPostsFromLocationCompletion(responseOr: StatusOr<Response>) {
@@ -70,11 +67,10 @@ class PopularViewController: UIViewController {
             return
         }
         
-        fetchPostsMetadata = responseOr.get().queryMetadata
-        popularPosts.removeAll()
-        popularPosts.append(contentsOf: responseOr.get().posts)
+        postFeedManager.addMorePosts(morePosts: responseOr.get().posts,
+                                     newMetadata: responseOr.get().queryMetadata)
         DispatchQueue.main.async {
-            self.postTableView.reloadData()
+            self.postFeedManager.reload()
         }
     }
     
@@ -82,24 +78,26 @@ class PopularViewController: UIViewController {
         client.getPopularLocations(completion: getPopularLocationsCompletion)
     }
     
-    private func getPopularLocationsCompletion(response: StatusOr<Response>) {
+    private func getPopularLocationsCompletion(responseOr: StatusOr<Response>) {
         var error: Bool = false
-        if (response.hasError()) {
+        if (responseOr.hasError()) {
             // Handle likley connection error
-            print("Connection Failure: " + response.getErrorMessage())
+            print("Connection Failure: " + responseOr.getErrorMessage())
             error = true
         }
-        if (!error && response.get().serverStatusCode != ServerStatusCode.OK) {
+        let response = responseOr.get()
+        if (!error && response.serverStatusCode != ServerStatusCode.OK) {
             // Handle server error
-            print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
+            print("ServerStatusCode: " + String(describing: response.serverStatusCode))
             error = true
         }
         if (!error) {
             popularLocations.removeAll()
             let userLocation = Location(locationStr: self.getTestLocation(), label: "My Area")
             popularLocations.append(userLocation)
-            popularLocations.append(contentsOf: response.get().locations)
-            getPopularPostsFromLocation(location: userLocation)
+            popularLocations.append(contentsOf: response.locations)
+            currLocation = userLocation
+            postFeedManager.pokeNew()
             DispatchQueue.main.async {
                 self.popularCollectionView.reloadData()
             }
@@ -110,41 +108,36 @@ class PopularViewController: UIViewController {
         if (segue.identifier == "seeCommentsSegue") {
             let postView: PostView = sender as! PostView
             let commentsViewController: CommentsViewController = segue.destination as! CommentsViewController
-            commentsViewController.controllerInit(post: postView.post!)
+            commentsViewController.controllerInit(post: postView.post)
             return
         }
     }
 
 }
 
-//UITableViewExtensions
-extension PopularViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+// Delegate functions
+extension PopularViewController: PostFeedDelegate {
+    func showComments(postView: PostView) {
+        self.performSegue(withIdentifier: COMMENTS_SEGUE_IDENTIFIER, sender: postView)
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "postViewCell") as! PostView
-        cell.delegate = self
-        cell.configure(post: popularPosts[indexPath.section])
-        cell.layer.borderWidth = 2
-        cell.layer.cornerRadius = 5
-        cell.layer.borderColor = UIColor.blue.cgColor
-        return cell
+    func fetchMorePosts(queryParams: QueryParams) {
+        if (currLocation == nil) {
+            print("No set location. This is a bug. Potentially unrecoverable.")
+            return
+        }
+        client.getAllPopularPostsAtLocation(username: self.getTestUser(), queryParams: queryParams,
+                                            locationStr: self.currLocation!.locationStr,
+                                            completion: getPopularPostsFromLocationCompletion)
     }
     
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 10
+    func likePost(post: Post) {
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return self.popularPosts.count
+    func dislikePost(post: Post) {
     }
 }
+
 
 // UIControllerView Extensions
 extension PopularViewController: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -168,10 +161,10 @@ extension PopularViewController: UICollectionViewDataSource, UICollectionViewDel
 // PopularCollectionViewCell Extensions
 extension PopularViewController: PopularCollectionViewCellDelegate {
     func popularButtonClicked(popularCollectionViewCell: PopularCollectionViewCell) {
-        self.popularPosts.removeAll()
-        DispatchQueue.main.async {
-            self.postTableView.reloadData()
+        if (self.currLocation?.locationStr == popularCollectionViewCell.location.locationStr) {
+            return
         }
-        self.getPopularPostsFromLocation(location: popularCollectionViewCell.location)
+        self.currLocation = popularCollectionViewCell.location
+        postFeedManager.resetDataAndPokeNew()
     }
 }

@@ -11,7 +11,10 @@ import UIKit
 
 class CommentsViewController: UIViewController {
     
-    @IBOutlet weak var commentTableView: UITableView!
+    let POST_VIEW_CELL_REUSE_IDENTIFIER = "postView"
+    let POST_VIEW_CELL_NIB_NAME = "PostView"
+    
+    @IBOutlet weak var commentFeedView: CommentFeedView!
     @IBOutlet weak var postTableView: UITableView!
     @IBOutlet weak var commentBn: UIButton!
     @IBOutlet weak var commentTextView: UITextView!
@@ -19,19 +22,17 @@ class CommentsViewController: UIViewController {
     private(set) var post: Post? = nil
     
     private let client: ServerClient = ServerClient()
-    private(set) var fetchCommentsMetadata: QueryMetadata = QueryMetadata()
-    private(set) var allPostComments: Array<Comment> = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.hideKeyboardWhenTapped()
-        setupTables()
+        setupPostViewTable()
         setupExitGesture()
         setupCommentTv()
+        commentFeedView.configure(delegate: self)
         DispatchQueue.main.async {
             self.postTableView.reloadData()
         }
-        getAllPostComments(getNewComments: true)
     }
     
     public func controllerInit(post: Post) {
@@ -51,38 +52,21 @@ class CommentsViewController: UIViewController {
         postTableView.addGestureRecognizer(gesture)
     }
     
-    private func setupTables() {
+    private func setupPostViewTable() {
         postTableView.delegate = self
         postTableView.dataSource = self
         postTableView.isScrollEnabled = true
-        postTableView.register(UINib(nibName: "PostView", bundle: nil), forCellReuseIdentifier: "postViewCell")
+        postTableView.register(UINib(nibName: POST_VIEW_CELL_NIB_NAME, bundle: nil), forCellReuseIdentifier: POST_VIEW_CELL_REUSE_IDENTIFIER)
         postTableView.isScrollEnabled = false
-
-        commentTableView.delegate = self
-        commentTableView.dataSource = self
-        commentTableView.isScrollEnabled = true
-        commentTableView.register(UINib(nibName: "CommentView", bundle: nil), forCellReuseIdentifier: "commentViewCell")
-        // Take care of refreshing
-        commentTableView.refreshControl = UIRefreshControl()
-        commentTableView.refreshControl!.addTarget(self, action: #selector(refreshCommentTableView(_:)), for: .valueChanged)
     }
 
     @objc func exitViewController(recognizer: UISwipeGestureRecognizer) {
         _ = self.navigationController?.popViewController(animated: true)
         self.dismiss(animated: true, completion: nil)
     }
-
-    @objc func refreshCommentTableView(_ refreshControl: UIRefreshControl) {
-        // This should also end the refresh.
-        getAllPostComments(getNewComments: true)
-    }
     
-    public func getAllPostComments(getNewComments: Bool) {
-        if (!getNewComments && !(fetchCommentsMetadata.hasMoreOlderData ?? true)) {
-            return
-        }
-        let params: QueryParams = QueryParams(getNewer: getNewComments, currTopCursorStr: self.fetchCommentsMetadata.newTopCursorStr, currBottomCursorStr: self.fetchCommentsMetadata.newBottomCursorStr)
-        client.getAllCommentsForPost(postId: (post?.postId)!, queryParams: params, completion: getAllPostCommentsCompletion)
+    public func getAllPostComments(queryParams: QueryParams) {
+        client.getAllCommentsForPost(postId: (post?.postId)!, queryParams: queryParams, completion: getAllPostCommentsCompletion)
     }
     
     private func getAllPostCommentsCompletion(responseOr: StatusOr<Response>) {
@@ -91,23 +75,20 @@ class CommentsViewController: UIViewController {
             print("Connection Failure: " + responseOr.getErrorMessage())
             return
         }
-        if (!responseOr.get().ok()) {
+        let response = responseOr.get()
+        if (!response.ok()) {
             // Handle server error
             print("ServerStatusCode: " + String(describing: responseOr.get().serverStatusCode))
             return
         }
-
-        fetchCommentsMetadata.updateMetadata(newMetadata: responseOr.get().queryMetadata)
-        allPostComments.append(contentsOf: responseOr.get().comments)
-        allPostComments = allPostComments.sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
-        print("Got post comments: ", responseOr.get().comments)
-    
+        
+        let comments = response.comments
+        let newMetadata = response.queryMetadata
+        commentFeedView.addMoreComments(moreComments: comments, newMetadata: newMetadata)
         DispatchQueue.main.async {
-            self.commentTableView.reloadData()
-            if (self.commentTableView.refreshControl != nil) {
-                self.commentTableView.refreshControl?.endRefreshing()
-            }
+            self.commentFeedView.reload()
         }
+        print("Got post comments: ", responseOr.get().comments)
     }
     
     @IBAction func commentBnAction(_ sender: UIButton) {
@@ -134,6 +115,7 @@ class CommentsViewController: UIViewController {
             print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
             error = true
         }
+        commentFeedView.fetchMoreComments(getNewer: true)
         DispatchQueue.main.async {
             self.commentTextView.isEditable = true
             self.commentTextView.isSelectable = true
@@ -154,44 +136,28 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if (tableView == postTableView && self.post != nil) {
-            let cell: PostView = tableView.dequeueReusableCell(withIdentifier: "postViewCell") as! PostView
-            cell.configure(post: self.post!)
-            cell.layer.borderWidth = 2
-            cell.layer.cornerRadius = 5
-            cell.layer.borderColor = UIColor.blue.cgColor
-            DispatchQueue.main.async {
-                cell.commentBn.isEnabled = false
-            }
-            return cell
-        } else {
-            let cell: CommentView = tableView.dequeueReusableCell(withIdentifier: "commentViewCell") as! CommentView
-            cell.configure(comment: allPostComments[indexPath.section])
-            cell.layer.borderWidth = 2
-            cell.layer.cornerRadius = 5
-            cell.layer.borderColor = UIColor.blue.cgColor
-            return cell
+        let cell: PostView = tableView.dequeueReusableCell(withIdentifier: POST_VIEW_CELL_REUSE_IDENTIFIER) as! PostView
+        cell.configure(post: self.post!, delegate: self)
+        cell.layer.borderWidth = 2
+        cell.layer.cornerRadius = 5
+        cell.layer.borderColor = UIColor.blue.cgColor
+        DispatchQueue.main.async {
+            cell.commentBn.isEnabled = false
         }
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0
+        return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return tableView == postTableView ? tableView.layer.bounds.height : 120
+        return 120
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return tableView == postTableView ? 1 : self.allPostComments.count
+        return 1
     }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.section == tableView.numberOfSections - 1 &&
-            indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
-            if (!allPostComments.isEmpty) {
-                self.getAllPostComments(getNewComments: false)
-            }
-        }
+}
+
+extension CommentsViewController: CommentFeedViewDelegate {
+    func fetchComments(queryParams: QueryParams) {
+        self.getAllPostComments(queryParams: queryParams)
     }
 }

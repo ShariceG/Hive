@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Post {
+class Post: Hashable, Equatable {
     private static let POST_LIFESPAN_SEC : Double = 24 * 60 * 60  // 24 hours
     private(set) var username: String
     private(set) var postId: String
@@ -18,6 +18,14 @@ class Post {
     private(set) var dislikes: Int
     private(set) var creationTimestampSec: Decimal
     private(set) var jsonPost: [String: Any]?
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(postId)
+    }
+    
+    static func ==(left:Post, right:Post) -> Bool {
+        return left.postId == right.postId
+    }
     
     init(username: String, postId: String, postText: String, location: String, likes: Int, dislikes: Int, creationTimestampSec: Decimal, jsonPost: [String: Any]) {
         self.username = username
@@ -32,7 +40,7 @@ class Post {
     
     public func isExpired() -> Bool {
         let currentTimeSec: Double = Date().getCurrentTimeSec() / 1000
-        return Double(self.creationTimestampSec as NSNumber) + Post.POST_LIFESPAN_SEC < currentTimeSec
+        return Double(truncating: self.creationTimestampSec as NSNumber) + Post.POST_LIFESPAN_SEC < currentTimeSec
     }
     
     public func toString() -> String {

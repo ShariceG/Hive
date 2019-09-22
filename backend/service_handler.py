@@ -1,5 +1,6 @@
 from google.appengine.ext import ndb
 
+import geo_helper
 import service_helper
 import status
 import time
@@ -14,9 +15,16 @@ from google.appengine.datastore.datastore_query import Cursor
 import uuid
 import sys
 
+# Max # of posts to return to a client
 POST_QUERY_LIMIT = 10000
+
+# Max # of comments to return to a client
 COMMENT_QUERY_LIMIT = 10000
+
+# Max # of popular posts to return to a client
 POPULAR_POST_QUERY_LIMIT = 10
+
+# Number of decimal places to use to match users in the same location
 LOCATION_QUERY_DECIMAL_PLACES = 2
 
 class ServiceHandler(object):
@@ -256,7 +264,9 @@ class ServiceHandler(object):
             self._fill_post_likes_dislikes_comment_count(the_post)
             post_list.append(the_post)
         return GetAllPopularPostsAtLocationResponse(
-            posts=post_list, status=Status(status_code=StatusCode.OK))
+            posts=post_list,
+            query_metadata=metadata,
+            status=Status(status_code=StatusCode.OK))
 
     def handle_get_popular_locations(self, request):
         query = ndb.gql(('SELECT LocationLatitude, LocationLongitude '
@@ -302,6 +312,11 @@ class ServiceHandler(object):
                 ).put()
             post.put()
 
+        ndb.delete_multi(
+            model.LocationModel.query(
+                model.LocationModel.UpdateKey != update_key).fetch(
+                keys_only=True)
+        )
         return CalculateAllPopularityIndexResponse(
             status=Status(status_code=StatusCode.OK))
 
@@ -325,7 +340,7 @@ class ServiceHandler(object):
                         start_cursor=bottom_cursor)
                     qm.new_top_cursor_str = top_cursor.urlsafe()
                     qm.new_bottom_cursor_str = bottom_cursor.urlsafe()
-                    qm.has_more_older_data = more
+                    qm.has_more_older_data = more  # does this make sense??
             else:
                 cursor = Cursor(urlsafe=params.curr_top_cursor_str)
                 # With a forward_query, the bottom_cursor is the new top.
@@ -344,18 +359,34 @@ class ServiceHandler(object):
                 else:
                     results = []
         else:
+            # if params.curr_bottom_cursor_str:
+            #     cursor = Cursor(urlsafe=params.curr_bottom_cursor_str)
+            #     results, new_bottom_cursor, more = reverse_query.fetch_page(
+            #         fetch_limit, start_cursor=cursor)
+            #     # If there are actual results
+            #     if new_bottom_cursor and not self._cursors_are_eq(
+            #         new_bottom_cursor, cursor):
+            #         qm.new_bottom_cursor_str = new_bottom_cursor.urlsafe()
+            #     qm.has_more_older_data = more
+            cursor = None
             if params.curr_bottom_cursor_str:
                 cursor = Cursor(urlsafe=params.curr_bottom_cursor_str)
-                results, new_bottom_cursor, more = reverse_query.fetch_page(
-                    fetch_limit, start_cursor=cursor)
-                # If there are actual results
-                if new_bottom_cursor and not self._cursors_are_eq(
-                    new_bottom_cursor, cursor):
-                    qm.new_bottom_cursor_str = new_bottom_cursor.urlsafe()
-                qm.has_more_older_data = more
+            results, new_bottom_cursor, more = reverse_query.fetch_page(
+                fetch_limit, start_cursor=cursor)
+            # If there are actual results
+            if new_bottom_cursor and not self._cursors_are_eq(
+                new_bottom_cursor, cursor):
+                qm.new_bottom_cursor_str = new_bottom_cursor.urlsafe()
+            qm.has_more_older_data = more
         return results, qm
 
     def _cursors_are_eq(self, c1, c2):
+        if c1 is None and c2 is None:
+            return True
+        if c1 is None and not c2 is None:
+            return False
+        if not c1 is None and c2 is None:
+            return False
         return c1.urlsafe() == c2.urlsafe()
 
     def _truncate_float(self, float_str, dec_places):

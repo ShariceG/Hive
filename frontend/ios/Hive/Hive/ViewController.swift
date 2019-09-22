@@ -10,30 +10,49 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    let COMMENTS_SEGUE_IDENTIFIER = "seeCommentsSegue"
+    let POPULAR_PAGE_SEGUE_IDENTIFIER = "seePopularSegue"
+    let MENU_VIEW_SEGUE_IDENTIFIER = "seeMenuViewSegue"
+    
+    @IBOutlet weak var postFeedTable: UITableView!
     @IBOutlet weak var postTv: UITextView!
     @IBOutlet weak var postBn: UIButton!
-    @IBOutlet weak var postTableView: UITableView!
     
+    private var postFeedManager = PostFeedManager()
     private(set) var client: ServerClient = ServerClient()
     private(set) var fetchPostsMetadata: QueryMetadata = QueryMetadata()
-    public private(set) var allPostsAroundUser: Array<Post> = []
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.hideKeyboardWhenTapped()
         setupPostTv()
         setupPostBn()
-        setupPostTableView()
-        fetchPostsAroundUser(getNewPosts: true)
-        setupGestureToPopularView()
+        setupSwipeGestures()
+        setupPostFeedView()
     }
     
-    private func setupGestureToPopularView() {
-        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(gestureToPopularViewAction))
-        gesture.numberOfTouchesRequired = 1
-        gesture.direction = .left
-        postTableView.addGestureRecognizer(gesture)
+    private func setupSwipeGestures() {
+        let swipeLeft = UISwipeGestureRecognizer(
+            target: self, action: #selector(swipeGestureAction))
+        swipeLeft.direction = .left
+        
+        let swipeRight = UISwipeGestureRecognizer(
+            target: self, action: #selector(swipeGestureAction))
+        swipeRight.direction = .right
+        
+        self.view?.addGestureRecognizer(swipeLeft)
+        self.view?.addGestureRecognizer(swipeRight)
+    }
+    
+    @objc func swipeGestureAction(recognizer: UISwipeGestureRecognizer) {
+        switch recognizer.direction {
+        case UISwipeGestureRecognizer.Direction.right:
+                self.performSegue(withIdentifier: MENU_VIEW_SEGUE_IDENTIFIER, sender: self)
+        case UISwipeGestureRecognizer.Direction.left:
+                self.performSegue(withIdentifier: POPULAR_PAGE_SEGUE_IDENTIFIER, sender: self)
+        default:
+            break
+        }
     }
     
     private func setupPostBn() {
@@ -49,23 +68,10 @@ class ViewController: UIViewController {
         postTv.layer.borderColor = UIColor.black.cgColor
     }
     
-    private func setupPostTableView() {
-        postTableView.delegate = self
-        postTableView.dataSource = self
-        postTableView.isScrollEnabled = true
-        // Register nib as cell.
-        postTableView.register(UINib(nibName: "PostView", bundle: nil), forCellReuseIdentifier: "postViewCell")
-        
-        // Take care of refreshing
-        postTableView.refreshControl = UIRefreshControl()
-        postTableView.refreshControl!.addTarget(self, action: #selector(refreshPostTableView(_:)), for: .valueChanged)
+    private func setupPostFeedView() {
+        postFeedManager.configure(tableView: postFeedTable, delegate: self)
     }
-    
-    @objc func refreshPostTableView(_ refreshControl: UIRefreshControl) {
-        // This fetch should also end the refresh.
-        fetchPostsAroundUser(getNewPosts: true)
-    }
-    
+
     @IBAction func postBnAction(_ sender: UIButton) {
         if (postTv.text.isEmpty) {
             return
@@ -75,30 +81,30 @@ class ViewController: UIViewController {
             self.postTv.isSelectable = false
             sender.isEnabled = false
         }
-        client.insertPost(username: self.getTestUser(), postText: postTv.text, location: self.getTestLocation(), completion: insertPostCompletion)
-    }
-    
-    @objc func gestureToPopularViewAction(recognizer: UISwipeGestureRecognizer) {
-        self.performSegue(withIdentifier: "seePopularSegue", sender: self)
+        client.insertPost(username: self.getTestUser(),
+                          postText: postTv.text, location: self.getTestLocation(),
+                          completion: insertPostCompletion)
     }
     
     private func insertPostCompletion(response: StatusOr<Response>) {
         var error: Bool = false
+        let baseStr: String = "insertPostCompletion => "
         if (response.hasError()) {
             // Handle likley connection error
-            print("Connection Failure: " + response.getErrorMessage())
+            print(baseStr + "Connection Failure: " + response.getErrorMessage())
             error = true
         }
         if (!error && response.get().serverStatusCode != ServerStatusCode.OK) {
             // Handle server error
-            print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
+            print(baseStr + "ServerStatusCode: " + String(describing: response.get().serverStatusCode))
             error = true
         }
         
         if (!error) {
-            print("Inserted post successfully!")
+            print(baseStr + "Inserted post successfully!")
         }
         
+        self.postFeedManager.pokeNew()
         DispatchQueue.main.async {
             self.postTv.isEditable = true
             self.postTv.isSelectable = true
@@ -106,7 +112,7 @@ class ViewController: UIViewController {
                 self.postTv.text = ""
             }
             self.postBn.isEnabled = true
-            self.postTableView.reloadData()
+            self.postFeedManager.reload()
         }
     }
     
@@ -130,90 +136,65 @@ class ViewController: UIViewController {
 //    }
     
     private func fetchPostsAroundUserCompletion(responseOr: StatusOr<Response>) {
+        let baseStr: String = "fetchPostsAroundUserCompletion => "
         if (responseOr.hasError()) {
             // Handle likley connection error
-            print("Connection Failure: " + responseOr.getErrorMessage())
+            print(baseStr + "Connection Failure: " + responseOr.getErrorMessage())
             return
         }
-        if (!responseOr.get().ok()) {
+        let response = responseOr.get()
+        if (!response.ok()) {
             // Handle server error
-            print("ServerStatusCode: " + String(describing: responseOr.get().serverStatusCode))
+            print(baseStr + "ServerStatusCode: " + String(describing: response.serverStatusCode))
             return
         }
-
-        fetchPostsMetadata.updateMetadata(newMetadata: responseOr.get().queryMetadata)
-        allPostsAroundUser.append(contentsOf: responseOr.get().posts)
-        allPostsAroundUser = allPostsAroundUser.sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
-        print("Got posts around user after fetch..." + String(responseOr.get().posts.count))
         
-        DispatchQueue.main.async {
-            self.postTableView.reloadData()
-            
-            if (self.postTableView.refreshControl != nil) {
-                self.postTableView.refreshControl?.endRefreshing()
-            }
-        }
-    }
+        let newPosts = response.posts
+        let newMetdata = response.queryMetadata
+        fetchPostsMetadata.updateMetadata(newMetadata: response.queryMetadata)
+        print(baseStr + "Fetched " + String(newPosts.count) + " posts around user")
     
-    public func fetchPostsAroundUser(getNewPosts: Bool) {
-        if (!getNewPosts && !(fetchPostsMetadata.hasMoreOlderData ?? true)) {
-            return
+        self.postFeedManager.addMorePosts(morePosts: newPosts, newMetadata: newMetdata)
+        DispatchQueue.main.async {
+            self.postFeedManager.reload()
         }
-        let params: QueryParams = QueryParams(getNewer: getNewPosts, currTopCursorStr: self.fetchPostsMetadata.newTopCursorStr, currBottomCursorStr: self.fetchPostsMetadata.newBottomCursorStr)
-        client.getAllPostsAroundUser(username: self.getTestUser(), location: self.getTestLocation(),
-                                     queryParams: params, completion:fetchPostsAroundUserCompletion)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "seePopularSegue") {
+        if (segue.identifier == MENU_VIEW_SEGUE_IDENTIFIER) {
+            // Do something here, maybe
+            return
+        }
+        if (segue.identifier == POPULAR_PAGE_SEGUE_IDENTIFIER) {
             // Do something here, maybe...
             return
         }
-        if (segue.identifier == "seeCommentsSegue") {
+        if (segue.identifier == COMMENTS_SEGUE_IDENTIFIER) {
             let postView: PostView = sender as! PostView
             let commentsViewController: CommentsViewController = segue.destination as! CommentsViewController
-            commentsViewController.controllerInit(post: postView.post!)
+            commentsViewController.controllerInit(post: postView.post)
             return
         }
     }
 }
 
-// Post TableView Extensions
-extension ViewController: UITableViewDataSource, UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+// Delegate functions
+extension ViewController: PostFeedDelegate {
+    func showComments(postView: PostView) {
+        self.performSegue(withIdentifier: COMMENTS_SEGUE_IDENTIFIER, sender: postView)
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "postViewCell") as! PostView
-        cell.delegate = self
-        cell.configure(post: allPostsAroundUser[indexPath.section])
-        cell.layer.borderWidth = 2
-        cell.layer.cornerRadius = 5
-        cell.layer.borderColor = UIColor.blue.cgColor
-        return cell
+    func fetchMorePosts(queryParams: QueryParams) {
+        client.getAllPostsAroundUser(username: self.getTestUser(),
+                                     location: self.getTestLocation(),
+                                     queryParams: queryParams,
+                                     completion:fetchPostsAroundUserCompletion)
     }
     
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 10
+    func likePost(post: Post) {
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 120
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return self.allPostsAroundUser.count
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.section == tableView.numberOfSections - 1 &&
-            indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
-            if (!allPostsAroundUser.isEmpty) {
-                self.fetchPostsAroundUser(getNewPosts: false)
-            }
-        }
+    func dislikePost(post: Post) {
     }
 }
 
