@@ -82,7 +82,7 @@ public final class Post {
 		int dislikes = jsonPost.get("dislikes") == null ? 0 : Integer.parseInt((String)jsonPost.get("dislikes"));
 		double timestamp = Double.parseDouble(jsonPost.get("creation_timestamp_sec")+"");
 		return new Post((String)jsonPost.get("username"), (String)jsonPost.get("post_id"), (String)jsonPost.get("post_text"), 
-				Location.jsonToLocation((String)jsonPost.get("location")), 
+				Location.jsonToLocation((JSONObject) jsonPost.get("location")), 
 				likes, dislikes, timestamp, jsonPost);
 	}
 

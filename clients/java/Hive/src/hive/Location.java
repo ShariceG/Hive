@@ -1,61 +1,61 @@
 package hive;
 
+import org.json.simple.JSONObject;
+
 public class Location {
 	
 	/*
 	 * This class represents a geographical location.
 	 */
 
-	private String label;  // Represents the human readable version of the geo coordinates. Ex: "Las Vegas, NV"
-	private String locationStr;   // Represents the string format the server expects all geo locations to be in. "lat:lon"
+	private String area;  // Represents the human readable version of the geo coordinates. Ex: "Las Vegas, NV"
 	private String latStr;
 	private String lonStr;
+	private JSONObject json;
+	
+	public Location(String lat, String lon) {
+		area = "";
+		json = new JSONObject();
+		latStr = lat;
+		lonStr = lon;
+	}
 	
 	public Location() {
-		label = "";
-		locationStr = "";
+		area = "";
+		json = new JSONObject();
 		latStr = "";
 		lonStr = "";
 	}
 	
-	public static Location jsonToLocation(String locationJsonStr) {
-		return new Location(locationJsonStr);
+	public static Location jsonToLocation(JSONObject locationJson) {
+		return new Location(locationJson);
 	}
 	
-	private Location(String locationJsonStr) {
-		if (!locationJsonStr.contains(":")) {
-			throw new RuntimeException("Invalid location, no ':' -> " + locationJsonStr);
-		}
-		
-		String[] split = locationJsonStr.split(":");
-		if (split.length != 2) {
-			throw new RuntimeException("Invalid location: " + locationStr);
-		}
-		
-		this.locationStr = locationJsonStr;
-		this.label = "";
-		this.latStr = split[0];
-		this.lonStr = split[1];
+	private Location(JSONObject locationJson) {
+		json = locationJson;
+		latStr = (String) locationJson.get("latitude");
+		lonStr = (String) locationJson.get("longitude");
+		area = (String) locationJson.get("area");
 	}
 
-	public String getLabel() {
-		return label;
+	public String getArea() {
+		return area;
 	}
 
-	public String getLocationStr() {
-		return locationStr;
-	}
-
-	public String getLatStr() {
+	public String getLatitude() {
 		return latStr;
 	}
 
-	public String getLonStr() {
+	public String getLongitude() {
 		return lonStr;
 	}
-	
-	public String toString() {
-		return locationStr;
+
+	public JSONObject toJSON() {
+		JSONObject json = new JSONObject();
+		json.put("latitude", latStr);
+		json.put("longitude", lonStr);
+		json.put("area", area);
+		return json;
 	}
 	
 }

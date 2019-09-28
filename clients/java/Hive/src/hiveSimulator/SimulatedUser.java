@@ -1,6 +1,7 @@
 package hiveSimulator;
 
 import java.util.Random;
+import hive.Location;
 
 import hive.ActionType;
 import hive.Callback;
@@ -15,10 +16,10 @@ public class SimulatedUser {
 	
 	private String username;
 	private String phoneNumber;
-	private String location;
+	private Location location;
 	private QueryParams queryParams;
 		
-	public SimulatedUser(String username, String phoneNumber, String location) {
+	public SimulatedUser(String username, String phoneNumber, Location location) {
 		this.client = ServerClient.newServerClient();
 		this.username = username;
 		this.phoneNumber = phoneNumber;
@@ -39,7 +40,9 @@ public class SimulatedUser {
 					}
 					System.out.println(username + " has been created.");
 				} catch (RuntimeException e) {
-					
+					if (!e.getMessage().contains("USER_ALREADY_EXISTS")) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
@@ -54,7 +57,7 @@ public class SimulatedUser {
 	}
 	
 	public void writeComment() {
-		client.getAllPostsAroundUser(username, location, queryParams, new Callback() {
+		client.getAllPostsAtLocation(location, queryParams, new Callback() {
 			public void serverRequestCallback(StatusOr<Response> responseOr) {
 				
 				if (responseOr.get().getPosts().size() == 0) {
@@ -75,7 +78,7 @@ public class SimulatedUser {
 	}
 	
 	public void performActionOnAPost() {
-		client.getAllPostsAroundUser(username, location, queryParams, new Callback() {
+		client.getAllPostsAtLocation(location, queryParams, new Callback() {
 			public void serverRequestCallback(StatusOr<Response> responseOr) {
 				
 				if (responseOr.get().getPosts().size() == 0) {
@@ -96,7 +99,7 @@ public class SimulatedUser {
 		});
 	}
 	
-	public void changeLocation(String location) {
+	public void changeLocation(Location location) {
 		this.location = location;
 	}
 	

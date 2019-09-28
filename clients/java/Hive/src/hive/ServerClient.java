@@ -19,14 +19,15 @@ public interface ServerClient {
 
 	void createUser(String username, String phoneNumber, Callback callback);
 	void insertComment(String username, String commentText, String postId, Callback callback);
-	void insertPost(String username, String postText, String location, Callback callback);
+	void insertPost(String username, String postText, Location location, Callback callback);
 	void updatePost(String username, String postId, ActionType actionType, Callback callback);
-	void getAllPostsAroundUser(String username, String location, QueryParams params, Callback callback);
+	void getAllPostsAtLocation(Location location, QueryParams queryParams, Callback callback);
 	void getAllPostsByUser(String username, QueryParams params, Callback callback);
 	void getAllPostsCommentedOnByUser(String username, QueryParams params, Callback callback);
 	void getAllPostComments(String postId, QueryParams params, Callback callback);
-	void getAllPopularPostsAtLocation(String username, String locationStr, QueryParams params, Callback callback);
+	void getAllPopularPostsAtLocation(Location location, QueryParams params, Callback callback);
 	void getPopularLocations(Callback callback);
+	void getAllPostLocations(Callback callback);
 	
 	// Please call shutdown when application is finished running to gracefully free the clients resources.
 	void shutdown();

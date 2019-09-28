@@ -9,7 +9,8 @@ from backend.status import StatusCode
     The server will decide the radius.
 '''
 class CreateUserRequest(messages.Message):
-    user = messages.MessageField(entity_proto.User, 1, required=False)
+    username = messages.StringField(1, required=False)
+    phone_number = messages.StringField(2, required=False)
 
 class CreateUserResponse(messages.Message):
     status = messages.MessageField(Status, 1, required=False)
@@ -40,9 +41,9 @@ class InsertPostResponse(messages.Message):
 #     status = messages.MessageField(Status, 1, required=False)
 
 class UpdatePostRequest(messages.Message):
-    post_id = messages.MessageField(entity_proto.Post, 1, required=False)
+    post_id = messages.StringField(1, required=False)
     action_type = messages.EnumField(entity_proto.ActionType, 2, required=False)
-    user = messages.MessageField(entity_proto.User, 3, required=False)
+    username = messages.StringField(3, required=False)
 
 class UpdatePostResponse(messages.Message):
     status = messages.MessageField(Status, 1, required=False)

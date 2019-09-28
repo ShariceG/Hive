@@ -33,15 +33,14 @@ POPULAR_TIME_THRESHOLD_SEC = 60 * 60
 class ServiceHandler(object):
 
     def handle_create_user(self, request):
-        user = request.user
-        if self._user_exists(user.username):
+        if self._user_exists(request.username):
             return CreateUserResponse(
                 status=Status(status_code=StatusCode.USER_ALREADY_EXISTS))
 
         model.UserModel(
-            id=user.username,
-            Username=user.username,
-            PhoneNumber=user.phone_number,
+            id=request.username,
+            Username=request.username,
+            PhoneNumber=request.phone_number,
             CreationTimestampSec=time.time()).put()
         return CreateUserResponse(
             status=Status(status_code=StatusCode.OK))
@@ -53,6 +52,7 @@ class ServiceHandler(object):
             return InsertPostResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
         # TODO: validate post
+        print location.latitude
         ok, location = self._validate_and_get_location_with_precision(location)
         if not ok:
             return InsertPostResponse(
@@ -94,8 +94,7 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK), posts=[post])
 
     def handle_update_post(self, request):
-        post = request.post
-        post_model = ndb.Key('PostModel', post.post_id).get()
+        post_model = ndb.Key('PostModel', request.post_id).get()
         if post_model is None:
             return UpdatePostResponse(
                 status=Status(status_code=StatusCode.POST_NOT_FOUND))
@@ -104,7 +103,8 @@ class ServiceHandler(object):
         ok_status = Status(status_code=StatusCode.OK)
         results = ndb.gql(('SELECT * FROM ActionModel '
                           'WHERE Username = :1 AND '
-                          'PostID = :2'), request.user.username, post.post_id)
+                          'PostID = :2'),
+                          request.username, request.post_id)
 
         if results.count() > 1:
             print 'ERROR: Got %d ActionType query results.' % results.count()
@@ -120,8 +120,8 @@ class ServiceHandler(object):
             if action_entity is None:
                 model.ActionModel(
                     id=uuid.uuid4().hex,
-                    Username=request.user.username,
-                    PostID=post.post_id,
+                    Username=request.username,
+                    PostID=request.post_id,
                     ActionType=str(action_type),
                     CreationTimestampSec=time.time()).put()
             else:
@@ -154,7 +154,7 @@ class ServiceHandler(object):
         comment = entity_proto.Comment()
         comment.username = request.username
         comment.post_id = request.post_id
-        comment.comment_text = request.comment_test
+        comment.comment_text = request.comment_text
         comment.comment_id = comment_id
         comment.creation_timestamp_sec = timestamp
         return InsertCommentResponse(
@@ -486,8 +486,7 @@ class ServiceHandler(object):
         return True, self._get_location_with_equal_precision(location)
 
     def _get_location_key(self, location):
-        return '%s:%s:%s' % (
-            location.AreaLatitude, location.AreaLongitude, location.Area)
+        return location.Area
 
     def _post_exists(self, post_id):
         return not ndb.Key('PostModel', post_id).get() is None

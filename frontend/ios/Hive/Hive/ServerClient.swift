@@ -187,7 +187,7 @@ class ServerClient {
         var url: String = targetUrl
         url += jsonObjectToUrlParameters(jsonRequest: jsonParams)
         
-//        url = url.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+        url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
         //create the url with NSURL
         let urlObj = URL(string: url)!
         

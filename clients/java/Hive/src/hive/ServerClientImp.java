@@ -22,13 +22,14 @@ public class ServerClientImp implements ServerClient {
 	private static final int READ_TIMEOUT_MS = 55000;
 	
 //	private static final String SERVER_DOMAIN = "http://localhost:8080";
-	private static final String SERVER_DOMAIN = "http://192.168.0.32:8080";
+	private static final String SERVER_DOMAIN = "http://192.168.0.42:8080";
 	private static final String COMMON_PATH = "/_ah/api/media_api/v1/";
 	private static final String CREATE_USER_PATH = "app.create_user?";
 	private static final String INSERT_COMMENT_PATH = "app.insert_comment?";
 	private static final String INSERT_POST_PATH = "app.insert_post?";
 	private static final String GET_ALL_POST_COMMENTS_PATH = "app.get_all_comments_for_post?";
-	private static final String GET_ALL_POSTS_AROUND_USER_PATH = "app.get_all_posts_around_user?";
+	private static final String GET_ALL_POSTS_AT_LOCATION_PATH = "app.get_all_posts_at_location?";
+	private static final String GET_ALL_POST_LOCATIONS_PATH = "app.get_all_post_locations?";
 	private static final String GET_ALL_POSTS_BY_USER_PATH = "app.get_all_posts_by_user?";
 	private static final String GET_ALL_POSTS_COMMENTED_ON_BY_USER_PATH = "app.get_all_posts_commented_on_by_user?";
 	private static final String UPDATE_POST_PATH = "app.update_post?";
@@ -52,25 +53,26 @@ public class ServerClientImp implements ServerClient {
 		executeHttpRequestAsync("GET", path, request, callback);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public void getAllPopularPostsAtLocation(String username, String locationStr, QueryParams params, Callback callback) {
-		JSONObject user = new JSONObject();
-		user.put("username", username);
-		user.put("location", locationStr);
+	public void getAllPostLocations(Callback callback) {
 		JSONObject request = new JSONObject();
-		request.put("user", user);
+		String path = constructIncompleteUrlPath() + GET_ALL_POST_LOCATIONS_PATH;
+		executeHttpRequestAsync("GET", path, request, callback);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void getAllPopularPostsAtLocation(Location location, QueryParams params, Callback callback) {
+		JSONObject request = new JSONObject();
+		request.put("location", location.toJSON());
 		request.put("query_params", params.toJson());
-		
+
 		String path = constructIncompleteUrlPath() + GET_ALL_POPULAR_POSTS_AT_LOCATION_PATH;
 		executeHttpRequestAsync("GET", path, request, callback);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void getAllPostsCommentedOnByUser(String username, QueryParams params, Callback callback) {
-		JSONObject user = new JSONObject();
-		user.put("username", username);
 		JSONObject request = new JSONObject();
-		request.put("user", user);
+		request.put("username", username);
 		request.put("query_params", params.toJson());
 		
 		String path = constructIncompleteUrlPath() + GET_ALL_POSTS_COMMENTED_ON_BY_USER_PATH;
@@ -79,10 +81,8 @@ public class ServerClientImp implements ServerClient {
 	
 	@SuppressWarnings("unchecked")
 	public void getAllPostsByUser(String username, QueryParams params, Callback callback) {
-		JSONObject user = new JSONObject();
-		user.put("username", username);
 		JSONObject request = new JSONObject();
-		request.put("user", user);
+		request.put("username", username);
 		request.put("query_params", params.toJson());
 		
 		String path = constructIncompleteUrlPath() + GET_ALL_POSTS_BY_USER_PATH;
@@ -90,24 +90,19 @@ public class ServerClientImp implements ServerClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void getAllPostsAroundUser(String username, String locationStr, QueryParams params, Callback callback) {
-		JSONObject user = new JSONObject();
-		user.put("username", username);
-		user.put("location", locationStr);
+	public void getAllPostsAtLocation(Location location, QueryParams params, Callback callback) {
 		JSONObject request = new JSONObject();
-		request.put("user", user);
+		request.put("location", location.toJSON());
 		request.put("query_params", params.toJson());
 		
-		String path = constructIncompleteUrlPath() + GET_ALL_POSTS_AROUND_USER_PATH;
+		String path = constructIncompleteUrlPath() + GET_ALL_POSTS_AT_LOCATION_PATH;
 		executeHttpRequestAsync("GET", path, request, callback);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void getAllPostComments(String postId, QueryParams params, Callback callback) {
-		JSONObject post = new JSONObject();
-		post.put("post_id", postId);
 		JSONObject request = new JSONObject();
-		request.put("post", post);
+		request.put("post_id", postId);
 		request.put("query_params", params.toJson());
 		
 		String path = constructIncompleteUrlPath() + GET_ALL_POST_COMMENTS_PATH;
@@ -116,11 +111,9 @@ public class ServerClientImp implements ServerClient {
 	
 	@SuppressWarnings("unchecked")
 	public void createUser(String username, String phoneNumber, Callback callback) {
-		JSONObject user = new JSONObject();
-		user.put("username", username);
-		user.put("phone_number", phoneNumber);
 		JSONObject request = new JSONObject();
-		request.put("user", user);
+		request.put("username", username);
+		request.put("phone_number", phoneNumber);
 
 		String path = constructIncompleteUrlPath() + CREATE_USER_PATH;
 		executeHttpRequestAsync("POST", path, request, callback);
@@ -128,13 +121,9 @@ public class ServerClientImp implements ServerClient {
 	
 	@SuppressWarnings("unchecked")
 	public void updatePost(String username, String postId, ActionType actionType, Callback callback) {
-		JSONObject user = new JSONObject();
-		user.put("username", username);
-		JSONObject post = new JSONObject();
-		post.put("post_id", postId);
 		JSONObject request = new JSONObject();
-		request.put("user", user);
-		request.put("post", post); 
+		request.put("username", username);
+		request.put("post_id", postId);
 		request.put("action_type", actionType.name() + "");
 		
 		String path = constructIncompleteUrlPath() + UPDATE_POST_PATH;
@@ -142,13 +131,11 @@ public class ServerClientImp implements ServerClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void insertPost(String username, String postText, String location, Callback callback) {
-		JSONObject post = new JSONObject();
-		post.put("username", username);
-		post.put("post_text", postText);
-		post.put("location", location);
+	public void insertPost(String username, String postText, Location location, Callback callback) {
 		JSONObject request = new JSONObject();
-		request.put("post", post);
+		request.put("username", username);
+		request.put("post_text", postText);
+		request.put("location", location.toJSON());
 
 		String path = constructIncompleteUrlPath() + INSERT_POST_PATH;
 		executeHttpRequestAsync("POST", path, request, callback);
@@ -156,12 +143,10 @@ public class ServerClientImp implements ServerClient {
 	
 	@SuppressWarnings("unchecked")
 	public void insertComment(String username, String commentText, String postId, Callback callback) {
-		JSONObject comment = new JSONObject();
-		comment.put("username", username);
-		comment.put("comment_text", commentText);
-		comment.put("post_id", postId);
 		JSONObject request = new JSONObject();
-		request.put("comment", comment);
+		request.put("username", username);
+		request.put("comment_text", commentText);
+		request.put("post_id", postId);
 
 		String path = constructIncompleteUrlPath() + INSERT_COMMENT_PATH;
 		executeHttpRequestAsync("POST", path, request, callback);

@@ -12,25 +12,29 @@ public class ServerClientMain {
 
 	public static void main(String[] args) {
 		madePosts = new ArrayList<Post>();
-//		client.getPopularLocations(new Callback() {
-//			public void serverRequestCallback(StatusOr<Response> responseOr) {
-//				System.out.println(responseOr.toString());
-//			}
-//		});
-		client.getAllPopularPostsAtLocation("user1", "33.75:-116.35", new QueryParams(true, "", ""), new Callback() {
+		client.getPopularLocations(new Callback() {
+			public void serverRequestCallback(StatusOr<Response> responseOr) {
+				System.out.println(responseOr.toString());
+			}
+		});
+		client.getAllPopularPostsAtLocation(makeLocation("33.75","-116.35"), new QueryParams(true, "", ""), new Callback() {
 			public void serverRequestCallback(StatusOr<Response> responseOr) {
 				System.out.println("BLAH BLAH BLAH ");
 				Post p = responseOr.get().getPosts().get(0);
 				System.out.println(p.getCreationTimestampSecAsLong() + " " + p.getCreationTimestampSec() + " " + p.isExpired());
 			}
 		});
-//		createUsers(USER_COUNT);
-//		makePosts(1);
-//		makeComments(100);
-//		makePostUpdates(1);
+		createUsers(USER_COUNT);
+		makePosts(1);
+		makeComments(100);
+		makePostUpdates(1);
 //		StatusOr<Response> response = client.getAllPostComments("f7e29db07ff845e6a001583949d32b6a", ServerClient.NO_CALLBACK);
 //		printArrayList(response.get().getComments());
-//		client.shutdown();
+		client.shutdown();
+	}
+	
+	public static Location makeLocation(String lat, String lon) {
+		return new Location(lat, lon);
 	}
 	
 	public static void makePostUpdates(int amount) {
@@ -63,7 +67,7 @@ public class ServerClientMain {
 		for (int i = 0; i < amount; i++) {
 			String username = getRandomUsername();
 			String post = "Post by " + username;
-			String location = getRandomLocation();
+			Location location = getRandomLocation();
 			client.insertPost(username, post, location, new Callback() {
 				public void serverRequestCallback(StatusOr<Response> responseOr) {
 					madePosts.add(responseOr.get().getPost().get());
@@ -76,11 +80,11 @@ public class ServerClientMain {
 		return madePosts.get(new Random().nextInt(madePosts.size())).getPostId();
 	}
 	
-	public static String getRandomLocation() {
+	public static Location getRandomLocation() {
 		Random random = new Random();	
 		String longStr = Double.toString(42 + random.nextDouble() * 2);
 		String latStr = Double.toString(98 + random.nextDouble() * 2);
-		return longStr + ":" + latStr;
+		return new Location(longStr, latStr);
 	}
 	
 	public static String getRandomUsername() {

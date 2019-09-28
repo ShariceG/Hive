@@ -2,6 +2,8 @@ package hiveSimulator;
 
 import java.util.Random;
 
+import hive.Location;
+
 public class HiveSimulator {
 	
 	private String[] locations = {
@@ -78,8 +80,13 @@ public class HiveSimulator {
 		}
 	}
 	
-	private String randomLocation() {
-		return locations[new Random().nextInt(locations.length)];
+	public static Location makeLocation(String lat, String lon) {
+		return new Location(lat, lon);
+	}
+	
+	private Location randomLocation() {
+		String[] split = locations[new Random().nextInt(locations.length)].split(":");
+		return makeLocation(split[0], split[1]);
 	}
 
 }

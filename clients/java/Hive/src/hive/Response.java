@@ -74,8 +74,8 @@ public class Response {
 		}
 		JSONArray jsonLocations = (JSONArray) jsonResponse.get("locations");
 		ArrayList<Location> locations = new ArrayList<Location>();
-		for (Object locationStr : jsonLocations) {
-			locations.add(Location.jsonToLocation((String)locationStr));
+		for (Object locationJson : jsonLocations) {
+			locations.add(Location.jsonToLocation((JSONObject)locationJson));
 		}
 		return locations;
 	}
