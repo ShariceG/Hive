@@ -93,10 +93,8 @@ class PopularViewController: UIViewController {
         }
         if (!error) {
             popularLocations.removeAll()
-            let userLocation = Location(locationStr: self.getTestLocation(), label: "My Area")
-            popularLocations.append(userLocation)
             popularLocations.append(contentsOf: response.locations)
-            currLocation = userLocation
+            currLocation = popularLocations.first
             postFeedManager.pokeNew()
             DispatchQueue.main.async {
                 self.popularCollectionView.reloadData()
@@ -123,11 +121,11 @@ extension PopularViewController: PostFeedDelegate {
     
     func fetchMorePosts(queryParams: QueryParams) {
         if (currLocation == nil) {
-            print("No set location. This is a bug. Potentially unrecoverable.")
+            print("No set location.")
             return
         }
         client.getAllPopularPostsAtLocation(username: self.getTestUser(), queryParams: queryParams,
-                                            locationStr: self.currLocation!.locationStr,
+                                            location: self.currLocation!,
                                             completion: getPopularPostsFromLocationCompletion)
     }
     
@@ -161,7 +159,7 @@ extension PopularViewController: UICollectionViewDataSource, UICollectionViewDel
 // PopularCollectionViewCell Extensions
 extension PopularViewController: PopularCollectionViewCellDelegate {
     func popularButtonClicked(popularCollectionViewCell: PopularCollectionViewCell) {
-        if (self.currLocation?.locationStr == popularCollectionViewCell.location.locationStr) {
+        if (self.currLocation?.area == popularCollectionViewCell.location.area) {
             return
         }
         self.currLocation = popularCollectionViewCell.location

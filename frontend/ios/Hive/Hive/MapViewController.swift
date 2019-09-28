@@ -23,22 +23,22 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     override func viewDidLoad() {
         mapView.delegate = self
-        getPopularLocations()
+        getLocations()
     }
     
     private func addMapAnnotation(location: Location) {
         let annotation = CustomMKPointAnnotation()
         annotation.location = location
         annotation.coordinate = location.location.coordinate
-        annotation.title = location.label
+        annotation.title = location.area
         mapView.addAnnotation(annotation)
     }
     
-    private func getPopularLocations() {
-        client.getPopularLocations(completion: getPopularLocationsCompletion)
+    private func getLocations() {
+        client.getAllPostLocations(completion: getAllPostLocationsCompletion)
     }
     
-    private func getPopularLocationsCompletion(responseOr: StatusOr<Response>) {
+    private func getAllPostLocationsCompletion(responseOr: StatusOr<Response>) {
         var error: Bool = false
         if (responseOr.hasError()) {
             // Handle likley connection error

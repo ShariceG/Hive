@@ -22,4 +22,4 @@ def geo_to_area(lat, long):
     locations = json.loads(result.content)
     locations = sorted(locations, key=lambda k: k['Distance'])
 
-    print locations[0]
+    return locations[0]['City']

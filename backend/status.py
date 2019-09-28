@@ -10,6 +10,7 @@ class StatusCode(messages.Enum):
     UNSUPPORTED_ACTION_TYPE = 6
     INTERNAL_ERROR = 7
     NO_LOCATION_PROVIDED = 8
+    INVALID_LOCATION = 9
 
 class Status(messages.Message):
     is_ok = messages.BooleanField(1, required=False)

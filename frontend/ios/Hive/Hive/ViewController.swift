@@ -185,8 +185,7 @@ extension ViewController: PostFeedDelegate {
     }
     
     func fetchMorePosts(queryParams: QueryParams) {
-        client.getAllPostsAroundUser(username: self.getTestUser(),
-                                     location: self.getTestLocation(),
+        client.getAllPostsAtLocation(location: self.getTestLocation(),
                                      queryParams: queryParams,
                                      completion:fetchPostsAroundUserCompletion)
     }

@@ -19,7 +19,8 @@
             "UNKNOWN_ERROR",
             "UNSUPPORTED_ACTION_TYPE",
             "INTERNAL_ERROR",
-            "NO_LOCATION_PROVIDED"
+            "NO_LOCATION_PROVIDED",
+            "INVALID_LOCATION"
           ],
           "type": "string"
         },
@@ -50,6 +51,22 @@
       },
       "type": "object"
     },
+    "BackendStoreMainProtoEntityProtoLocation": {
+      "properties": {
+        "area": {
+          "type": "string"
+        },
+        "latitude": {
+          "format": "double",
+          "type": "number"
+        },
+        "longitude": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "type": "object"
+    },
     "BackendStoreMainProtoEntityProtoPost": {
       "properties": {
         "creation_timestamp_sec": {
@@ -65,7 +82,7 @@
           "type": "string"
         },
         "location": {
-          "type": "string"
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoLocation"
         },
         "number_of_comments": {
           "format": "int64",
@@ -99,9 +116,6 @@
     },
     "BackendStoreMainProtoEntityProtoUser": {
       "properties": {
-        "location": {
-          "type": "string"
-        },
         "phone_number": {
           "type": "string"
         },
@@ -226,9 +240,9 @@
     },
     "BackendStoreMainProtoServerProtoGetPopularLocationsResponse": {
       "properties": {
-        "locations": {
+        "location": {
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/BackendStoreMainProtoEntityProtoLocation"
           },
           "type": "array"
         },
@@ -240,8 +254,14 @@
     },
     "BackendStoreMainProtoServerProtoInsertCommentRequest": {
       "properties": {
-        "comment": {
-          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoComment"
+        "comment_text": {
+          "type": "string"
+        },
+        "post_id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
         }
       },
       "type": "object"
@@ -262,8 +282,14 @@
     },
     "BackendStoreMainProtoServerProtoInsertPostRequest": {
       "properties": {
-        "post": {
-          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoPost"
+        "location": {
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoLocation"
+        },
+        "text": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
         }
       },
       "type": "object"
@@ -293,7 +319,7 @@
           ],
           "type": "string"
         },
-        "post": {
+        "post_id": {
           "$ref": "#/definitions/BackendStoreMainProtoEntityProtoPost"
         },
         "user": {
@@ -367,7 +393,13 @@
     "/media_api/v1/app.get_all_comments_for_post": {
       "get": {
         "operationId": "LocationBasedSocialMediaAPI_getAllCommentsForPost",
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "post_id",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "A successful response",
@@ -395,7 +427,13 @@
     "/media_api/v1/app.get_all_posts_around_user": {
       "get": {
         "operationId": "LocationBasedSocialMediaAPI_getAllPostsAroundUser",
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "username",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "A successful response",
@@ -409,7 +447,13 @@
     "/media_api/v1/app.get_all_posts_by_user": {
       "get": {
         "operationId": "LocationBasedSocialMediaAPI_getAllPostsByUser",
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "username",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "A successful response",
@@ -423,7 +467,13 @@
     "/media_api/v1/app.get_all_posts_commented_on_by_user": {
       "get": {
         "operationId": "LocationBasedSocialMediaAPI_getAllPostsCommentedOnByUser",
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "username",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "A successful response",

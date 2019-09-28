@@ -56,12 +56,19 @@ class LocationBasedSocialMediaAPI(remote.Service):
     def insert_comment(self, request):
         return self._handler.handle_insert_comment(request)
 
-    @endpoints.method(server_proto.GetAllPostsAroundUserRequest,
-        server_proto.GetAllPostsAroundUserResponse,
-        name='get_all_posts_around_user',
-        path='app.get_all_posts_around_user', http_method='GET')
-    def get_all_posts_around_user(self, request):
-        return self._handler.handle_get_all_posts_around_user(request)
+    @endpoints.method(server_proto.GetAllPostsAtLocationRequest,
+        server_proto.GetAllPostsAtLocationResponse,
+        name='get_all_posts_at_location',
+        path='app.get_all_posts_at_location', http_method='GET')
+    def get_all_posts_at_location(self, request):
+        return self._handler.handle_get_all_posts_at_location(request)
+
+    @endpoints.method(server_proto.GetAllPostLocationsRequest,
+        server_proto.GetAllPostLocationsResponse,
+        name='get_all_post_locations',
+        path='app.get_all_post_locations', http_method='GET')
+    def get_all_post_locations(self, request):
+        return self._handler.handle_get_all_post_locations(request)
 
     @endpoints.method(server_proto.GetAllPostsByUserRequest,
         server_proto.GetAllPostsByUserResponse,

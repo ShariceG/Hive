@@ -5,15 +5,19 @@ class UserModel(ndb.Model):
     PhoneNumber = ndb.StringProperty(required=False)
     CreationTimestampSec = ndb.FloatProperty(required=False)
 
+class Location(ndb.Model):
+    Latitude = ndb.StringProperty(required=False)
+    Longitude = ndb.StringProperty(required=False)
+    # Truncated lat and long
+    AreaLatitude = ndb.StringProperty(required=False)
+    AreaLongitude = ndb.StringProperty(required=False)
+    # Area, based on reverse geo coordinates
+    Area = ndb.StringProperty(required=False)
+
 class PostModel(ndb.Model):
     PostText = ndb.StringProperty(required=False)
     Username = ndb.StringProperty(required=False)
-    # Raw Latitude/Longitude
-    OriginalLongitude = ndb.StringProperty(required=False)
-    OriginalLatitude = ndb.StringProperty(required=False)
-    # Latitude/Longitude truncated
-    LocationLongitude = ndb.StringProperty(required=False)
-    LocationLatitude = ndb.StringProperty(required=False)
+    Location = ndb.StructuredProperty(Location, required=False)
     CreationTimestampSec = ndb.FloatProperty(required=False)
     PopularityIndex = ndb.IntegerProperty(required=False)
 
@@ -30,7 +34,6 @@ class ActionModel(ndb.Model):
     CreationTimestampSec = ndb.FloatProperty(required=False)
 
 class LocationModel(ndb.Model):
-    LocationLongitude = ndb.StringProperty(required=False)
-    LocationLatitude = ndb.StringProperty(required=False)
+    Location = ndb.StructuredProperty(Location, required=False)
     PopularityIndex = ndb.IntegerProperty(required=False)
     UpdateKey = ndb.StringProperty(required=False)

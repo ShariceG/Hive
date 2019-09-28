@@ -8,7 +8,7 @@
 
 import Foundation
 import UIKit
-// LLURRUUU
+
 class PostFeedModalViewController: UIViewController {
     
     let COMMENTS_SEGUE_IDENTIFIER = "seeCommentsSegue"
@@ -81,7 +81,7 @@ extension PostFeedModalViewController: PostFeedDelegate {
     
     func fetchMorePosts(queryParams: QueryParams) {
         client.getAllPopularPostsAtLocation(username: self.getTestUser(), queryParams: queryParams,
-                                            locationStr: self.location!.locationStr,
+                                            location: self.location!,
             completion: getPopularPostsFromLocationCompletion)
     }
     

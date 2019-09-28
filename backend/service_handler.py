@@ -27,6 +27,9 @@ POPULAR_POST_QUERY_LIMIT = 10
 # Number of decimal places to use to match users in the same location
 LOCATION_QUERY_DECIMAL_PLACES = 2
 
+# How many seconds ago to consider a post for popularity
+POPULAR_TIME_THRESHOLD_SEC = 60 * 60
+
 class ServiceHandler(object):
 
     def handle_create_user(self, request):
@@ -40,37 +43,51 @@ class ServiceHandler(object):
             Username=user.username,
             PhoneNumber=user.phone_number,
             CreationTimestampSec=time.time()).put()
-
         return CreateUserResponse(
             status=Status(status_code=StatusCode.OK))
 
     def handle_insert_post(self, request):
-        post = request.post
-        username = post.username
+        username = request.username
+        location = request.location
         if not self._user_exists(username):
             return InsertPostResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
-        ok, lat, lon = self._verify_and_get_latitude_longitude(post.location)
+        # TODO: validate post
+        ok, location = self._validate_and_get_location_with_precision(location)
         if not ok:
             return InsertPostResponse(
-                status=Status(status_code=StatusCode.NO_LOCATION_PROVIDED))
-        # Truncate user location before querying.
-        loc_lat, loc_long = self._truncate_latitude_longitude(lat, lon)
+                status=Status(status_code=StatusCode.INVALID_LOCATION))
+
+        # Truncate user location before putting in database.
+        lat = location.latitude
+        lon = location.longitude
+        area_lat, area_long = self._get_area_latitude_longitude(lat, lon)
+
+        # Get reverse geo area
+        area = geo_helper.geo_to_area(area_lat, area_long)
+        location.area = area
+
         post_id = uuid.uuid4().hex
         timestamp = time.time()
 
-        # Store a version of the location thats only up to 2 decimal places.
         model.PostModel(
             id=post_id,
-            PostText=request.post.post_text,
+            PostText=request.post_text,
             Username=username,
-            OriginalLongitude=lon,
-            OriginalLatitude=lat,
-            LocationLongitude=loc_long,
-            LocationLatitude=loc_lat,
+            Location=model.Location(
+                Longitude=lon,
+                Latitude=lat,
+                AreaLatitude=area_lat,
+                AreaLongitude=area_long,
+                Area=area
+                ),
             CreationTimestampSec=timestamp
         ).put()
 
+        post = entity_proto.Post()
+        post.post_text = request.post_text
+        post.username = username
+        post.location = location
         post.post_id = post_id
         post.creation_timestamp_sec = timestamp
         return InsertPostResponse(
@@ -114,15 +131,13 @@ class ServiceHandler(object):
             print 'Unsupported ActionType: %d ' % action_type
             return UpdatePostResponse(
                 status=Status(status_code=StatusCode.UNSUPPORTED_ACTION_TYPE))
-
         return UpdatePostResponse(status=ok_status)
 
     def handle_insert_comment(self, request):
-        comment = request.comment
-        if not self._user_exists(comment.username):
+        if not self._user_exists(request.username):
             return InsertCommentResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
-        if not self._post_exists(comment.post_id):
+        if not self._post_exists(request.post_id):
             return InsertCommentResponse(
                 status=Status(status_code=StatusCode.POST_NOT_FOUND))
 
@@ -130,54 +145,43 @@ class ServiceHandler(object):
         timestamp = time.time()
         new_model = model.CommentModel(
             id=comment_id,
-            Username=comment.username,
-            PostID=comment.post_id,
-            CommentText=comment.comment_text,
+            Username=request.username,
+            PostID=request.post_id,
+            CommentText=request.comment_text,
             CreationTimestampSec=timestamp)
         new_model.put()
 
+        comment = entity_proto.Comment()
+        comment.username = request.username
+        comment.post_id = request.post_id
+        comment.comment_text = request.comment_test
         comment.comment_id = comment_id
         comment.creation_timestamp_sec = timestamp
         return InsertCommentResponse(
             status=Status(status_code=StatusCode.OK), comments=[comment])
 
-    def handle_get_all_posts_around_user(self, request):
-        user = request.user
-        if not self._user_exists(user.username):
-            return GetAllPostsAroundUserResponse(
-                status=Status(status_code=StatusCode.USER_NOT_FOUND))
-        ok, lat, lon = self._verify_and_get_latitude_longitude(user.location)
-        if not ok:
-            return GetAllPostsAroundUserResponse(
-                status=Status(status_code=StatusCode.NO_LOCATION_PROVIDED))
-        # Truncate user location before querying.
-        loc_lat, loc_long = self._truncate_latitude_longitude(lat, lon)
-
-        query = model.PostModel.query().filter(
-            model.PostModel.LocationLatitude == loc_lat).filter(
-            model.PostModel.LocationLongitude == loc_long)
-        results, metadata = self._run_query_with_cursor(query=query,
-            params=request.query_params, fetch_limit=POST_QUERY_LIMIT,
-            order_property=model.PostModel.CreationTimestampSec)
-
-        post_list = []
+    def handle_get_all_post_locations(self, request):
+        query = ndb.gql(('SELECT Location.AreaLatitude, '
+                'Location.AreaLongitude, Location.Area '
+                 'FROM LocationModel'))
+        locations = []
         helper = service_helper.ServiceHelper
-        for post_model in results:
-            the_post = helper.post_model_to_proto(post_model)
-            self._fill_post_likes_dislikes_comment_count(the_post)
-            post_list.append(the_post)
-        return GetAllPostsAroundUserResponse(
-            posts=post_list, query_metadata=metadata,
+        for result in query.fetch():
+            locations.append(entity_proto.Location(
+                latitude=result.Location.AreaLatitude,
+                longitude=result.Location.AreaLongitude,
+                area=result.Location.Area
+            ))
+        return GetAllPostLocationsResponse(locations=locations,
             status=Status(status_code=StatusCode.OK))
 
     def handle_get_all_posts_by_user(self, request):
-        user = request.user
-        if not self._user_exists(user.username):
+        if not self._user_exists(request.username):
             return GetAllPostsByUserResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
 
         query = model.PostModel.query().filter(
-            model.PostModel.Username == user.username)
+            model.PostModel.Username == request.username)
         results, metadata = self._run_query_with_cursor(query=query,
             params=request.query_params, fetch_limit=POST_QUERY_LIMIT,
             order_property=model.PostModel.CreationTimestampSec)
@@ -193,12 +197,11 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK))
 
     def handle_get_all_posts_commented_on_by_user(self, request):
-        user = request.user
-        if not self._user_exists(user.username):
+        if not self._user_exists(request.username):
             return GetAllPostsCommentedOnByUserResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
         query = ndb.gql(('SELECT DISTINCT PostID FROM CommentModel '
-                          'WHERE Username = :1'), user.username)
+                          'WHERE Username = :1'), request.username)
         comments, metadata = self._run_query_with_cursor(query=query,
             params=request.query_params, fetch_limit=COMMENT_QUERY_LIMIT,
             order_property=model.CommentModel.CreationTimestampSec)
@@ -218,12 +221,11 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK))
 
     def handle_get_all_comments_for_post(self, request):
-        post = request.post
-        if not self._post_exists(post.post_id):
+        if not self._post_exists(request.post_id):
             return GetAllCommentsForPostResponse(
                 status=Status(status_code=StatusCode.POST_NOT_FOUND))
         query = ndb.gql(('SELECT * FROM CommentModel '
-                          'WHERE PostID = :1 '), post.post_id)
+                          'WHERE PostID = :1 '), request.post_id)
         comments, metadata = self._run_query_with_cursor(query=query,
             params=request.query_params, fetch_limit=COMMENT_QUERY_LIMIT,
             order_property=model.CommentModel.CreationTimestampSec)
@@ -237,22 +239,56 @@ class ServiceHandler(object):
             query_metadata=metadata,
             status=Status(status_code=StatusCode.OK))
 
+    def handle_get_all_posts_at_location(self, request):
+        location = request.location
+        query_params = request.query_params
+        ok, location = self._validate_and_get_location_with_precision(location)
+        if not ok:
+            return GetAllPostsAtLocationResponse(
+                status=Status(status_code=StatusCode.INVALID_LOCATION))
+
+        lat = location.latitude
+        lon = location.longitude
+        # Truncate user location before querying.
+        area_lat, area_long = self._get_area_latitude_longitude(lat, lon)
+
+        query = model.PostModel.query().filter(
+            model.PostModel.Location.AreaLatitude == area_lat).filter(
+            model.PostModel.Location.AreaLongitude == area_long)
+        results, metadata = self._run_query_with_cursor(query=query,
+            params=query_params, fetch_limit=POST_QUERY_LIMIT,
+            order_property=model.PostModel.CreationTimestampSec)
+
+        post_list = []
+        helper = service_helper.ServiceHelper
+        for post_model in results:
+            the_post = helper.post_model_to_proto(post_model)
+            self._fill_post_likes_dislikes_comment_count(the_post)
+            post_list.append(the_post)
+        return GetAllPostsAtLocationResponse(
+            posts=post_list, query_metadata=metadata,
+            status=Status(status_code=StatusCode.OK))
+
+
     def handle_get_all_popular_posts_at_location(self, request):
-        user = request.user
-        if not self._user_exists(user.username):
+        location = request.location
+        if not self._user_exists(request.username):
             return GetAllPopularPostsAtLocationResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
-        ok, lat, lon = self._verify_and_get_latitude_longitude(user.location)
+        ok, location = self._validate_and_get_location_with_precision(location)
         if not ok:
             return GetAllPopularPostsAtLocationResponse(
-                status=Status(status_code=StatusCode.NO_LOCATION_PROVIDED))
+                status=Status(status_code=StatusCode.INVALID_LOCATION))
+
+        lat = location.latitude
+        lon = location.longitude
         # Truncate user location before querying.
-        loc_lat, loc_long = self._truncate_latitude_longitude(lat, lon)
+        area_lat, area_long = self._get_area_latitude_longitude(lat, lon)
 
         query = ndb.gql(('SELECT * '
-                 'FROM PostModel WHERE LocationLatitude = :1 AND '
-                 'LocationLongitude = :2 AND PopularityIndex > 0 '),
-                 loc_lat, loc_long)
+                 'FROM PostModel WHERE Location.AreaLatitude = :1 AND '
+                 'Location.AreaLongitude = :2 AND PopularityIndex > 0 '),
+                 area_lat, area_long)
         results, metadata = self._run_query_with_cursor(query=query,
             params=request.query_params, fetch_limit=POST_QUERY_LIMIT,
             order_property=model.PostModel.PopularityIndex)
@@ -269,12 +305,17 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK))
 
     def handle_get_popular_locations(self, request):
-        query = ndb.gql(('SELECT LocationLatitude, LocationLongitude '
+        query = ndb.gql(('SELECT Location.AreaLatitude, '
+                'Location.AreaLongitude, Location.Area '
                  'FROM LocationModel ORDER BY PopularityIndex DESC'))
         locations = []
+        helper = service_helper.ServiceHelper
         for result in query.fetch(POPULAR_POST_QUERY_LIMIT):
-            locations.append(self._latitude_longitude_to_str(
-                result.LocationLatitude, result.LocationLongitude))
+            locations.append(entity_proto.Location(
+                latitude=result.Location.AreaLatitude,
+                longitude=result.Location.AreaLongitude,
+                area=result.Location.Area
+            ))
         return GetPopularLocationsResponse(locations=locations,
             status=Status(status_code=StatusCode.OK))
 
@@ -283,7 +324,7 @@ class ServiceHandler(object):
         # Let t = last x seconds
         # Popularity = likes in t + dislikes in t + comments in t
 
-        time_thresh = 0 # time.time() - (60 * 60)  # Last hour, in sec
+        time_thresh = time.time() - POPULAR_TIME_THRESHOLD_SEC
         results = model.PostModel.query()
         for post in results:
             id = post.key.id()
@@ -296,22 +337,21 @@ class ServiceHandler(object):
             post.PopularityIndex = count
 
             # Add to the LocationModel
-            location = self._latitude_longitude_to_str(post.LocationLatitude,
-                post.LocationLongitude)
-            location_model = ndb.Key('LocationModel', location).get()
+            location_key = self._get_location_key(post.Location)
+            location_model = ndb.Key('LocationModel', location_key).get()
             if location_model and location_model.UpdateKey == update_key:
                 location_model.PopularityIndex += post.PopularityIndex
                 location_model.put()
             elif post.PopularityIndex > 0:
                 model.LocationModel(
-                    id=str(location),
-                    LocationLatitude=post.LocationLatitude,
-                    LocationLongitude=post.LocationLongitude,
+                    id=location_key,
+                    Location=post.Location,
                     PopularityIndex=post.PopularityIndex,
                     UpdateKey=update_key
                 ).put()
             post.put()
 
+        # Remove locations with previous update key.
         ndb.delete_multi(
             model.LocationModel.query(
                 model.LocationModel.UpdateKey != update_key).fetch(
@@ -389,7 +429,7 @@ class ServiceHandler(object):
             return False
         return c1.urlsafe() == c2.urlsafe()
 
-    def _truncate_float(self, float_str, dec_places):
+    def _truncate_float_str(self, float_str, dec_places):
         float_str = '%s.' % (float_str) if not '.' in float_str else float_str
         float_str = '%s%s' % (float_str, '0'*20)
         return float_str[0:float_str.find('.') + 1 + dec_places]
@@ -410,23 +450,44 @@ class ServiceHandler(object):
         post.dislikes = info[1]
         post.number_of_comments = info[2]
 
-    def _truncate_latitude_longitude(self, lat, lon):
+    def _get_area_latitude_longitude(self, lat, lon):
         dec = LOCATION_QUERY_DECIMAL_PLACES
-        return self._truncate_float(lat, dec), self._truncate_float(lon, dec)
+        return (self._truncate_float_str(lat, dec),
+            self._truncate_float_str(lon, dec))
 
-    def _verify_and_get_latitude_longitude(self, location):
-        if not isinstance(location, basestring) or not ':' in location:
-            return False, None, None
-        # Latitude should be first, then longitude
-        lat_lon = location.split(':')
-        # Truncate such that both quanties have the same decimal places.
-        dec_places = max(len(lat_lon[1]), len(lat_lon[0]))
-        lon = self._truncate_float(lat_lon[1], dec_places)
-        lat = self._truncate_float(lat_lon[0], dec_places)
-        return True, lat, lon
+    def _validate_location(self, location):
+        if not location:
+            return False
+        if location.latitude == "" or location.longitude == "":
+            return False
+        try:
+            float(location.latitude)
+            float(location.longitude)
+        except ValueError:
+            return False
+        return True
 
-    def _latitude_longitude_to_str(self, lat, lon):
-        return '%s:%s' % (lat, lon)
+    def _get_location_with_equal_precision(self, location):
+        '''Make sure lat and lon have the same decimal precision.'''
+        lat = location.latitude
+        lon = location.longitude
+        dec_places = max(len(lat), len(lon))
+        lat = self._truncate_float_str(lat, dec_places)
+        lon = self._truncate_float_str(lon, dec_places)
+        location.latitude = lat
+        location.longitude = lon
+        return location
+
+    #BLAH 9105f3d0ee7048d99414b3682211c361
+
+    def _validate_and_get_location_with_precision(self, location):
+        if not self._validate_location(location):
+            return False, None
+        return True, self._get_location_with_equal_precision(location)
+
+    def _get_location_key(self, location):
+        return '%s:%s:%s' % (
+            location.AreaLatitude, location.AreaLongitude, location.Area)
 
     def _post_exists(self, post_id):
         return not ndb.Key('PostModel', post_id).get() is None

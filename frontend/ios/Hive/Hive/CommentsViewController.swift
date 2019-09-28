@@ -96,6 +96,7 @@ class CommentsViewController: UIViewController {
             return
         }
         DispatchQueue.main.async {
+            self.commentBn.isEnabled = false
             self.commentTextView.isEditable = false
             self.commentTextView.isSelectable = false
             sender.isEnabled = false

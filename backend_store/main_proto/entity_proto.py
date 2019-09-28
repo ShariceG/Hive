@@ -3,14 +3,17 @@ from protorpc import messages
 class User(messages.Message):
     username = messages.StringField(1, required=False)
     phone_number = messages.StringField(2, required=False)
-    # Not stored in datastore. Used mainly for transport to client.
-    location = messages.StringField(3, required=False)
+
+class Location(messages.Message):
+    longitude = messages.StringField(1, required=False)
+    latitude = messages.StringField(2, required=False)
+    area = messages.StringField(3, required=False)
 
 class Post(messages.Message):
     post_id = messages.StringField(1, required=False)
     username = messages.StringField(2, required=False)
     post_text = messages.StringField(3, required=False)
-    location = messages.StringField(4, required=False)
+    location = messages.MessageField(Location, 4)
     likes = messages.IntegerField(5, required=False)
     dislikes = messages.IntegerField(6, required=False)
     number_of_comments = messages.IntegerField(7, required=False)

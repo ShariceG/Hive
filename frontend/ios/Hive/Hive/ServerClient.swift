@@ -53,6 +53,10 @@ class ServerClient {
     private static let INSERT_POST_PATH: String = "app.insert_post?"
     private static let GET_ALL_POST_COMMENTS_PATH: String = "app.get_all_comments_for_post?"
     private static let GET_ALL_POSTS_AROUND_USER_PATH: String = "app.get_all_posts_around_user?"
+    private static let GET_ALL_POSTS_AT_LOCATION: String =
+        "app.get_all_posts_at_location?"
+    private static let GET_ALL_POST_LOCATIONS: String =
+        "app.get_all_post_locations?"
     private static let GET_ALL_POSTS_BY_USER_PATH: String = "app.get_all_posts_by_user?"
     private static let GET_ALL_POSTS_COMMENTED_ON_BY_USER_PATH: String = "app.get_all_posts_commented_on_by_user?"
     private static let UPDATE_POST_PATH: String = "app.update_post?"
@@ -65,12 +69,25 @@ class ServerClient {
         executeGet(targetUrl: path, jsonParams: request, completion: completion)
     }
     
-    public func getAllPopularPostsAtLocation(username: String, queryParams: QueryParams, locationStr: String, completion:@escaping (StatusOr<Response>) -> ()) {
-        var user: [String:Any] = [String:Any]()
-        user["username"] = username
-        user["location"] = locationStr
+    public func getAllPostLocations(completion:@escaping (StatusOr<Response>) -> ()) {
+        let request: [String:Any] = [String:Any]()
+        let path = constructIncompleteUrlPath() + ServerClient.GET_ALL_POST_LOCATIONS
+        executeGet(targetUrl: path, jsonParams: request, completion: completion)
+    }
+    
+    public func getAllPostsAtLocation(location: Location, queryParams: QueryParams, completion:@escaping (StatusOr<Response>) -> ()) {
         var request: [String:Any] = [String:Any]()
-        request["user"] = user
+        request["location"] = location.toJson()
+        request["query_params"] = queryParams.toJson()
+        
+        let path = constructIncompleteUrlPath() + ServerClient.GET_ALL_POSTS_AT_LOCATION
+        executeGet(targetUrl: path, jsonParams: request, completion: completion)
+    }
+    
+    public func getAllPopularPostsAtLocation(username: String, queryParams: QueryParams, location: Location, completion:@escaping (StatusOr<Response>) -> ()) {
+        var request: [String:Any] = [String:Any]()
+        request["username"] = username
+        request["location"] = location.toJson()
         request["query_params"] = queryParams.toJson()
         
         let path = constructIncompleteUrlPath() + ServerClient.GET_ALL_POPULAR_POSTS_AT_LOCATION
@@ -78,10 +95,8 @@ class ServerClient {
     }
     
     public func getAllPostsCommentedOnByUser(username: String, queryParams: QueryParams, completion:@escaping (StatusOr<Response>) -> ()){
-        var user: [String:Any] = [String:Any]()
-        user["username"] = username
         var request: [String:Any] = [String:Any]()
-        request["user"] = user
+        request["username"] = username
         request["query_params"] = queryParams.toJson()
 
         let path = constructIncompleteUrlPath() + ServerClient.GET_ALL_POSTS_COMMENTED_ON_BY_USER_PATH
@@ -89,35 +104,17 @@ class ServerClient {
     }
     
     public func getAllPostsByUser(username: String, queryParams: QueryParams, completion:@escaping (StatusOr<Response>) -> ()) {
-        var user: [String:Any] = [String:Any]()
-        user["username"] = username
         var request: [String:Any] = [String:Any]()
-        request["user"] = user
+        request["username"] = username
         request["query_params"] = queryParams.toJson()
     
         let path: String = constructIncompleteUrlPath() + ServerClient.GET_ALL_POSTS_BY_USER_PATH
         executeGet(targetUrl: path, jsonParams: request, completion: completion)
     }
     
-    public func getAllPostsAroundUser(username: String, location: String,
-                                      queryParams: QueryParams,
-                                      completion:@escaping (StatusOr<Response>) -> ()) {
-        var user: [String:Any] = [String:Any]()
-        user["username"] = username
-        user["location"] = location
-        var request: [String:Any] = [String:Any]()
-        request["user"] = user
-        request["query_params"] = queryParams.toJson()
-
-        let path: String = constructIncompleteUrlPath() + ServerClient.GET_ALL_POSTS_AROUND_USER_PATH
-        executeGet(targetUrl: path, jsonParams: request, completion: completion)
-    }
-    
     public func getAllCommentsForPost(postId: String, queryParams: QueryParams, completion:@escaping (StatusOr<Response>) -> ()) {
-        var post: [String:Any] = [String:Any]()
-        post["post_id"] = postId
         var request: [String:Any] = [String:Any]()
-        request["post"] = post
+        request["post_id"] = postId
         request["query_params"] = queryParams.toJson()
     
         let path: String = constructIncompleteUrlPath() + ServerClient.GET_ALL_POST_COMMENTS_PATH
@@ -125,49 +122,39 @@ class ServerClient {
     }
     
     public func createUser(username: String, phoneNumber: String, completion:@escaping (StatusOr<Response>) -> ()) {
-        var user: [String:Any] = [String:Any]()
-        user["username"] = username
-        user["phone_number"] = phoneNumber
         var request: [String:Any] = [String:Any]()
-        request["user"] = user
+        request["username"] = username
+        request["phone_number"] = phoneNumber
     
         let path: String = constructIncompleteUrlPath() + ServerClient.CREATE_USER_PATH
         executePost(targetUrl: path, jsonParams: request, completion: completion)
     }
     
     public func updatePost(postId: String, username: String, actionType: String, completion:@escaping (StatusOr<Response>) -> ()) {
-        var user: [String:Any] = [String:Any]()
-        user["username"] = username
-        var post: [String:Any] = [String:Any]()
-        post["post_id"] = postId
         var request: [String:Any] = [String:Any]()
-        request["user"] = user
-        request["post"] = post
+        request["username"] = username
+        request["post_id"] = postId
         request["action_type"] = actionType
     
         let path: String = constructIncompleteUrlPath() + ServerClient.UPDATE_POST_PATH
         executePost(targetUrl: path, jsonParams: request, completion: completion)
     }
     
-    public func insertPost(username: String, postText: String, location: String, completion:@escaping (StatusOr<Response>) -> ()) {
-        var post: [String:Any] = [String:Any]()
-        post["username"] = username
-        post["post_text"] = postText
-        post["location"] = location
+    public func insertPost(username: String, postText: String, location: Location, completion:@escaping (StatusOr<Response>) -> ()) {
         var request: [String:Any] = [String:Any]()
-        request["post"] = post
+        request["username"] = username
+        request["post_text"] = postText
+        request["location"] = location.toJson()
     
         let path: String = constructIncompleteUrlPath() + ServerClient.INSERT_POST_PATH;
         executePost(targetUrl: path, jsonParams: request, completion: completion);
     }
 
     public func insertComment(username: String, commentText: String, postId: String, completion:@escaping (StatusOr<Response>) -> ()) {
-        var comment: [String:Any] = [String:Any]()
-        comment["username"] = username
-        comment["comment_text"] = commentText
-        comment["post_id"] = postId
         var request: [String:Any] = [String:Any]()
-        request["comment"] = comment
+        request["username"] = username
+        request["comment_text"] = commentText
+        request["post_id"] = postId
     
         let path: String = constructIncompleteUrlPath() + ServerClient.INSERT_COMMENT_PATH;
         executePost(targetUrl: path, jsonParams: request, completion: completion);
@@ -200,6 +187,7 @@ class ServerClient {
         var url: String = targetUrl
         url += jsonObjectToUrlParameters(jsonRequest: jsonParams)
         
+//        url = url.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
         //create the url with NSURL
         let urlObj = URL(string: url)!
         

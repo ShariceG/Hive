@@ -10,13 +10,20 @@ class ServiceHelper(object):
             phone_number=user_model.PhoneNumber)
 
     @staticmethod
+    def location_model_to_proto(location_model):
+        return entity_proto.Location(
+            latitude=location_model.Latitude,
+            longitude=location_model.Longitude,
+            area=location_model.Area
+        )
+
+    @staticmethod
     def post_model_to_proto(post_model):
         return entity_proto.Post(
             post_id=post_model.key.id(),
             username=post_model.Username,
             post_text=post_model.PostText,
-            location='%s:%s' % (str(post_model.LocationLongitude),
-                        str(post_model.LocationLatitude)),
+            location=ServiceHelper.location_model_to_proto(post_model.Location),
             creation_timestamp_sec=post_model.CreationTimestampSec)
             # likes=post_model.Likes,
             # dislikes=post_model.Dislikes,

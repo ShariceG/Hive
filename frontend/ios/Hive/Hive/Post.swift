@@ -13,7 +13,7 @@ class Post: Hashable, Equatable {
     private(set) var username: String
     private(set) var postId: String
     private(set) var postText: String
-    private(set) var location: String
+    private(set) var location: Location
     private(set) var likes: Int
     private(set) var dislikes: Int
     private(set) var creationTimestampSec: Decimal
@@ -27,11 +27,11 @@ class Post: Hashable, Equatable {
         return left.postId == right.postId
     }
     
-    init(username: String, postId: String, postText: String, location: String, likes: Int, dislikes: Int, creationTimestampSec: Decimal, jsonPost: [String: Any]) {
+    init(username: String, postId: String, postText: String, locationJson: [String: Any], likes: Int, dislikes: Int, creationTimestampSec: Decimal, jsonPost: [String: Any]) {
         self.username = username
         self.postId = postId
         self.postText = postText
-        self.location = location
+        self.location = Location.jsonToLocation(json: locationJson)
         self.likes = likes
         self.dislikes = dislikes
         self.creationTimestampSec = creationTimestampSec
@@ -48,7 +48,7 @@ class Post: Hashable, Equatable {
         + "\nPostID: " + postId
         + "\nPostText: " + postText
         
-        let str2: String = "\nLocation: " + location
+        let str2: String = "\nLocation: " + location.area
             + "\nLikes: " + String(likes)
         
         return str1 + str2 + "\nDislikes: " + String(dislikes) + "\n"
@@ -60,7 +60,7 @@ class Post: Hashable, Equatable {
         return Post(username: jsonPost["username"] as! String,
                     postId: jsonPost["post_id"] as! String,
                     postText: jsonPost["post_text"] as! String,
-                    location: jsonPost["location"] as! String,
+                    locationJson: jsonPost["location"] as! [String: Any],
                     likes: likes!,
                     dislikes: dislikes!,
                     creationTimestampSec: (jsonPost["creation_timestamp_sec"] as! NSNumber).decimalValue,

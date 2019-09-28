@@ -73,7 +73,7 @@ class Response {
             self.serverStatusCode = getServerStatusCodeFromJson(jsonObject: jsonObject)
         }
         if (jsonObject["locations"] != nil) {
-            self.locations = getLocationList(jsonLocations: jsonObject["locations"] as! Array<Any>)
+            self.locations = getLocationList(jsonLocations: jsonObject["locations"] as! [[String : Any]])
         }
         if (jsonObject["query_metadata"] != nil) {
             self.queryMetadata = QueryMetadata(jsonMetadata: jsonObject["query_metadata"] as! [String : Any])
@@ -113,16 +113,10 @@ class Response {
         return commentList
     }
     
-    private func getLocationList(jsonLocations: Array<Any>) -> Array<Location> {
+    private func getLocationList(jsonLocations: [[String: Any]]) -> Array<Location> {
         var locations: Array<Location> = []
-        for location in jsonLocations {
-            let locString = location as! String
-            locations.append(Location(locationStr: locString))
-        }
-        
-        for location in locations {
-            location.waitUntilGeoLocationIsReversed()
-            print("LMAO: " + location.label)
+        for locationJson in jsonLocations {
+            locations.append(Location(locationJson: locationJson))
         }
         return locations
     }
