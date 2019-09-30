@@ -55,8 +55,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             // Report error to user somehow
             return
         }
-        for location in response.locations {
-            addMapAnnotation(location: location)
+        
+        DispatchQueue.main.async {
+            for location in response.locations {
+                self.addMapAnnotation(location: location)
+            }
         }
     }
     

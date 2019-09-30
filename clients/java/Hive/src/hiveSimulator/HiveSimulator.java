@@ -1,27 +1,17 @@
 package hiveSimulator;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 import hive.Location;
 
 public class HiveSimulator {
 	
-	private String[] locations = {
-			"44.968046:-94.420307",
-			"44.33328:-89.132008",
-			"33.755787:-116.359998",
-			"33.844843:-116.54911",
-			"44.92057:-93.44786",
-			"44.240309:-91.493619",
-			"44.968041:-94.419696",
-			"44.333304:-89.132027",
-			"33.755783:-116.360066",
-			"33.844847:-116.549069",
-			"44.920474:-93.447851",
-			"44.240304:-91.493768"
-	};
-	
 	private SimulatedUser[] users;
+	private ArrayList<String> locations;
 	
 	private int runtimeMs;
 	private int numUsers;
@@ -29,6 +19,8 @@ public class HiveSimulator {
 	public HiveSimulator(int runtimeSec, int numUsers) {
 		this.runtimeMs= runtimeSec * 1000;
 		this.numUsers = numUsers;
+		this.locations = new ArrayList<String>();
+		readLocationsIntoMemory(locations);
 		setupSimulatedUsers();
 	}
 	
@@ -62,6 +54,7 @@ public class HiveSimulator {
 			long timeLeft = (deadline - System.currentTimeMillis()) / 1000;
 			System.out.println(timeLeft + " seconds left.");
 		}
+		System.exit(0);
 	}
 	
 	private void pauseSimulation(int sec) {
@@ -76,17 +69,41 @@ public class HiveSimulator {
 		users = new SimulatedUser[numUsers];
 		System.out.println("Creating " + numUsers + " users.");
 		for (int i = 0; i < users.length; i++) {
-			users[i] = new SimulatedUser("user" + (i+1), "1111111111", randomLocation());
+			users[i] = new SimulatedUser("user" + (i+1), "1111111111", 
+					randomLocation());
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	public static Location makeLocation(String lat, String lon) {
-		return new Location(lat, lon);
+	public static Location makeLocation(String geo) {
+		String[] split = geo.split(":");
+		return new Location(split[0], split[1]);
 	}
 	
 	private Location randomLocation() {
-		String[] split = locations[new Random().nextInt(locations.length)].split(":");
-		return makeLocation(split[0], split[1]);
+		String geo = locations.get(new Random().nextInt(locations.size()));
+		return makeLocation(geo);
+	}
+	
+	private void readLocationsIntoMemory(ArrayList<String> locations) {
+		File file = new File("src/hiveSimulator/worldcities.csv");
+		try {
+			Scanner reader = new Scanner(file);
+			while (reader.hasNextLine()) {
+				String csv = reader.nextLine();
+				csv = csv.replaceAll("\"", "");
+				String[] split = csv.split(",");
+				String str = split[2] + ":" + split[3];
+				locations.add(str);
+			}
+			reader.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

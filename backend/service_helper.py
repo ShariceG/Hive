@@ -14,7 +14,13 @@ class ServiceHelper(object):
         return entity_proto.Location(
             latitude=location_model.Latitude,
             longitude=location_model.Longitude,
-            area=location_model.Area
+            area=entity_proto.Area(
+                latitude=location_model.Area.Latitude,
+                longitude=location_model.Area.Longitude,
+                city=location_model.Area.City,
+                state=location_model.Area.State,
+                country=location_model.Area.Country
+            )
         )
 
     @staticmethod

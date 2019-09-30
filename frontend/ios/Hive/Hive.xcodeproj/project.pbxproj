@@ -33,6 +33,7 @@
 		BA376F2A23375B4C00B66991 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA376F2923375B4C00B66991 /* MapViewController.swift */; };
 		BA376F2C233765FF00B66991 /* PostFeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA376F2B233765FF00B66991 /* PostFeedManager.swift */; };
 		BA376F2E23376BB300B66991 /* PostFeedModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA376F2D23376BB300B66991 /* PostFeedModalViewController.swift */; };
+		BAC2CA88233FF9A20051C6D8 /* MainPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC2CA87233FF9A20051C6D8 /* MainPageViewController.swift */; };
 		E067E56721D6A52600D3095D /* PopularViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E067E56621D6A52600D3095D /* PopularViewController.swift */; };
 		E0D91F3621D803F0007E6916 /* PopularCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D91F3521D803F0007E6916 /* PopularCollectionViewCell.swift */; };
 		E0D91F3821D8A1C9007E6916 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D91F3721D8A1C9007E6916 /* Location.swift */; };
@@ -67,6 +68,7 @@
 		BA376F2923375B4C00B66991 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		BA376F2B233765FF00B66991 /* PostFeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostFeedManager.swift; sourceTree = "<group>"; };
 		BA376F2D23376BB300B66991 /* PostFeedModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostFeedModalViewController.swift; sourceTree = "<group>"; };
+		BAC2CA87233FF9A20051C6D8 /* MainPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageViewController.swift; sourceTree = "<group>"; };
 		E067E56621D6A52600D3095D /* PopularViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularViewController.swift; sourceTree = "<group>"; };
 		E0D91F3521D803F0007E6916 /* PopularCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularCollectionViewCell.swift; sourceTree = "<group>"; };
 		E0D91F3721D8A1C9007E6916 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 				BA376F27233752B200B66991 /* MenuViewController.swift */,
 				BA376F2923375B4C00B66991 /* MapViewController.swift */,
 				BA376F2D23376BB300B66991 /* PostFeedModalViewController.swift */,
+				BAC2CA87233FF9A20051C6D8 /* MainPageViewController.swift */,
 			);
 			name = controllers;
 			sourceTree = "<group>";
@@ -271,6 +274,7 @@
 				BA376F28233752B200B66991 /* MenuViewController.swift in Sources */,
 				13AE7A572165FBE7003C898A /* Post.swift in Sources */,
 				E0D91F3821D8A1C9007E6916 /* Location.swift in Sources */,
+				BAC2CA88233FF9A20051C6D8 /* MainPageViewController.swift in Sources */,
 				13B74A70216AA4F100A64216 /* PostView.swift in Sources */,
 				13AE7A5D216606D0003C898A /* StatusOr.swift in Sources */,
 				E067E56721D6A52600D3095D /* PopularViewController.swift in Sources */,

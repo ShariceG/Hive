@@ -1,5 +1,6 @@
 package hiveSimulator;
 
+import java.util.Arrays;
 import java.util.Random;
 import hive.Location;
 
@@ -51,7 +52,9 @@ public class SimulatedUser {
 	public void writePost() {
 		client.insertPost(username, randomPost(), location, new Callback() {
 			public void serverRequestCallback(StatusOr<Response> responseOr) {
-				// ignore response, assume it worked.
+				if (reportError(responseOr)) {
+					return;
+				}
 			}
 		});
 	}
@@ -59,6 +62,9 @@ public class SimulatedUser {
 	public void writeComment() {
 		client.getAllPostsAtLocation(location, queryParams, new Callback() {
 			public void serverRequestCallback(StatusOr<Response> responseOr) {
+				if (reportError(responseOr)) {
+					return;
+				}
 				
 				if (responseOr.get().getPosts().size() == 0) {
 					writePost();
@@ -68,8 +74,10 @@ public class SimulatedUser {
 				int randomIndex = new Random().nextInt(responseOr.get().getPosts().size());
 				String postId = responseOr.get().getPosts().get(randomIndex).getPostId();
 				client.insertComment(username, randomComment(), postId, new Callback() {
-					public void serverRequestCallback(StatusOr<Response> response) {
-						// ignore response, assume it worked.
+					public void serverRequestCallback(StatusOr<Response> responseOr) {
+						if (reportError(responseOr)) {
+							return;
+						}
 					}
 				});
 				
@@ -80,6 +88,9 @@ public class SimulatedUser {
 	public void performActionOnAPost() {
 		client.getAllPostsAtLocation(location, queryParams, new Callback() {
 			public void serverRequestCallback(StatusOr<Response> responseOr) {
+				if (reportError(responseOr)) {
+					return;
+				}
 				
 				if (responseOr.get().getPosts().size() == 0) {
 					writePost();
@@ -91,7 +102,9 @@ public class SimulatedUser {
 				ActionType type = new Random().nextInt(1000) < 500 ? ActionType.LIKE : ActionType.DISLIKE;
 				client.updatePost(username, postId, type, new Callback() {
 					public void serverRequestCallback(StatusOr<Response> responseOr) {
-						// ignore response, assume it worked.
+						if (reportError(responseOr)) {
+							return;
+						}
 					}
 				});
 				
@@ -109,6 +122,23 @@ public class SimulatedUser {
 	
 	private String randomComment() {
 		return "A random comment: " + new Random().nextFloat();
+	}
+	
+	private boolean reportError(StatusOr<Response> responseOr) {
+		String stackTrace = "";
+		boolean error = false;
+		if (responseOr.hasError()) {
+			stackTrace += responseOr.getErrorMessage() + "\n";
+			error = true;
+		} else if (responseOr.get().serverReturnedWithError()) {
+			stackTrace += responseOr.get().getServerStatusCode() + "\n";
+			error = true;
+		}
+		if (error) {
+			stackTrace += Arrays.toString(Thread.currentThread().getStackTrace());
+			System.out.println(stackTrace);
+		}
+		return error;
 	}
 	
 }

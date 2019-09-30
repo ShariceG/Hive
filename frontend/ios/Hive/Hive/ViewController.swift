@@ -11,8 +11,6 @@ import UIKit
 class ViewController: UIViewController {
     
     let COMMENTS_SEGUE_IDENTIFIER = "seeCommentsSegue"
-    let POPULAR_PAGE_SEGUE_IDENTIFIER = "seePopularSegue"
-    let MENU_VIEW_SEGUE_IDENTIFIER = "seeMenuViewSegue"
     
     @IBOutlet weak var postFeedTable: UITableView!
     @IBOutlet weak var postTv: UITextView!
@@ -27,34 +25,9 @@ class ViewController: UIViewController {
         self.hideKeyboardWhenTapped()
         setupPostTv()
         setupPostBn()
-        setupSwipeGestures()
         setupPostFeedView()
     }
-    
-    private func setupSwipeGestures() {
-        let swipeLeft = UISwipeGestureRecognizer(
-            target: self, action: #selector(swipeGestureAction))
-        swipeLeft.direction = .left
-        
-        let swipeRight = UISwipeGestureRecognizer(
-            target: self, action: #selector(swipeGestureAction))
-        swipeRight.direction = .right
-        
-        self.view?.addGestureRecognizer(swipeLeft)
-        self.view?.addGestureRecognizer(swipeRight)
-    }
-    
-    @objc func swipeGestureAction(recognizer: UISwipeGestureRecognizer) {
-        switch recognizer.direction {
-        case UISwipeGestureRecognizer.Direction.right:
-                self.performSegue(withIdentifier: MENU_VIEW_SEGUE_IDENTIFIER, sender: self)
-        case UISwipeGestureRecognizer.Direction.left:
-                self.performSegue(withIdentifier: POPULAR_PAGE_SEGUE_IDENTIFIER, sender: self)
-        default:
-            break
-        }
-    }
-    
+
     private func setupPostBn() {
         postBn.layer.cornerRadius = 10
         postBn.layer.borderWidth = 1
@@ -161,14 +134,6 @@ class ViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == MENU_VIEW_SEGUE_IDENTIFIER) {
-            // Do something here, maybe
-            return
-        }
-        if (segue.identifier == POPULAR_PAGE_SEGUE_IDENTIFIER) {
-            // Do something here, maybe...
-            return
-        }
         if (segue.identifier == COMMENTS_SEGUE_IDENTIFIER) {
             let postView: PostView = sender as! PostView
             let commentsViewController: CommentsViewController = segue.destination as! CommentsViewController

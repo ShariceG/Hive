@@ -25,7 +25,18 @@ class PopularViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        initialize()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+//        self.view.isUserInteractionEnabled = false
+        initialize()
+    }
+    
+    private func initialize() {
         self.hideKeyboardWhenTapped()
+        popularCollectionView.showsHorizontalScrollIndicator = false
         setupPopularCollectionView()
         setupSwipeGestures()
         postFeedManager.configure(tableView: postFeedTable, delegate: self)

@@ -4,10 +4,18 @@ class User(messages.Message):
     username = messages.StringField(1, required=False)
     phone_number = messages.StringField(2, required=False)
 
+class Area(messages.Message):
+    # Lat/Lon truncated to the precision of city, state, country.
+    longitude = messages.StringField(1, required=False)
+    latitude = messages.StringField(2, required=False)
+    city = messages.StringField(3, required=False)
+    state = messages.StringField(4, required=False)
+    country = messages.StringField(5, required=False)
+
 class Location(messages.Message):
     longitude = messages.StringField(1, required=False)
     latitude = messages.StringField(2, required=False)
-    area = messages.StringField(3, required=False)
+    area = messages.MessageField(Area, 3)
 
 class Post(messages.Message):
     post_id = messages.StringField(1, required=False)

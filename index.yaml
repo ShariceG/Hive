@@ -47,10 +47,15 @@ indexes:
 
 - kind: "PostModel"
   properties:
-  - name: "Location.AreaLatitude"
-  - name: "Location.AreaLongitude"
+  - name: "Location.Area.Latitude"
+  - name: "Location.Area.Longitude"
   - name: "CreationTimestampSec"
     direction: desc
+- kind: "PostModel"
+  properties:
+  - name: "Location.Area.Latitude"
+  - name: "Location.Area.Longitude"
+  - name: "CreationTimestampSec"
 - kind: "PostModel"
   properties:
   - name: "Location.AreaLatitude"
@@ -61,6 +66,12 @@ indexes:
   - name: "Location.Area"
   - name: "Location.AreaLatitude"
   - name: "Location.AreaLongitude"
+- kind: "PostModel"
+  properties:
+  - name: "Location.AreaLatitude"
+  - name: "Location.AreaLongitude"
+  - name: "CreationTimestampSec"
+    direction: desc
 - kind: "LocationModel"
   properties:
   - name: "PopularityIndex"
@@ -68,21 +79,21 @@ indexes:
   - name: "Location.Area"
   - name: "Location.AreaLatitude"
   - name: "Location.AreaLongitude"
-- kind: "PostModel"
-  properties:
-  - name: "Location.AreaLatitude"
-  - name: "Location.AreaLongitude"
-  - name: "PopularityIndex"
-    direction: desc
-- kind: "PostModel"
-  properties:
-  - name: "Location.AreaLatitude"
-  - name: "Location.AreaLongitude"
-  - name: "PopularityIndex"
 - kind: "ActionModel"
   properties:
   - name: "PostID"
   - name: "CreationTimestampSec"
+- kind: "PostModel"
+  properties:
+  - name: "Location.AreaLatitude"
+  - name: "Location.AreaLongitude"
+  - name: "PopularityIndex"
+    direction: desc
+- kind: "PostModel"
+  properties:
+  - name: "Location.AreaLatitude"
+  - name: "Location.AreaLongitude"
+  - name: "PopularityIndex"
 - kind: "CommentModel"
   properties:
   - name: "PostID"

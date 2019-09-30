@@ -94,7 +94,7 @@ public class ServerClientImp implements ServerClient {
 		JSONObject request = new JSONObject();
 		request.put("location", location.toJSON());
 		request.put("query_params", params.toJson());
-		
+
 		String path = constructIncompleteUrlPath() + GET_ALL_POSTS_AT_LOCATION_PATH;
 		executeHttpRequestAsync("GET", path, request, callback);
 	}
@@ -125,7 +125,7 @@ public class ServerClientImp implements ServerClient {
 		request.put("username", username);
 		request.put("post_id", postId);
 		request.put("action_type", actionType.name() + "");
-		
+
 		String path = constructIncompleteUrlPath() + UPDATE_POST_PATH;
 		executeHttpRequestAsync("POST", path, request, callback);
 	}
@@ -147,7 +147,7 @@ public class ServerClientImp implements ServerClient {
 		request.put("username", username);
 		request.put("comment_text", commentText);
 		request.put("post_id", postId);
-
+		
 		String path = constructIncompleteUrlPath() + INSERT_COMMENT_PATH;
 		executeHttpRequestAsync("POST", path, request, callback);
 	}
@@ -239,15 +239,19 @@ public class ServerClientImp implements ServerClient {
 	    JSONObject jsonResponse = jsonStringToObject(response.toString());
 		return new StatusOr<Response>(new Response(jsonResponse));
 	  } catch (FileNotFoundException fnfe) {
-			return new StatusOr<Response>(StatusError.SERVER_NOT_FOUND, 
+		  fnfe.printStackTrace();
+		  return new StatusOr<Response>(StatusError.SERVER_NOT_FOUND, 
 					  fnfe.getMessage()); 
 	  } catch (SocketTimeoutException timeoutExcep) {
+		  timeoutExcep.printStackTrace();
 		  return new StatusOr<Response>(StatusError.CONNECTION_TIMEOUT_ERROR, 
 				  timeoutExcep.getMessage()); 
 	  } catch (IOException e) {
+		  e.printStackTrace();
 		  return new StatusOr<Response>(StatusError.GENERIC_CONNECTION_ERROR, 
 				  e.getMessage());
 	  } catch (Exception exc) {
+		  exc.printStackTrace();
 		  return new StatusOr<Response>(StatusError.GENERIC_SERVER_ERROR, 
 					 exc.getMessage());
 	  } finally {
@@ -257,7 +261,7 @@ public class ServerClientImp implements ServerClient {
 	  }
 	}
 	
-	private StatusOr<Response> executeGet(String targetURL, JSONObject jsonParams) {	
+	private StatusOr<Response> executeGet(String targetURL, JSONObject jsonParams) {
 		targetURL += jsonObjectToUrlParameter(jsonParams);
 		HttpURLConnection connection = null;
 		BufferedReader in = null;
@@ -268,10 +272,8 @@ public class ServerClientImp implements ServerClient {
 			connection.setRequestProperty("Content-Type", "application/json");
 			connection.setRequestMethod("GET");
 			connection.setDoOutput(true);
-			
 			connection.setConnectTimeout(CONNECTION_TIMEOUT_MS);
 		    connection.setReadTimeout(READ_TIMEOUT_MS);
-
 			in = new BufferedReader(
 			        new InputStreamReader(connection.getInputStream()));
 			
@@ -297,7 +299,7 @@ public class ServerClientImp implements ServerClient {
 					  e.getMessage());
 		} catch (Exception exc) {
 			exc.printStackTrace();
-			 return new StatusOr<Response>(StatusError.GENERIC_SERVER_ERROR, 
+			return new StatusOr<Response>(StatusError.GENERIC_SERVER_ERROR, 
 					 exc.getMessage());
 		} finally {
 		    if (connection != null) {

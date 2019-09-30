@@ -1,5 +1,7 @@
 import json
 import urllib
+
+from backend_store.main_proto import entity_proto
 from google.appengine.api import urlfetch
 
 _RAPID_HOST = 'geocodeapi.p.rapidapi.com'
@@ -22,4 +24,16 @@ def geo_to_area(lat, lon):
     locations = json.loads(result.content)
     locations = sorted(locations, key=lambda k: k['Distance'])
 
-    return locations[0]['City'] if len(locations) > 0 else "%s:%s" % (lat, lon)
+    area = entity_proto.Area(
+        latitude=lat,
+        longitude=lon,
+        city='',
+        state='',
+        country=''
+    )
+
+    if len(locations) > 0:
+        area.city = locations[0]['City']
+        area.country = locations[0]['Country']
+
+    return area

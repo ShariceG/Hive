@@ -51,8 +51,9 @@ public final class Comment {
 	}
 	
 	public static Comment jsonToComment(JSONObject jsonComment) {
-		double timestamp = Double.parseDouble((String)jsonComment.get("creation_timestamp_sec"));
-		System.out.println(timestamp);
+		// Converting to string using toString first then to double just in case for some
+		// reason the timestamp doesn't come to us as a double already.
+		double timestamp = Double.parseDouble(jsonComment.get("creation_timestamp_sec").toString());
 		return new Comment((String)jsonComment.get("comment_id"), (String)jsonComment.get("username"), 
 				(String)jsonComment.get("post_id"), (String)jsonComment.get("comment_text"), 
 				timestamp, jsonComment);

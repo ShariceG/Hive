@@ -5,14 +5,20 @@ class UserModel(ndb.Model):
     PhoneNumber = ndb.StringProperty(required=False)
     CreationTimestampSec = ndb.FloatProperty(required=False)
 
-class Location(ndb.Model):
+class Area(ndb.Model):
+    # Lat/Lon truncated to the precision of city, state, country.
     Latitude = ndb.StringProperty(required=False)
     Longitude = ndb.StringProperty(required=False)
-    # Truncated lat and long
-    AreaLatitude = ndb.StringProperty(required=False)
-    AreaLongitude = ndb.StringProperty(required=False)
-    # Area, based on reverse geo coordinates
-    Area = ndb.StringProperty(required=False)
+    City = ndb.StringProperty(required=False)
+    State = ndb.StringProperty(required=False)
+    Country = ndb.StringProperty(required=False)
+
+class Location(ndb.Model):
+    # Full precision latitude and longitude
+    Latitude = ndb.StringProperty(required=False)
+    Longitude = ndb.StringProperty(required=False)
+    Area = ndb.StructuredProperty(Area, required=False)
+
 
 class PostModel(ndb.Model):
     PostText = ndb.StringProperty(required=False)

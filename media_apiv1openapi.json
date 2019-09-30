@@ -30,6 +30,26 @@
       },
       "type": "object"
     },
+    "BackendStoreMainProtoEntityProtoArea": {
+      "properties": {
+        "city": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "string"
+        },
+        "longitude": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
     "BackendStoreMainProtoEntityProtoComment": {
       "properties": {
         "comment_id": {
@@ -54,15 +74,13 @@
     "BackendStoreMainProtoEntityProtoLocation": {
       "properties": {
         "area": {
-          "type": "string"
+          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoArea"
         },
         "latitude": {
-          "format": "double",
-          "type": "number"
+          "type": "string"
         },
         "longitude": {
-          "format": "double",
-          "type": "number"
+          "type": "string"
         }
       },
       "type": "object"
@@ -114,17 +132,6 @@
       },
       "type": "object"
     },
-    "BackendStoreMainProtoEntityProtoUser": {
-      "properties": {
-        "phone_number": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
     "BackendStoreMainProtoServerProtoCalculateAllPopularityIndexRequest": {
       "properties": {},
       "type": "object"
@@ -139,8 +146,11 @@
     },
     "BackendStoreMainProtoServerProtoCreateUserRequest": {
       "properties": {
-        "user": {
-          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoUser"
+        "phone_number": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
         }
       },
       "type": "object"
@@ -187,7 +197,21 @@
       },
       "type": "object"
     },
-    "BackendStoreMainProtoServerProtoGetAllPostsAroundUserResponse": {
+    "BackendStoreMainProtoServerProtoGetAllPostLocationsResponse": {
+      "properties": {
+        "locations": {
+          "items": {
+            "$ref": "#/definitions/BackendStoreMainProtoEntityProtoLocation"
+          },
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoGetAllPostsAtLocationResponse": {
       "properties": {
         "posts": {
           "items": {
@@ -240,7 +264,7 @@
     },
     "BackendStoreMainProtoServerProtoGetPopularLocationsResponse": {
       "properties": {
-        "location": {
+        "locations": {
           "items": {
             "$ref": "#/definitions/BackendStoreMainProtoEntityProtoLocation"
           },
@@ -285,7 +309,7 @@
         "location": {
           "$ref": "#/definitions/BackendStoreMainProtoEntityProtoLocation"
         },
-        "text": {
+        "post_text": {
           "type": "string"
         },
         "username": {
@@ -320,10 +344,10 @@
           "type": "string"
         },
         "post_id": {
-          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoPost"
+          "type": "string"
         },
-        "user": {
-          "$ref": "#/definitions/BackendStoreMainProtoEntityProtoUser"
+        "username": {
+          "type": "string"
         }
       },
       "type": "object"
@@ -413,20 +437,6 @@
     "/media_api/v1/app.get_all_popular_posts_at_location": {
       "get": {
         "operationId": "LocationBasedSocialMediaAPI_getAllPopularPostsAtLocation",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/BackendStoreMainProtoServerProtoGetAllPopularPostsAtLocationResponse"
-            }
-          }
-        }
-      }
-    },
-    "/media_api/v1/app.get_all_posts_around_user": {
-      "get": {
-        "operationId": "LocationBasedSocialMediaAPI_getAllPostsAroundUser",
         "parameters": [
           {
             "in": "query",
@@ -438,7 +448,35 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/BackendStoreMainProtoServerProtoGetAllPostsAroundUserResponse"
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoGetAllPopularPostsAtLocationResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.get_all_post_locations": {
+      "get": {
+        "operationId": "LocationBasedSocialMediaAPI_getAllPostLocations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoGetAllPostLocationsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.get_all_posts_at_location": {
+      "get": {
+        "operationId": "LocationBasedSocialMediaAPI_getAllPostsAtLocation",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoGetAllPostsAtLocationResponse"
             }
           }
         }

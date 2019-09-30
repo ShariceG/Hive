@@ -52,20 +52,17 @@ class ServiceHandler(object):
             return InsertPostResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
         # TODO: validate post
-        print location.latitude
         ok, location = self._validate_and_get_location_with_precision(location)
         if not ok:
             return InsertPostResponse(
                 status=Status(status_code=StatusCode.INVALID_LOCATION))
-
         # Truncate user location before putting in database.
         lat = location.latitude
         lon = location.longitude
         area_lat, area_long = self._get_area_latitude_longitude(lat, lon)
 
         # Get reverse geo area
-        area = geo_helper.geo_to_area(area_lat, area_long)
-        location.area = area
+        location.area = geo_helper.geo_to_area(area_lat, area_long)
 
         post_id = uuid.uuid4().hex
         timestamp = time.time()
@@ -77,10 +74,14 @@ class ServiceHandler(object):
             Location=model.Location(
                 Longitude=lon,
                 Latitude=lat,
-                AreaLatitude=area_lat,
-                AreaLongitude=area_long,
-                Area=area
-                ),
+                Area=model.Area(
+                    Latitude=area_lat,
+                    Longitude=area_long,
+                    City=location.area.city,
+                    State=location.area.state,
+                    Country=location.area.country
+                )
+            ),
             CreationTimestampSec=timestamp
         ).put()
 
@@ -90,10 +91,12 @@ class ServiceHandler(object):
         post.location = location
         post.post_id = post_id
         post.creation_timestamp_sec = timestamp
+
         return InsertPostResponse(
             status=Status(status_code=StatusCode.OK), posts=[post])
 
     def handle_update_post(self, request):
+        print request
         post_model = ndb.Key('PostModel', request.post_id).get()
         if post_model is None:
             return UpdatePostResponse(
@@ -161,17 +164,11 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK), comments=[comment])
 
     def handle_get_all_post_locations(self, request):
-        query = ndb.gql(('SELECT Location.AreaLatitude, '
-                'Location.AreaLongitude, Location.Area '
-                 'FROM LocationModel'))
+        query = ndb.gql(('SELECT * FROM LocationModel'))
         locations = []
         helper = service_helper.ServiceHelper
         for result in query.fetch():
-            locations.append(entity_proto.Location(
-                latitude=result.Location.AreaLatitude,
-                longitude=result.Location.AreaLongitude,
-                area=result.Location.Area
-            ))
+            locations.append(helper.location_model_to_proto(result))
         return GetAllPostLocationsResponse(locations=locations,
             status=Status(status_code=StatusCode.OK))
 
@@ -253,8 +250,8 @@ class ServiceHandler(object):
         area_lat, area_long = self._get_area_latitude_longitude(lat, lon)
 
         query = model.PostModel.query().filter(
-            model.PostModel.Location.AreaLatitude == area_lat).filter(
-            model.PostModel.Location.AreaLongitude == area_long)
+            model.PostModel.Location.Area.Latitude == area_lat).filter(
+            model.PostModel.Location.Area.Longitude == area_long)
         results, metadata = self._run_query_with_cursor(query=query,
             params=query_params, fetch_limit=POST_QUERY_LIMIT,
             order_property=model.PostModel.CreationTimestampSec)
@@ -286,8 +283,8 @@ class ServiceHandler(object):
         area_lat, area_long = self._get_area_latitude_longitude(lat, lon)
 
         query = ndb.gql(('SELECT * '
-                 'FROM PostModel WHERE Location.AreaLatitude = :1 AND '
-                 'Location.AreaLongitude = :2 AND PopularityIndex > 0 '),
+                 'FROM PostModel WHERE Location.Area.Latitude = :1 AND '
+                 'Location.Area.Longitude = :2 AND PopularityIndex > 0 '),
                  area_lat, area_long)
         results, metadata = self._run_query_with_cursor(query=query,
             params=request.query_params, fetch_limit=POST_QUERY_LIMIT,
@@ -305,17 +302,12 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK))
 
     def handle_get_popular_locations(self, request):
-        query = ndb.gql(('SELECT Location.AreaLatitude, '
-                'Location.AreaLongitude, Location.Area '
-                 'FROM LocationModel ORDER BY PopularityIndex DESC'))
+        query = ndb.gql(('SELECT * FROM LocationModel '
+                         'ORDER BY PopularityIndex DESC'))
         locations = []
         helper = service_helper.ServiceHelper
         for result in query.fetch(POPULAR_POST_QUERY_LIMIT):
-            locations.append(entity_proto.Location(
-                latitude=result.Location.AreaLatitude,
-                longitude=result.Location.AreaLongitude,
-                area=result.Location.Area
-            ))
+            locations.append(helper.location_model_to_proto(result))
         return GetPopularLocationsResponse(locations=locations,
             status=Status(status_code=StatusCode.OK))
 
@@ -477,8 +469,6 @@ class ServiceHandler(object):
         location.latitude = lat
         location.longitude = lon
         return location
-
-    #BLAH 9105f3d0ee7048d99414b3682211c361
 
     def _validate_and_get_location_with_precision(self, location):
         if not self._validate_location(location):

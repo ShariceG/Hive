@@ -12,6 +12,7 @@ import UIKit
 class PostFeedModalViewController: UIViewController {
     
     let COMMENTS_SEGUE_IDENTIFIER = "seeCommentsSegue"
+    @IBOutlet weak var areaLabel: UILabel!
     
     @IBOutlet weak var postFeedTableView: UITableView!
     private var postFeedManager: PostFeedManager = PostFeedManager()
@@ -21,6 +22,7 @@ class PostFeedModalViewController: UIViewController {
     override func viewDidLoad() {
         setupSwipeGestures()
         postFeedManager.configure(tableView: postFeedTableView, delegate: self)
+        self.areaLabel.text = location!.area
     }
     
     func controllerInit(location: Location) {
