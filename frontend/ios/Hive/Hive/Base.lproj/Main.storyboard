@@ -234,7 +234,7 @@
                     <navigationItem key="navigationItem" id="9fW-Ri-67K"/>
                     <connections>
                         <outlet property="mapButton" destination="0RS-zN-6pG" id="Bu8-aV-RZ4"/>
-                        <segue destination="9bE-mo-tTZ" kind="show" identifier="seeMapViewSegue" id="Gj1-zU-Wd0"/>
+                        <segue destination="9bE-mo-tTZ" kind="presentation" identifier="seeMapViewSegue" modalPresentationStyle="fullScreen" modalTransitionStyle="flipHorizontal" id="Gj1-zU-Wd0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ecx-fL-C9x" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -250,11 +250,11 @@
                         <viewControllerLayoutGuide type="bottom" id="BvO-86-V8f"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="SBk-Ok-gBN">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="758"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" rotateEnabled="NO" pitchEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m3s-sb-f19">
-                                <rect key="frame" x="0.0" y="20" width="398" height="810"/>
+                                <rect key="frame" x="0.0" y="0.0" width="398" height="830"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </mapView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ery-8j-lCZ">
@@ -277,7 +277,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="czD-ch-XVH" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2050" y="1174"/>
+            <point key="canvasLocation" x="-2050.4000000000001" y="1173.3990147783252"/>
         </scene>
         <!--Post Feed Modal View Controller-->
         <scene sceneID="b3v-Nr-iUT">

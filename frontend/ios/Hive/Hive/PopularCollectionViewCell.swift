@@ -27,7 +27,7 @@ class PopularCollectionViewCell: UICollectionViewCell {
     public func configure(location: Location, viewPosition: Int) {
         self.location = location
         self.viewPosition = viewPosition
-        self.popularButton.setTitle(location.area, for: .normal)
+        self.popularButton.setTitle(location.area.toString(), for: .normal)
     }
     
 }

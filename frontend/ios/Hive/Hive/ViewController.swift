@@ -89,24 +89,21 @@ class ViewController: UIViewController {
         }
     }
     
-//    private func getAllPostsByUserCompletion(response: StatusOr<Response>) {
-//        if (response.hasError()) {
-//            // Handle likley connection error
-//            print("Connection Failure: " + response.getErrorMessage())
-//            return
-//        }
-//        if (response.get().serverStatusCode != ServerStatusCode.OK) {
-//            // Handle server error
-//            print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
-//            return
-//        }
-//        allPostsByUser.append(contentsOf: response.get().posts)
-//        print("Got posts..." + String(allPostsByUser.count))
-//        
-//        DispatchQueue.main.async {
-//            self.postTableView.reloadData()
-//        }
-//    }
+    private func updatePostCompletion(responseOr: StatusOr<Response>) {
+        let baseStr: String = "updatePostCompletion => "
+        if (responseOr.hasError()) {
+            // Handle likley connection error
+            print(baseStr + "Connection Failure: " + responseOr.getErrorMessage())
+            return
+        }
+        let response = responseOr.get()
+        if (!response.ok()) {
+            // Handle server error
+            print(baseStr + "ServerStatusCode: " + String(describing: response.serverStatusCode))
+            return
+        }
+        
+    }
     
     private func fetchPostsAroundUserCompletion(responseOr: StatusOr<Response>) {
         let baseStr: String = "fetchPostsAroundUserCompletion => "
@@ -156,6 +153,8 @@ extension ViewController: PostFeedDelegate {
     }
     
     func likePost(post: Post) {
+        client.updatePost(postId: post.postId, username: getTestUser(), actionType: "LIKE", completion: <#T##(StatusOr<Response>) -> ()#>)
+        print("LIKE")
     }
     
     func dislikePost(post: Post) {

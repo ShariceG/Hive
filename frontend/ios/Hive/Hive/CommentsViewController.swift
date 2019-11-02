@@ -138,7 +138,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: PostView = tableView.dequeueReusableCell(withIdentifier: POST_VIEW_CELL_REUSE_IDENTIFIER) as! PostView
-        cell.configure(post: self.post!, delegate: self)
+        cell.configureDisableButtons(post: self.post!)
         cell.layer.borderWidth = 2
         cell.layer.cornerRadius = 5
         cell.layer.borderColor = UIColor.blue.cgColor

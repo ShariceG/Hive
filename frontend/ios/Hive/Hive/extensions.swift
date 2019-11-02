@@ -48,10 +48,7 @@ extension Date {
     }
 }
 
-extension UIViewController: PostViewDelegate {
-    func commentButtonClick(postView: PostView) {
-        self.performSegue(withIdentifier: "seeCommentsSegue", sender: postView)
-    }
+extension UIViewController{
     
     func hideKeyboardWhenTapped() {
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
@@ -69,7 +66,9 @@ extension UIViewController: PostViewDelegate {
         let location = Location()
         location.latStr = "47.608013"
         location.lonStr = "-122.335167"
-        location.area = "Seattle,WA"
+        location.area = Location.Area()
+        location.area.city = "Seattle"
+        location.area.country = "United States"
         return location
     }
     

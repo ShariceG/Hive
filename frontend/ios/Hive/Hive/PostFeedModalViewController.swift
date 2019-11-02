@@ -22,7 +22,8 @@ class PostFeedModalViewController: UIViewController {
     override func viewDidLoad() {
         setupSwipeGestures()
         postFeedManager.configure(tableView: postFeedTableView, delegate: self)
-        self.areaLabel.text = location!.area
+        self.areaLabel.text =
+            location!.area.city + ", " + location!.area.country
     }
     
     func controllerInit(location: Location) {

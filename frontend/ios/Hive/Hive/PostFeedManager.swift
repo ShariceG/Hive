@@ -107,6 +107,14 @@ class PostFeedManager: NSObject, PostViewDelegate {
     func commentButtonClick(postView: PostView) {
         delegate?.showComments(postView: postView);
     }
+    func likeButtonClick(postView: PostView) {
+        delegate?.likePost(post: postView.post)
+    }
+    
+    func dislikeButtonClick(postView: PostView) {
+        delegate?.dislikePost(post: postView.post)
+    }
+    
 }
 
 extension PostFeedManager: UITableViewDelegate {

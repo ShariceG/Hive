@@ -28,7 +28,7 @@ POPULAR_POST_QUERY_LIMIT = 10
 LOCATION_QUERY_DECIMAL_PLACES = 2
 
 # How many seconds ago to consider a post for popularity
-POPULAR_TIME_THRESHOLD_SEC = 60 * 60
+POPULAR_TIME_THRESHOLD_SEC = 3 * 24 * 60 * 60
 
 class ServiceHandler(object):
 
@@ -96,7 +96,6 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK), posts=[post])
 
     def handle_update_post(self, request):
-        print request
         post_model = ndb.Key('PostModel', request.post_id).get()
         if post_model is None:
             return UpdatePostResponse(
@@ -168,7 +167,7 @@ class ServiceHandler(object):
         locations = []
         helper = service_helper.ServiceHelper
         for result in query.fetch():
-            locations.append(helper.location_model_to_proto(result))
+            locations.append(helper.location_model_to_proto(result.Location))
         return GetAllPostLocationsResponse(locations=locations,
             status=Status(status_code=StatusCode.OK))
 
@@ -307,7 +306,7 @@ class ServiceHandler(object):
         locations = []
         helper = service_helper.ServiceHelper
         for result in query.fetch(POPULAR_POST_QUERY_LIMIT):
-            locations.append(helper.location_model_to_proto(result))
+            locations.append(helper.location_model_to_proto(result.Location))
         return GetPopularLocationsResponse(locations=locations,
             status=Status(status_code=StatusCode.OK))
 
@@ -476,7 +475,7 @@ class ServiceHandler(object):
         return True, self._get_location_with_equal_precision(location)
 
     def _get_location_key(self, location):
-        return location.Area
+        return location.Area.Latitude + ':' + location.Area.Longitude
 
     def _post_exists(self, post_id):
         return not ndb.Key('PostModel', post_id).get() is None

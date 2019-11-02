@@ -48,7 +48,7 @@ class Post: Hashable, Equatable {
         + "\nPostID: " + postId
         + "\nPostText: " + postText
         
-        let str2: String = "\nLocation: " + location.area
+        let str2: String = "\nLocation: " + location.area.toString()
             + "\nLikes: " + String(likes)
         
         return str1 + str2 + "\nDislikes: " + String(dislikes) + "\n"

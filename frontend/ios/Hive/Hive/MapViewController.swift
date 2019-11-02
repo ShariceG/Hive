@@ -30,7 +30,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         let annotation = CustomMKPointAnnotation()
         annotation.location = location
         annotation.coordinate = location.location.coordinate
-        annotation.title = location.area
+        annotation.title = location.area.city
         mapView.addAnnotation(annotation)
     }
     
