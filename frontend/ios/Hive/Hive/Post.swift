@@ -14,14 +14,14 @@ class Post: Hashable, Equatable {
     private(set) var postId: String
     private(set) var postText: String
     private(set) var location: Location
-    private(set) var likes: Int
-    private(set) var dislikes: Int
     private(set) var creationTimestampSec: Decimal
+    private(set) var jsonPost: [String: Any]?
     // Type of action requesting user did on this post.
     // Can be mutated. Let's keep the amount of mutable things
     // small.
     public var userActionType: ActionType
-    private(set) var jsonPost: [String: Any]?
+    public var likes: Int
+    public var dislikes: Int
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(postId)

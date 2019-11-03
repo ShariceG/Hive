@@ -94,12 +94,60 @@ class PostFeedManager: NSObject, PostViewDelegate {
     
     func reconfigureWithAction(postId: String, actionType: ActionType) {
         let thePost = posts.filter {$0.postId == postId}
-        // filter will return a list but it should be one item long, unless
-        // the post doesn't exist anymore.
-        if thePost.count > 0 {
-            posts[0].userActionType = actionType
-            reload()
+        if (thePost.count == 0) {
+            return;
         }
+        // filter will return a list but it should be one item long, unless
+        // the post doesn't exist anymore or some weird duplicate error, which
+        // shouldn't happen since we remove duplicates.
+
+        // Now change the # of likes and dislikes by 1 depending on the old and
+        // new action type.
+        let newActionType = actionType
+        let oldActionType = posts[0].userActionType
+        if oldActionType == ActionType.LIKE {
+            switch newActionType {
+            case ActionType.LIKE:
+                posts[0].likes -= 1;
+                break;
+            case ActionType.DISLIKE:
+                posts[0].likes -= 1;
+                posts[0].dislikes += 1;
+                break;
+            case ActionType.NO_ACTION:
+                posts[0].likes -= 1;
+                break;
+            }
+        }
+        if oldActionType == ActionType.DISLIKE {
+            switch newActionType {
+            case ActionType.LIKE:
+                posts[0].dislikes -= 1;
+                posts[0].likes += 1;
+                break;
+            case ActionType.DISLIKE:
+                posts[0].dislikes -= 1;
+                break;
+            case ActionType.NO_ACTION:
+                posts[0].dislikes -= 1;
+                break;
+            }
+        }
+        if oldActionType == ActionType.NO_ACTION {
+            switch newActionType {
+            case ActionType.LIKE:
+                posts[0].likes += 1;
+                break;
+            case ActionType.DISLIKE:
+                posts[0].dislikes += 1;
+                break;
+            case ActionType.NO_ACTION:
+                print("WARNING: This shouldn't happen but its not really an error.")
+                break;
+            }
+        }
+        posts[0].userActionType = newActionType
+        reload()
     }
     
     private func fetchMorePosts(getNewer: Bool) {
@@ -130,7 +178,6 @@ extension PostFeedManager: UITableViewDelegate {
     // Asks for cell to display at indexPath
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: POST_VIEW_CELL_REUSE_IDENTIFIER) as! PostView
-        print("Attempting to show: " + indexPath.description)
         cell.configure(post: posts[indexPath.section], delegate: self)
         cell.layer.borderWidth = 2
         cell.layer.cornerRadius = 5

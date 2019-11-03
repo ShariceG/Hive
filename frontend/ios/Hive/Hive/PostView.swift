@@ -44,15 +44,28 @@ class PostView: UITableViewCell {
         self.post = post
         self.delegate = delegate
         
-        // Disable like or dislike buttons, maybe.
-        if post.userActionType != ActionType.NO_ACTION {
-            likeBn.isEnabled = post.userActionType != ActionType.LIKE;
-            dislikeBn.isEnabled = post.userActionType != ActionType.DISLIKE;
+        likeBn.isEnabled = true;
+        dislikeBn.isEnabled = true;
+        // Handle like/dislike behavior.
+        DispatchQueue.main.async {
+            switch post.userActionType {
+            case ActionType.LIKE:
+                self.likeBn.setTitleColor(UIColor.orange, for: UIControl.State.normal)
+                self.dislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
+                break;
+            case ActionType.DISLIKE:
+                self.dislikeBn.setTitleColor(UIColor.orange, for: UIControl.State.normal)
+                self.likeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
+                break;
+            case ActionType.NO_ACTION:
+                self.likeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
+                self.dislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
+                break;
+            }
         }
     }
     
     public func configureDisableButtons(post: Post) {
-        print("No delegate given, will disable post buttons!")
         userLabel.text = post.username
         postTextView.text = post.postText
         dislikeBn.setTitle("Dislike: " + String(post.dislikes), for: UIControl.State.normal)
@@ -65,10 +78,26 @@ class PostView: UITableViewCell {
     }
     
     @IBAction func dislikeBnAction(_ sender: UIButton) {
-        delegate.performAction(postView: self, actionType: ActionType.DISLIKE)
+        sender.isEnabled = false
+        switch post.userActionType {
+        case ActionType.NO_ACTION, ActionType.LIKE:
+            delegate.performAction(postView: self, actionType: ActionType.DISLIKE)
+            break;
+        case ActionType.DISLIKE:
+            delegate.performAction(postView: self, actionType: ActionType.NO_ACTION)
+            break;
+        }
     }
     @IBAction func likeBnAction(_ sender: UIButton) {
-        delegate.performAction(postView: self, actionType: ActionType.LIKE)
+        sender.isEnabled = false
+        switch post.userActionType {
+        case ActionType.NO_ACTION, ActionType.DISLIKE:
+            delegate.performAction(postView: self, actionType: ActionType.LIKE)
+            break;
+        case ActionType.LIKE:
+            delegate.performAction(postView: self, actionType: ActionType.NO_ACTION)
+            break;
+        }
     }
     @IBAction func commentBnAction(_ sender: UIButton) {
         delegate.commentButtonClick(postView: self)
