@@ -2,6 +2,7 @@ package hive;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class ServerClientMain {
@@ -13,17 +14,19 @@ public class ServerClientMain {
 	public static void main(String[] args) {
 		madePosts = new ArrayList<Post>();
 		client.getPopularLocations(new Callback() {
-			public void serverRequestCallback(StatusOr<Response> responseOr) {
+			public void serverRequestCallback(StatusOr<Response> responseOr, 
+					Map<String, Object> notes) {
 				System.out.println(responseOr.toString());
 			}
-		});
+		}, /*notes=*/null);
 		client.getAllPopularPostsAtLocation(makeLocation("33.75","-116.35"), new QueryParams(true, "", ""), new Callback() {
-			public void serverRequestCallback(StatusOr<Response> responseOr) {
+			public void serverRequestCallback(StatusOr<Response> responseOr, 
+					Map<String, Object> notes) {
 				System.out.println("BLAH BLAH BLAH ");
 				Post p = responseOr.get().getPosts().get(0);
 				System.out.println(p.getCreationTimestampSecAsLong() + " " + p.getCreationTimestampSec() + " " + p.isExpired());
 			}
-		});
+		}, /*notes=*/null);
 		createUsers(USER_COUNT);
 		makePosts(1);
 		makeComments(100);
@@ -42,10 +45,11 @@ public class ServerClientMain {
 		for (int i = 0; i < amount; i++) {
 			ActionType type = new Random().nextInt(1000) < 500 ? ActionType.LIKE : ActionType.DISLIKE;
 			client.updatePost(getRandomUsername(), getRandomPostId(), type, new Callback() {
-				public void serverRequestCallback(StatusOr<Response> responseOr) {
+				public void serverRequestCallback(StatusOr<Response> responseOr, 
+						Map<String, Object> notes) {
 					System.out.println(responseOr.toString());
 				}
-			});
+			}, /*notes=*/null);
 		}
 	}
 	
@@ -55,10 +59,11 @@ public class ServerClientMain {
 			String username = getRandomUsername();
 			String comment = "Comment by " + username;
 			client.insertComment(username, comment, getRandomPostId(), new Callback() {
-				public void serverRequestCallback(StatusOr<Response> responseOr) {
+				public void serverRequestCallback(StatusOr<Response> responseOr, 
+						Map<String, Object> notes) {
 					System.out.println(responseOr.toString());
 				}
-			});
+			}, /*notes=*/null);
 		}
 	}
 	
@@ -69,10 +74,11 @@ public class ServerClientMain {
 			String post = "Post by " + username;
 			Location location = getRandomLocation();
 			client.insertPost(username, post, location, new Callback() {
-				public void serverRequestCallback(StatusOr<Response> responseOr) {
+				public void serverRequestCallback(StatusOr<Response> responseOr, 
+						Map<String, Object> notes) {
 					madePosts.add(responseOr.get().getPost().get());
 				}
-			});
+			}, /*notes=*/null);
 		}
 	}
 	
@@ -95,7 +101,8 @@ public class ServerClientMain {
 		System.out.println("Creating " + amount + " users.");
 		for (int i = 0; i < amount; i++) {
 			client.createUser("user"+i, i+""+i+""+i, new Callback() {
-				public void serverRequestCallback(StatusOr<Response> responseOr) {
+				public void serverRequestCallback(StatusOr<Response> responseOr, 
+						Map<String, Object> notes) {
 					if (responseOr.hasError()) {
 						System.err.println(responseOr.getErrorMessage());
 					}
@@ -103,7 +110,7 @@ public class ServerClientMain {
 						System.out.println(responseOr.get().getServerStatusCode().name());
 					}
 				}
-			});
+			}, /*notes=*/null);
 		}
 	}
 	

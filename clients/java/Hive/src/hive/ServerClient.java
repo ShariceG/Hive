@@ -1,5 +1,7 @@
 package hive;
 
+import java.util.Map;
+
 public interface ServerClient {
 	
 	/*
@@ -17,17 +19,26 @@ public interface ServerClient {
 		return new ServerClientImp();
 	}
 
-	void createUser(String username, String phoneNumber, Callback callback);
-	void insertComment(String username, String commentText, String postId, Callback callback);
-	void insertPost(String username, String postText, Location location, Callback callback);
-	void updatePost(String username, String postId, ActionType actionType, Callback callback);
-	void getAllPostsAtLocation(Location location, QueryParams queryParams, Callback callback);
-	void getAllPostsByUser(String username, QueryParams params, Callback callback);
-	void getAllPostsCommentedOnByUser(String username, QueryParams params, Callback callback);
-	void getAllPostComments(String postId, QueryParams params, Callback callback);
-	void getAllPopularPostsAtLocation(Location location, QueryParams params, Callback callback);
-	void getPopularLocations(Callback callback);
-	void getAllPostLocations(Callback callback);
+	void createUser(String username, String phoneNumber, 
+			Callback callback, Map<String, Object> notes);
+	void insertComment(String username, String commentText, String postId, 
+			Callback callback, Map<String, Object> notes);
+	void insertPost(String username, String postText, Location location, 
+			Callback callback, Map<String, Object> notes);
+	void updatePost(String username, String postId, ActionType actionType, 
+			Callback callback, Map<String, Object> notes);
+	void getAllPostsAtLocation(Location location, QueryParams queryParams, 
+			Callback callback, Map<String, Object> notes);
+	void getAllPostsByUser(String username, QueryParams params, 
+			Callback callback, Map<String, Object> notes);
+	void getAllPostsCommentedOnByUser(String username, QueryParams params, 
+			Callback callback, Map<String, Object> notes);
+	void getAllPostComments(String postId, QueryParams params, 
+			Callback callback, Map<String, Object> notes);
+	void getAllPopularPostsAtLocation(Location location, QueryParams params, 
+			Callback callback, Map<String, Object> notes);
+	void getPopularLocations(Callback callback, Map<String, Object> notes);
+	void getAllPostLocations(Callback callback, Map<String, Object> notes);
 	
 	// Please call shutdown when application is finished running to gracefully free the clients resources.
 	void shutdown();

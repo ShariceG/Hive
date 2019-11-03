@@ -1,6 +1,7 @@
 package hiveSimulator;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Random;
 import hive.Location;
 
@@ -31,7 +32,8 @@ public class SimulatedUser {
 	
 	public void createNewUser() {
 		client.createUser(username, phoneNumber, new Callback() {
-			public void serverRequestCallback(StatusOr<Response> responseOr) {
+			public void serverRequestCallback(StatusOr<Response> responseOr, 
+					Map<String, Object> notes) {
 				try {
 					if (responseOr.hasError()) {
 						throw new RuntimeException(responseOr.toString());
@@ -46,23 +48,25 @@ public class SimulatedUser {
 					}
 				}
 			}
-		});
+		}, /*notes=*/null);
 	}
 	
 	public void writePost() {
 		client.insertPost(username, randomPost(), location, new Callback() {
-			public void serverRequestCallback(StatusOr<Response> responseOr) {
-				if (reportError(responseOr)) {
+			public void serverRequestCallback(StatusOr<Response> responseOr, 
+					Map<String, Object> notes) {
+				if (reportError(responseOr, notes)) {
 					return;
 				}
 			}
-		});
+		}, /*notes=*/null);
 	}
 	
 	public void writeComment() {
 		client.getAllPostsAtLocation(location, queryParams, new Callback() {
-			public void serverRequestCallback(StatusOr<Response> responseOr) {
-				if (reportError(responseOr)) {
+			public void serverRequestCallback(StatusOr<Response> responseOr, 
+					Map<String, Object> notes) {
+				if (reportError(responseOr, notes)) {
 					return;
 				}
 				
@@ -74,21 +78,23 @@ public class SimulatedUser {
 				int randomIndex = new Random().nextInt(responseOr.get().getPosts().size());
 				String postId = responseOr.get().getPosts().get(randomIndex).getPostId();
 				client.insertComment(username, randomComment(), postId, new Callback() {
-					public void serverRequestCallback(StatusOr<Response> responseOr) {
-						if (reportError(responseOr)) {
+					public void serverRequestCallback(StatusOr<Response> responseOr, 
+							Map<String, Object> notes) {
+						if (reportError(responseOr, notes)) {
 							return;
 						}
 					}
-				});
+				}, /*notes=*/null);
 				
 			}
-		});
+		}, /*notes=*/null);
 	}
 	
 	public void performActionOnAPost() {
 		client.getAllPostsAtLocation(location, queryParams, new Callback() {
-			public void serverRequestCallback(StatusOr<Response> responseOr) {
-				if (reportError(responseOr)) {
+			public void serverRequestCallback(StatusOr<Response> responseOr, 
+					Map<String, Object> notes) {
+				if (reportError(responseOr, notes)) {
 					return;
 				}
 				
@@ -101,15 +107,16 @@ public class SimulatedUser {
 				String postId = responseOr.get().getPosts().get(randomIndex).getPostId();
 				ActionType type = new Random().nextInt(1000) < 500 ? ActionType.LIKE : ActionType.DISLIKE;
 				client.updatePost(username, postId, type, new Callback() {
-					public void serverRequestCallback(StatusOr<Response> responseOr) {
-						if (reportError(responseOr)) {
+					public void serverRequestCallback(StatusOr<Response> responseOr, 
+							Map<String, Object> notes) {
+						if (reportError(responseOr, notes)) {
 							return;
 						}
 					}
-				});
+				}, /*notes=*/null);
 				
 			}
-		});
+		}, /*notes=*/null);
 	}
 	
 	public void changeLocation(Location location) {
@@ -124,7 +131,8 @@ public class SimulatedUser {
 		return "A random comment: " + new Random().nextFloat();
 	}
 	
-	private boolean reportError(StatusOr<Response> responseOr) {
+	private boolean reportError(StatusOr<Response> responseOr, 
+			Map<String, Object> notes) {
 		String stackTrace = "";
 		boolean error = false;
 		if (responseOr.hasError()) {
