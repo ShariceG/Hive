@@ -48,6 +48,10 @@ class QueryMetadata {
 
 class Response {
     
+    // Yes, oky, not a great solution but it works.
+    // All the possible things we can get as a response from the server.
+    // Whoever makes the request looks and gets what it expects. Simple.
+    // Let's try and keep this as minimal as possible.
     private(set) var posts: Array<Post>
     private(set) var comments: Array<Comment>
     private(set) var serverStatusCode: ServerStatusCode

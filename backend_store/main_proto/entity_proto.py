@@ -4,6 +4,12 @@ class User(messages.Message):
     username = messages.StringField(1, required=False)
     phone_number = messages.StringField(2, required=False)
 
+class ActionType(messages.Enum):
+    NO_ACTION = 0
+    LIKE = 1
+    DISLIKE = 2
+    NUMBER_OF_ACTIONS = 3
+
 class Area(messages.Message):
     # Lat/Lon truncated to the precision of city, state, country.
     longitude = messages.StringField(1, required=False)
@@ -19,6 +25,7 @@ class Location(messages.Message):
 
 class Post(messages.Message):
     post_id = messages.StringField(1, required=False)
+    # Username of person who wrote the post.
     username = messages.StringField(2, required=False)
     post_text = messages.StringField(3, required=False)
     location = messages.MessageField(Location, 4)
@@ -26,6 +33,10 @@ class Post(messages.Message):
     dislikes = messages.IntegerField(6, required=False)
     number_of_comments = messages.IntegerField(7, required=False)
     creation_timestamp_sec = messages.FloatField(8, required=False)
+    # The action on the post by the user that requested for the post.
+    # This field should only be set when returning posts not inserting them.
+    # Yes, this is kind of a hack.
+    user_action_type = messages.EnumField(ActionType, 9, required=False)
 
 class Comment(messages.Message):
     comment_id = messages.StringField(1, required=False)
@@ -34,13 +45,8 @@ class Comment(messages.Message):
     comment_text = messages.StringField(4, required=False)
     creation_timestamp_sec = messages.FloatField(5, required=False)
 
-class ActionType(messages.Enum):
-    NO_ACTION = 0
-    LIKE = 1
-    DISLIKE = 2
-    NUMBER_OF_ACTIONS = 3
-
 class Action(messages.Message):
+    # Username of person who made the action.
     username = messages.StringField(1, required=False)
     post_id = messages.StringField(2, required=False)
     action_type = messages.EnumField(ActionType, 3, required=False);

@@ -66,10 +66,11 @@ class CommentsViewController: UIViewController {
     }
     
     public func getAllPostComments(queryParams: QueryParams) {
-        client.getAllCommentsForPost(postId: (post?.postId)!, queryParams: queryParams, completion: getAllPostCommentsCompletion)
+        client.getAllCommentsForPost(postId: (post?.postId)!, queryParams: queryParams,
+                                     completion: getAllPostCommentsCompletion, notes: nil)
     }
     
-    private func getAllPostCommentsCompletion(responseOr: StatusOr<Response>) {
+    private func getAllPostCommentsCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
         if (responseOr.hasError()) {
             // Handle likley connection error
             print("Connection Failure: " + responseOr.getErrorMessage())
@@ -101,10 +102,10 @@ class CommentsViewController: UIViewController {
             self.commentTextView.isSelectable = false
             sender.isEnabled = false
         }
-        client.insertComment(username: self.getTestUser(), commentText: commentTextView.text, postId: (post?.postId)!, completion: insertCommentCompletion)
+        client.insertComment(username: self.getTestUser(), commentText: commentTextView.text, postId: (post?.postId)!, completion: insertCommentCompletion, notes: nil)
     }
     
-    private func insertCommentCompletion(response: StatusOr<Response>) {
+    private func insertCommentCompletion(response: StatusOr<Response>, notes: [String:Any]?) {
         var error: Bool = false
         if (response.hasError()) {
             // Handle likley connection error

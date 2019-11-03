@@ -47,7 +47,7 @@ class PostFeedModalViewController: UIViewController {
         }
     }
     
-    private func getPopularPostsFromLocationCompletion(responseOr: StatusOr<Response>) {
+    private func getPopularPostsFromLocationCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
         if (responseOr.hasError()) {
             // Handle likley connection error
             print("Connection Failure: " + responseOr.getErrorMessage())
@@ -78,6 +78,7 @@ class PostFeedModalViewController: UIViewController {
 
 
 extension PostFeedModalViewController: PostFeedDelegate {
+    
     func showComments(postView: PostView) {
         self.performSegue(withIdentifier: COMMENTS_SEGUE_IDENTIFIER, sender: postView)
     }
@@ -85,13 +86,10 @@ extension PostFeedModalViewController: PostFeedDelegate {
     func fetchMorePosts(queryParams: QueryParams) {
         client.getAllPopularPostsAtLocation(username: self.getTestUser(), queryParams: queryParams,
                                             location: self.location!,
-            completion: getPopularPostsFromLocationCompletion)
+                                            completion: getPopularPostsFromLocationCompletion, notes: nil)
     }
     
-    func likePost(post: Post) {
-    }
-    
-    func dislikePost(post: Post) {
+    func performAction(post: Post, actionType: ActionType) {
     }
 }
 

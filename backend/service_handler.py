@@ -32,6 +32,9 @@ POPULAR_TIME_THRESHOLD_SEC = 3 * 24 * 60 * 60
 
 class ServiceHandler(object):
 
+    def __init__(self):
+        self._helper = service_helper.ServiceHelper
+
     def handle_create_user(self, request):
         if self._user_exists(request.username):
             return CreateUserResponse(
@@ -165,9 +168,9 @@ class ServiceHandler(object):
     def handle_get_all_post_locations(self, request):
         query = ndb.gql(('SELECT * FROM LocationModel'))
         locations = []
-        helper = service_helper.ServiceHelper
         for result in query.fetch():
-            locations.append(helper.location_model_to_proto(result.Location))
+            locations.append(self._helper.location_model_to_proto(
+                result.Location))
         return GetAllPostLocationsResponse(locations=locations,
             status=Status(status_code=StatusCode.OK))
 
@@ -183,10 +186,10 @@ class ServiceHandler(object):
             order_property=model.PostModel.CreationTimestampSec)
 
         post_list = []
-        helper = service_helper.ServiceHelper
         for post_model in results:
-            the_post = helper.post_model_to_proto(post_model)
+            the_post = self._helper.post_model_to_proto(post_model)
             self._fill_post_likes_dislikes_comment_count(the_post)
+            self._fill_requesting_user_action(request.username, the_post)
             post_list.append(the_post)
         return GetAllPostsByUserResponse(
             posts=post_list, query_metadata=metadata,
@@ -207,10 +210,10 @@ class ServiceHandler(object):
             results.append(ndb.Key('PostModel', comment_model.PostID).get())
 
         post_list = []
-        helper = service_helper.ServiceHelper
         for post_model in results:
-            the_post = helper.post_model_to_proto(post_model)
+            the_post = self._helper.post_model_to_proto(post_model)
             self._fill_post_likes_dislikes_comment_count(the_post)
+            self._fill_requesting_user_action(request.username, the_post)
             post_list.append(the_post)
         return GetAllPostsCommentedOnByUserResponse(
             posts=post_list, query_metadata=metadata,
@@ -227,15 +230,18 @@ class ServiceHandler(object):
             order_property=model.CommentModel.CreationTimestampSec)
 
         comment_list = []
-        helper = service_helper.ServiceHelper
         for comment_model in comments:
-            comment_list.append(helper.comment_model_to_proto(comment_model))
+            comment_list.append(self._helper.comment_model_to_proto(
+                comment_model))
         return GetAllCommentsForPostResponse(
             comments=comment_list,
             query_metadata=metadata,
             status=Status(status_code=StatusCode.OK))
 
     def handle_get_all_posts_at_location(self, request):
+        if not self._user_exists(request.username):
+            return GetAllPostsAtLocationResponse(
+                status=Status(status_code=StatusCode.USER_NOT_FOUND))
         location = request.location
         query_params = request.query_params
         ok, location = self._validate_and_get_location_with_precision(location)
@@ -256,10 +262,10 @@ class ServiceHandler(object):
             order_property=model.PostModel.CreationTimestampSec)
 
         post_list = []
-        helper = service_helper.ServiceHelper
         for post_model in results:
-            the_post = helper.post_model_to_proto(post_model)
+            the_post = self._helper.post_model_to_proto(post_model)
             self._fill_post_likes_dislikes_comment_count(the_post)
+            self._fill_requesting_user_action(request.username, the_post)
             post_list.append(the_post)
         return GetAllPostsAtLocationResponse(
             posts=post_list, query_metadata=metadata,
@@ -290,9 +296,8 @@ class ServiceHandler(object):
             order_property=model.PostModel.PopularityIndex)
 
         post_list = []
-        helper = service_helper.ServiceHelper
         for post_model in results:
-            the_post = helper.post_model_to_proto(post_model)
+            the_post = self._helper.post_model_to_proto(post_model)
             self._fill_post_likes_dislikes_comment_count(the_post)
             post_list.append(the_post)
         return GetAllPopularPostsAtLocationResponse(
@@ -304,9 +309,9 @@ class ServiceHandler(object):
         query = ndb.gql(('SELECT * FROM LocationModel '
                          'ORDER BY PopularityIndex DESC'))
         locations = []
-        helper = service_helper.ServiceHelper
         for result in query.fetch(POPULAR_POST_QUERY_LIMIT):
-            locations.append(helper.location_model_to_proto(result.Location))
+            locations.append(self._helper.location_model_to_proto(
+                result.Location))
         return GetPopularLocationsResponse(locations=locations,
             status=Status(status_code=StatusCode.OK))
 
@@ -440,6 +445,16 @@ class ServiceHandler(object):
         post.likes = info[0]
         post.dislikes = info[1]
         post.number_of_comments = info[2]
+
+    def _fill_requesting_user_action(self, username, post):
+        results = ndb.gql(('SELECT * FROM ActionModel '
+                            'WHERE Username = :1 AND PostID = :2'),
+                            username, post.post_id)
+        if results.count() == 0:
+            post.user_action_type = ActionType.NO_ACTION
+        else:
+            action = self._helper.action_model_to_proto(results.get())
+            post.user_action_type = action.action_type
 
     def _get_area_latitude_longitude(self, lat, lon):
         dec = LOCATION_QUERY_DECIMAL_PLACES

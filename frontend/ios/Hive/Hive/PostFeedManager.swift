@@ -12,8 +12,7 @@ import UIKit
 protocol PostFeedDelegate: class {
     func showComments(postView: PostView);
     func fetchMorePosts(queryParams: QueryParams);
-    func likePost(post: Post);
-    func dislikePost(post: Post);
+    func performAction(post: Post, actionType: ActionType);
 }
 
 class PostFeedManager: NSObject, PostViewDelegate {
@@ -93,6 +92,16 @@ class PostFeedManager: NSObject, PostViewDelegate {
         pokeNew()
     }
     
+    func reconfigureWithAction(postId: String, actionType: ActionType) {
+        let thePost = posts.filter {$0.postId == postId}
+        // filter will return a list but it should be one item long, unless
+        // the post doesn't exist anymore.
+        if thePost.count > 0 {
+            posts[0].userActionType = actionType
+            reload()
+        }
+    }
+    
     private func fetchMorePosts(getNewer: Bool) {
         if (!getNewer && !(prevFetchQueryMetadata.hasMoreOlderData ?? true)) {
             print("Server already told us there are no more new posts. Returning.")
@@ -107,14 +116,10 @@ class PostFeedManager: NSObject, PostViewDelegate {
     func commentButtonClick(postView: PostView) {
         delegate?.showComments(postView: postView);
     }
-    func likeButtonClick(postView: PostView) {
-        delegate?.likePost(post: postView.post)
-    }
     
-    func dislikeButtonClick(postView: PostView) {
-        delegate?.dislikePost(post: postView.post)
+    func performAction(postView: PostView, actionType: ActionType) {
+        delegate?.performAction(post: postView.post, actionType: actionType)
     }
-    
 }
 
 extension PostFeedManager: UITableViewDelegate {

@@ -17,6 +17,10 @@ class Post: Hashable, Equatable {
     private(set) var likes: Int
     private(set) var dislikes: Int
     private(set) var creationTimestampSec: Decimal
+    // Type of action requesting user did on this post.
+    // Can be mutated. Let's keep the amount of mutable things
+    // small.
+    public var userActionType: ActionType
     private(set) var jsonPost: [String: Any]?
     
     func hash(into hasher: inout Hasher) {
@@ -27,7 +31,7 @@ class Post: Hashable, Equatable {
         return left.postId == right.postId
     }
     
-    init(username: String, postId: String, postText: String, locationJson: [String: Any], likes: Int, dislikes: Int, creationTimestampSec: Decimal, jsonPost: [String: Any]) {
+    init(username: String, postId: String, postText: String, locationJson: [String: Any], likes: Int, dislikes: Int, creationTimestampSec: Decimal, jsonPost: [String: Any], userActionType: ActionType) {
         self.username = username
         self.postId = postId
         self.postText = postText
@@ -36,6 +40,7 @@ class Post: Hashable, Equatable {
         self.dislikes = dislikes
         self.creationTimestampSec = creationTimestampSec
         self.jsonPost = jsonPost
+        self.userActionType = userActionType
     }
     
     public func isExpired() -> Bool {
@@ -57,6 +62,8 @@ class Post: Hashable, Equatable {
     public static func jsonToPost(jsonPost: [String: Any]) -> Post {
         let likes = jsonPost["likes"] == nil ? 0 : Int(jsonPost["likes"] as! String)
         let dislikes = jsonPost["dislikes"] == nil ? 0 : Int(jsonPost["dislikes"] as! String)
+        let userActionType = jsonPost["user_action_type"] == nil ? ActionType.NO_ACTION :
+            ActionType.FromString(str: jsonPost["user_action_type"] as! String)
         return Post(username: jsonPost["username"] as! String,
                     postId: jsonPost["post_id"] as! String,
                     postText: jsonPost["post_text"] as! String,
@@ -64,6 +71,6 @@ class Post: Hashable, Equatable {
                     likes: likes!,
                     dislikes: dislikes!,
                     creationTimestampSec: (jsonPost["creation_timestamp_sec"] as! NSNumber).decimalValue,
-                    jsonPost: jsonPost)
+                    jsonPost: jsonPost, userActionType: userActionType)
     }
 }

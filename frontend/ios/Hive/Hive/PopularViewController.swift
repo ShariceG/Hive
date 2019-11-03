@@ -66,7 +66,7 @@ class PopularViewController: UIViewController {
         popularCollectionView.dataSource = self
     }
     
-    private func getPopularPostsFromLocationCompletion(responseOr: StatusOr<Response>) {
+    private func getPopularPostsFromLocationCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
         if (responseOr.hasError()) {
             // Handle likley connection error
             print("Connection Failure: " + responseOr.getErrorMessage())
@@ -86,10 +86,10 @@ class PopularViewController: UIViewController {
     }
     
     private func getPopularLocations() {
-        client.getPopularLocations(completion: getPopularLocationsCompletion)
+        client.getPopularLocations(completion: getPopularLocationsCompletion, notes: nil)
     }
     
-    private func getPopularLocationsCompletion(responseOr: StatusOr<Response>) {
+    private func getPopularLocationsCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
         var error: Bool = false
         if (responseOr.hasError()) {
             // Handle likley connection error
@@ -126,6 +126,7 @@ class PopularViewController: UIViewController {
 
 // Delegate functions
 extension PopularViewController: PostFeedDelegate {
+    
     func showComments(postView: PostView) {
         self.performSegue(withIdentifier: COMMENTS_SEGUE_IDENTIFIER, sender: postView)
     }
@@ -137,13 +138,11 @@ extension PopularViewController: PostFeedDelegate {
         }
         client.getAllPopularPostsAtLocation(username: self.getTestUser(), queryParams: queryParams,
                                             location: self.currLocation!,
-                                            completion: getPopularPostsFromLocationCompletion)
+                                            completion: getPopularPostsFromLocationCompletion,
+                                            notes: nil)
     }
     
-    func likePost(post: Post) {
-    }
-    
-    func dislikePost(post: Post) {
+    func performAction(post: Post, actionType: ActionType) {
     }
 }
 

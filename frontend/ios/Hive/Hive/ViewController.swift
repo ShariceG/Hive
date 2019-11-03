@@ -56,10 +56,10 @@ class ViewController: UIViewController {
         }
         client.insertPost(username: self.getTestUser(),
                           postText: postTv.text, location: self.getTestLocation(),
-                          completion: insertPostCompletion)
+                          completion: insertPostCompletion, notes: nil)
     }
     
-    private func insertPostCompletion(response: StatusOr<Response>) {
+    private func insertPostCompletion(response: StatusOr<Response>, notes: [String:Any]?) {
         var error: Bool = false
         let baseStr: String = "insertPostCompletion => "
         if (response.hasError()) {
@@ -89,7 +89,7 @@ class ViewController: UIViewController {
         }
     }
     
-    private func updatePostCompletion(responseOr: StatusOr<Response>) {
+    private func updatePostCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
         let baseStr: String = "updatePostCompletion => "
         if (responseOr.hasError()) {
             // Handle likley connection error
@@ -102,10 +102,18 @@ class ViewController: UIViewController {
             print(baseStr + "ServerStatusCode: " + String(describing: response.serverStatusCode))
             return
         }
-        
+        if notes == nil {
+            print(baseStr + "Expected notes!")
+            return
+        }
+        let actionType = notes!["actionType"] as! ActionType
+        let postId = notes!["postId"] as! String
+        DispatchQueue.main.async {
+            self.postFeedManager.reconfigureWithAction(postId: postId, actionType: actionType)
+        }
     }
     
-    private func fetchPostsAroundUserCompletion(responseOr: StatusOr<Response>) {
+    private func fetchPostsAroundUserCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
         let baseStr: String = "fetchPostsAroundUserCompletion => "
         if (responseOr.hasError()) {
             // Handle likley connection error
@@ -147,17 +155,16 @@ extension ViewController: PostFeedDelegate {
     }
     
     func fetchMorePosts(queryParams: QueryParams) {
-        client.getAllPostsAtLocation(location: self.getTestLocation(),
+        client.getAllPostsAtLocation(username: getTestUser(),
+                                     location: self.getTestLocation(),
                                      queryParams: queryParams,
-                                     completion:fetchPostsAroundUserCompletion)
+                                     completion:fetchPostsAroundUserCompletion, notes: nil)
     }
-    
-    func likePost(post: Post) {
-        client.updatePost(postId: post.postId, username: getTestUser(), actionType: "LIKE", completion: <#T##(StatusOr<Response>) -> ()#>)
-        print("LIKE")
-    }
-    
-    func dislikePost(post: Post) {
+
+    func performAction(post: Post, actionType: ActionType) {
+        client.updatePost(postId: post.postId, username: getTestUser(),
+            actionType: actionType, completion: updatePostCompletion,
+            notes: ["actionType": actionType, "postId": post.postId])
     }
 }
 

@@ -19,7 +19,6 @@ class Location(ndb.Model):
     Longitude = ndb.StringProperty(required=False)
     Area = ndb.StructuredProperty(Area, required=False)
 
-
 class PostModel(ndb.Model):
     PostText = ndb.StringProperty(required=False)
     Username = ndb.StringProperty(required=False)

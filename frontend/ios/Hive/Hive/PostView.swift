@@ -10,8 +10,7 @@ import UIKit
 
 protocol PostViewDelegate: class {
     func commentButtonClick(postView: PostView)
-    func likeButtonClick(postView: PostView)
-    func dislikeButtonClick(postView: PostView)
+    func performAction(postView: PostView, actionType: ActionType)
 }
 
 class PostView: UITableViewCell {
@@ -44,10 +43,16 @@ class PostView: UITableViewCell {
         dateLabel.text = self.timestampToDate(timestampSec: post.creationTimestampSec)
         self.post = post
         self.delegate = delegate
+        
+        // Disable like or dislike buttons, maybe.
+        if post.userActionType != ActionType.NO_ACTION {
+            likeBn.isEnabled = post.userActionType != ActionType.LIKE;
+            dislikeBn.isEnabled = post.userActionType != ActionType.DISLIKE;
+        }
     }
     
     public func configureDisableButtons(post: Post) {
-        print("No delegate give, will disable post buttons!")
+        print("No delegate given, will disable post buttons!")
         userLabel.text = post.username
         postTextView.text = post.postText
         dislikeBn.setTitle("Dislike: " + String(post.dislikes), for: UIControl.State.normal)
@@ -60,10 +65,10 @@ class PostView: UITableViewCell {
     }
     
     @IBAction func dislikeBnAction(_ sender: UIButton) {
-        delegate.dislikeButtonClick(postView: self)
+        delegate.performAction(postView: self, actionType: ActionType.DISLIKE)
     }
     @IBAction func likeBnAction(_ sender: UIButton) {
-        delegate.likeButtonClick(postView: self)
+        delegate.performAction(postView: self, actionType: ActionType.LIKE)
     }
     @IBAction func commentBnAction(_ sender: UIButton) {
         delegate.commentButtonClick(postView: self)

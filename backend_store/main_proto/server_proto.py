@@ -113,6 +113,7 @@ class GetAllPostsAtLocationRequest(messages.Message):
     location = messages.MessageField(entity_proto.Location, 1, required=False)
     query_params = messages.MessageField(
         entity_proto.QueryParams, 2, required=False)
+    username = messages.StringField(3, required=False)
 
 class GetAllPostsAtLocationResponse(messages.Message):
     posts = messages.MessageField(entity_proto.Post, 1, repeated=True)

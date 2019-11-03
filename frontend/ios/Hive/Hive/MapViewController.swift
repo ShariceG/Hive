@@ -35,10 +35,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     private func getLocations() {
-        client.getAllPostLocations(completion: getAllPostLocationsCompletion)
+        client.getAllPostLocations(completion: getAllPostLocationsCompletion, notes: nil)
     }
     
-    private func getAllPostLocationsCompletion(responseOr: StatusOr<Response>) {
+    private func getAllPostLocationsCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
         var error: Bool = false
         if (responseOr.hasError()) {
             // Handle likley connection error

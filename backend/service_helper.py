@@ -4,6 +4,19 @@ from backend_store.model import model
 class ServiceHelper(object):
 
     @staticmethod
+    def action_model_to_proto(action_model):
+        enum_map = {
+            "NO_ACTION": entity_proto.ActionType.NO_ACTION,
+            "LIKE": entity_proto.ActionType.LIKE,
+            "DISLIKE": entity_proto.ActionType.DISLIKE,
+        }
+        return entity_proto.Action(
+            username=action_model.Username,
+            post_id=action_model.PostID,
+            action_type=enum_map[action_model.ActionType]
+            )
+
+    @staticmethod
     def user_model_to_proto(user_model):
         return entity_proto.User(
             username=user_model.Username,

@@ -63,101 +63,102 @@ class ServerClient {
     private static let GET_ALL_POPULAR_POSTS_AT_LOCATION: String = "app.get_all_popular_posts_at_location?"
     private static let GET_POPULAR_LOCATIONS: String = "app.get_popular_locations?"
     
-    public func getPopularLocations(completion:@escaping (StatusOr<Response>) -> ()) {
+    public func getPopularLocations(completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
         let request: [String:Any] = [String:Any]()
         let path = constructIncompleteUrlPath() + ServerClient.GET_POPULAR_LOCATIONS
-        executeGet(targetUrl: path, jsonParams: request, completion: completion)
+        executeGet(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
     }
     
-    public func getAllPostLocations(completion:@escaping (StatusOr<Response>) -> ()) {
+    public func getAllPostLocations(completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
         let request: [String:Any] = [String:Any]()
         let path = constructIncompleteUrlPath() + ServerClient.GET_ALL_POST_LOCATIONS
-        executeGet(targetUrl: path, jsonParams: request, completion: completion)
+        executeGet(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
     }
     
-    public func getAllPostsAtLocation(location: Location, queryParams: QueryParams, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func getAllPostsAtLocation(username: String, location: Location, queryParams: QueryParams, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
         var request: [String:Any] = [String:Any]()
         request["location"] = location.toJson()
         request["query_params"] = queryParams.toJson()
+        request["username"] = username
         
         let path = constructIncompleteUrlPath() + ServerClient.GET_ALL_POSTS_AT_LOCATION
-        executeGet(targetUrl: path, jsonParams: request, completion: completion)
+        executeGet(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
     }
     
-    public func getAllPopularPostsAtLocation(username: String, queryParams: QueryParams, location: Location, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func getAllPopularPostsAtLocation(username: String, queryParams: QueryParams, location: Location, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
         var request: [String:Any] = [String:Any]()
         request["username"] = username
         request["location"] = location.toJson()
         request["query_params"] = queryParams.toJson()
         
         let path = constructIncompleteUrlPath() + ServerClient.GET_ALL_POPULAR_POSTS_AT_LOCATION
-        executeGet(targetUrl: path, jsonParams: request, completion: completion)
+        executeGet(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
     }
     
-    public func getAllPostsCommentedOnByUser(username: String, queryParams: QueryParams, completion:@escaping (StatusOr<Response>) -> ()){
+    public func getAllPostsCommentedOnByUser(username: String, queryParams: QueryParams, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?){
         var request: [String:Any] = [String:Any]()
         request["username"] = username
         request["query_params"] = queryParams.toJson()
 
         let path = constructIncompleteUrlPath() + ServerClient.GET_ALL_POSTS_COMMENTED_ON_BY_USER_PATH
-        executeGet(targetUrl: path, jsonParams: request, completion: completion)
+        executeGet(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
     }
     
-    public func getAllPostsByUser(username: String, queryParams: QueryParams, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func getAllPostsByUser(username: String, queryParams: QueryParams, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
         var request: [String:Any] = [String:Any]()
         request["username"] = username
         request["query_params"] = queryParams.toJson()
     
         let path: String = constructIncompleteUrlPath() + ServerClient.GET_ALL_POSTS_BY_USER_PATH
-        executeGet(targetUrl: path, jsonParams: request, completion: completion)
+        executeGet(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
     }
     
-    public func getAllCommentsForPost(postId: String, queryParams: QueryParams, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func getAllCommentsForPost(postId: String, queryParams: QueryParams, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
         var request: [String:Any] = [String:Any]()
         request["post_id"] = postId
         request["query_params"] = queryParams.toJson()
     
         let path: String = constructIncompleteUrlPath() + ServerClient.GET_ALL_POST_COMMENTS_PATH
-        executeGet(targetUrl: path, jsonParams: request, completion: completion)
+        executeGet(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
     }
     
-    public func createUser(username: String, phoneNumber: String, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func createUser(username: String, phoneNumber: String, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
         var request: [String:Any] = [String:Any]()
         request["username"] = username
         request["phone_number"] = phoneNumber
     
         let path: String = constructIncompleteUrlPath() + ServerClient.CREATE_USER_PATH
-        executePost(targetUrl: path, jsonParams: request, completion: completion)
+        executePost(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
     }
     
-    public func updatePost(postId: String, username: String, actionType: String, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func updatePost(postId: String, username: String, actionType: ActionType, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
         var request: [String:Any] = [String:Any]()
         request["username"] = username
         request["post_id"] = postId
-        request["action_type"] = actionType
+        request["action_type"] = ActionType.ToString(actionType: actionType)
     
         let path: String = constructIncompleteUrlPath() + ServerClient.UPDATE_POST_PATH
-        executePost(targetUrl: path, jsonParams: request, completion: completion)
+        executePost(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
     }
     
-    public func insertPost(username: String, postText: String, location: Location, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func insertPost(username: String, postText: String, location: Location, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
         var request: [String:Any] = [String:Any]()
         request["username"] = username
         request["post_text"] = postText
         request["location"] = location.toJson()
     
         let path: String = constructIncompleteUrlPath() + ServerClient.INSERT_POST_PATH;
-        executePost(targetUrl: path, jsonParams: request, completion: completion);
+        executePost(targetUrl: path, jsonParams: request, completion: completion, notes: notes);
     }
 
-    public func insertComment(username: String, commentText: String, postId: String, completion:@escaping (StatusOr<Response>) -> ()) {
+    public func insertComment(username: String, commentText: String, postId: String, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
         var request: [String:Any] = [String:Any]()
         request["username"] = username
         request["comment_text"] = commentText
         request["post_id"] = postId
     
         let path: String = constructIncompleteUrlPath() + ServerClient.INSERT_COMMENT_PATH;
-        executePost(targetUrl: path, jsonParams: request, completion: completion);
+        executePost(targetUrl: path, jsonParams: request, completion: completion, notes: notes);
     }
     
     private func constructIncompleteUrlPath() -> String {
@@ -183,7 +184,7 @@ class ServerClient {
     }
     
     // Literally have no idea how this function really works.
-    private func executeGet(targetUrl: String, jsonParams: [String:Any], completion: @escaping (StatusOr<Response>) -> ()) {
+    private func executeGet(targetUrl: String, jsonParams: [String:Any], completion: @escaping ((StatusOr<Response>), [String:Any]?) -> (), notes: [String:Any]?) {
         var url: String = targetUrl
         url += jsonObjectToUrlParameters(jsonRequest: jsonParams)
         
@@ -201,7 +202,7 @@ class ServerClient {
         let task = session.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
             
             guard let data = data, error == nil else {
-                completion(StatusOr<Response>(err: StatusError.GENERIC_CONNECTION_ERROR, msg: String(describing: error!)))
+                completion(StatusOr<Response>(err: StatusError.GENERIC_CONNECTION_ERROR, msg: String(describing: error!)), notes)
                 return
             }
             
@@ -214,20 +215,20 @@ class ServerClient {
                 if json == nil {
                     completion(StatusOr<Response>(err: StatusError.GENERIC_EMPTY_ERROR,
                                                   msg: "Expected non-empty response. No or invalid JSON to parse. \nHTTP Code: " + String(httpStatusCode)
-                    + " -> \nurl: " + url))
+                                                    + " -> \nurl: " + url), notes)
                 }
                 // Everything is okay at this point.
-                completion(StatusOr<Response>(v: Response(jsonObject: json!)))
+                completion(StatusOr<Response>(v: Response(jsonObject: json!)), notes)
             } catch let error {
                 completion(StatusOr<Response>(err: StatusError.GENERIC_CONNECTION_ERROR, msg: String(describing: error) + "\nHTTP Code: " + String(httpStatusCode)
-                    + " -> \nurl: " + url))
+                    + " -> \nurl: " + url), notes)
             }
         })
         task.resume()
     }
     
     // Also, literally have no idea how this function really works.
-    private func executePost(targetUrl: String, jsonParams: [String:Any], completion: @escaping (StatusOr<Response>) -> ()) {
+    private func executePost(targetUrl: String, jsonParams: [String:Any], completion: @escaping ((StatusOr<Response>), [String:Any]?) -> (), notes: [String:Any]?) {
         let jsonData: Data = try! JSONSerialization.data(withJSONObject: jsonParams, options: [])
         let jsonString: String = String(data: jsonData, encoding: .utf8)!
         let url = URL(string: targetUrl)
@@ -240,7 +241,7 @@ class ServerClient {
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
-                completion(StatusOr<Response>(err: StatusError.GENERIC_CONNECTION_ERROR, msg: String(describing: error!)))
+                completion(StatusOr<Response>(err: StatusError.GENERIC_CONNECTION_ERROR, msg: String(describing: error!)), notes)
                 return
             }
             
@@ -253,13 +254,13 @@ class ServerClient {
                 if json == nil {
                     completion(StatusOr<Response>(err: StatusError.GENERIC_EMPTY_ERROR,
                                                   msg: "Expected non-empty response. No or invalid JSON to parse. \nHTTP Code: " + String(httpStatusCode)
-                                                    + " -> \nurl: " + targetUrl))
+                                                    + " -> \nurl: " + targetUrl), notes)
                 }
                 // Everything is okay at this point.
-                completion(StatusOr<Response>(v: Response(jsonObject: json!)))
+                completion(StatusOr<Response>(v: Response(jsonObject: json!)), notes)
             } catch let error {
                 completion(StatusOr<Response>(err: StatusError.GENERIC_CONNECTION_ERROR, msg: String(describing: error) + "\nHTTP Code: " + String(httpStatusCode)
-                    + " -> \nurl: " + targetUrl))
+                    + " -> \nurl: " + targetUrl), notes)
             }
         }
         task.resume()
