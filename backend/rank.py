@@ -2,6 +2,41 @@ import math
 
 class Rank:
 
+    class Stats(object):
+        '''Holds info used to calculate amount of xp a player gets'''
+        post_likes = 0
+        post_dislikes = 0
+        comment_likes = 0
+        comment_dislikes = 0
+        usage = 0
+
+    class Interval(object):
+        '''A class representing an interval. It is always [a, b).'''
+        def __init__(self, a, b):
+            self.a = a
+            self.b = b
+
+        def contains(self, n):
+            return self.a >= n and n < b
+
+    # Each index in this array corresponds to the level for that xp interval.
+    XP_INTERVALS = [
+        Interval(0, 100),
+        Interval(100, 250),
+        Interval(250, 1000),
+        Interval(100, 250),
+        Interval(100, 250),
+        Interval(100, 250),
+        Interval(100, 250),
+        Interval(100, 250),
+        Interval(100, 250),
+        Interval(100, 250),
+        Interval(100, 250),
+        Interval(100, 250),
+        Interval(100, 250),
+        Interval(100, 250),
+    ]
+
     STAT_WORTH = {
         'post_likes': 1,
         'post_dislikes': -1,
@@ -13,14 +48,6 @@ class Rank:
     # Tweaks how far apart each of the levels are. For example, the closer to
     # zero this is, the further apart the levels.
     LEVEL_RATE = 0.2
-
-    class Stats(object):
-        '''Holds info used to calculate amount of xp a player gets'''
-        post_likes = 0
-        post_dislikes = 0
-        comment_likes = 0
-        comment_dislikes = 0
-        usage = 0
 
     def __init__(self):
         self._xp = 0

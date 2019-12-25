@@ -63,7 +63,7 @@ public class SimulatedUser {
 	}
 	
 	public void writeComment() {
-		client.getAllPostsAtLocation(location, queryParams, new Callback() {
+		client.getAllPostsAtLocation(username, location, queryParams, new Callback() {
 			public void serverRequestCallback(StatusOr<Response> responseOr, 
 					Map<String, Object> notes) {
 				if (reportError(responseOr, notes)) {
@@ -91,7 +91,7 @@ public class SimulatedUser {
 	}
 	
 	public void performActionOnAPost() {
-		client.getAllPostsAtLocation(location, queryParams, new Callback() {
+		client.getAllPostsAtLocation(username, location, queryParams, new Callback() {
 			public void serverRequestCallback(StatusOr<Response> responseOr, 
 					Map<String, Object> notes) {
 				if (reportError(responseOr, notes)) {
