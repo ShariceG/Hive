@@ -395,25 +395,15 @@ class ServiceHandler(object):
                 else:
                     results = []
         else:
-            # if params.curr_bottom_cursor_str:
-            #     cursor = Cursor(urlsafe=params.curr_bottom_cursor_str)
-            #     results, new_bottom_cursor, more = reverse_query.fetch_page(
-            #         fetch_limit, start_cursor=cursor)
-            #     # If there are actual results
-            #     if new_bottom_cursor and not self._cursors_are_eq(
-            #         new_bottom_cursor, cursor):
-            #         qm.new_bottom_cursor_str = new_bottom_cursor.urlsafe()
-            #     qm.has_more_older_data = more
-            cursor = None
             if params.curr_bottom_cursor_str:
                 cursor = Cursor(urlsafe=params.curr_bottom_cursor_str)
-            results, new_bottom_cursor, more = reverse_query.fetch_page(
-                fetch_limit, start_cursor=cursor)
-            # If there are actual results
-            if new_bottom_cursor and not self._cursors_are_eq(
-                new_bottom_cursor, cursor):
-                qm.new_bottom_cursor_str = new_bottom_cursor.urlsafe()
-            qm.has_more_older_data = more
+                results, new_bottom_cursor, more = reverse_query.fetch_page(
+                    fetch_limit, start_cursor=cursor)
+                # If there are actual results
+                if new_bottom_cursor and not self._cursors_are_eq(
+                    new_bottom_cursor, cursor):
+                    qm.new_bottom_cursor_str = new_bottom_cursor.urlsafe()
+                qm.has_more_older_data = more
         return results, qm
 
     def _cursors_are_eq(self, c1, c2):
