@@ -1,0 +1,14 @@
+package coloredcoded.hive.client;
+
+public enum ServerStatusCode {
+	OK,
+    USER_NOT_FOUND,
+    USER_ALREADY_EXISTS,
+    POST_NOT_FOUND,
+    COMMENT_NOT_FOUND,
+    UNKNOWN_ERROR,
+    UNSUPPORTED_ACTION_TYPE,
+    INTERNAL_ERROR,
+    NO_LOCATION_PROVIDED,
+    INVALID_LOCATION
+}
