@@ -1,6 +1,5 @@
 package coloredcoded.hive;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,10 +57,11 @@ public class PostView {
         delegate = d;
         userTextView.setText(post.getUsername());
         postTextView.setText(post.getPostText());
+        likeButton.setText("Like: " + post.getLikes());
+        dislikeButton.setText("Dislike: " + post.getDislikes());
         DateFormat f = new SimpleDateFormat("MM-dd-yyyy HH:mm");
         f.setTimeZone(TimeZone.getDefault());
         dateTextView.setText(f.format(new Date(post.getCreationTimestampSecAsLong() * 1000)));
-
         setupListeners();
     }
 
@@ -76,19 +76,41 @@ public class PostView {
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                delegate.performAction(postView, ActionType.LIKE);
+                v.setEnabled(false);
+                switch (post.getUserActionType()) {
+                    case NO_ACTION:
+                    case DISLIKE:
+                        delegate.performAction(postView, ActionType.LIKE);
+                        break;
+                    case LIKE:
+                        delegate.performAction(postView, ActionType.NO_ACTION);
+                        break;
+                }
             }
         });
         dislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                delegate.performAction(postView, ActionType.DISLIKE);
+                v.setEnabled(false);
+                switch (post.getUserActionType()) {
+                    case NO_ACTION:
+                    case LIKE:
+                        delegate.performAction(postView, ActionType.DISLIKE);
+                        break;
+                    case DISLIKE:
+                        delegate.performAction(postView, ActionType.NO_ACTION);
+                        break;
+                }
             }
         });
     }
 
     public View getPostView() {
         return postView;
+    }
+
+    public Post getPost() {
+        return post;
     }
 
 }

@@ -1,5 +1,7 @@
 package coloredcoded.hive.client;
 
+import android.util.Log;
+
 import org.json.simple.JSONObject;
 
 /**
@@ -19,13 +21,17 @@ public final class Post {
 	private String postText;
 	// Location of the user when post was made
 	private Location location;
+	// Type of action currently on this post made by the user of the phone. Can be mutated.
+	// Lets keep the amount of mutable things small.
+	private ActionType userActionType;
 	private int likes;
 	private int dislikes;
 	private double creationTimestampSec;
 	private JSONObject jsonPost;
 	
-	private Post(String username, String postId, String postText, Location location, int likes, int dislikes, 
-			double creationTimestampSec, JSONObject jsonPost) {
+	private Post(String username, String postId, String postText, Location location, int likes, int dislikes,
+			double creationTimestampSec, JSONObject jsonPost,
+				 ActionType userActionType) {
 		this.username = username;
 		this.postText = postText;
 		this.postId = postId;
@@ -34,6 +40,7 @@ public final class Post {
 		this.dislikes = dislikes;
 		this.creationTimestampSec = creationTimestampSec;
 		this.jsonPost = jsonPost;
+		this.userActionType = userActionType;
 	}
 	
 	public double getCreationTimestampSec() {
@@ -63,10 +70,15 @@ public final class Post {
 	public int getLikes() {
 		return likes;
 	}
+	public void addLikes(int delta) { likes += delta; }
 
 	public int getDislikes() {
 		return dislikes;
 	}
+	public void addDislikes(int delta) { dislikes += delta; }
+
+	public ActionType getUserActionType() { return userActionType; }
+	public void setUserActionType(ActionType actionType) { userActionType = actionType; }
 	
 	public boolean isExpired() {
 		double currentTimeSec = System.currentTimeMillis() / 1000;
@@ -81,9 +93,15 @@ public final class Post {
 		int likes = jsonPost.get("likes") == null ? 0 : Integer.parseInt((String)jsonPost.get("likes"));
 		int dislikes = jsonPost.get("dislikes") == null ? 0 : Integer.parseInt((String)jsonPost.get("dislikes"));
 		double timestamp = Double.parseDouble(jsonPost.get("creation_timestamp_sec")+"");
-		return new Post((String)jsonPost.get("username"), (String)jsonPost.get("post_id"), (String)jsonPost.get("post_text"), 
+		ActionType actionType = jsonPost.get("user_action_type") == null ? ActionType.NO_ACTION
+				: ActionType.valueOf((String)jsonPost.get("user_action_type"));
+		return new Post(
+				(String)jsonPost.get("username"),
+				(String)jsonPost.get("post_id"),
+				(String)jsonPost.get("post_text"),
 				Location.jsonToLocation((JSONObject) jsonPost.get("location")), 
-				likes, dislikes, timestamp, jsonPost);
+				likes, dislikes, timestamp, jsonPost,
+				actionType);
 	}
 
 }

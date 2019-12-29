@@ -8,6 +8,8 @@ import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import coloredcoded.hive.client.ActionType;
@@ -48,14 +50,11 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
 
     @Override
     public void fetchMorePosts(QueryParams queryParams) {
-        Location location = new Location("-13.71000000", "-76.22000000",
-                new Location.Area("-13.71", "-76.22",
-                        "Seattle", "WA", "United States"));
-        client.getAllPostsAtLocation("user1", location, queryParams,
-                fetchMorePostsCallback(), null);
+        client.getAllPostsAtLocation(testUser(), testLocation(), queryParams,
+                getAllPostsAtLocationCallback(), null);
     }
 
-    public Callback fetchMorePostsCallback() {
+    public Callback getAllPostsAtLocationCallback() {
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
@@ -74,6 +73,32 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
 
     @Override
     public void performAction(Post post, ActionType actionType) {
+        Map<String, Object> notes = new HashMap<>();
+        notes.put("postId", post.getPostId());
+        notes.put("actionType", actionType);
+        client.updatePost(testUser(), post.getPostId(), actionType,
+                updatePostCallback(), notes);
+    }
 
+    public Callback updatePostCallback() {
+        return new Callback() {
+            @Override
+            public void serverRequestCallback(StatusOr<Response> responseOr,
+                                              Map<String, Object> notes) {
+                Response response = responseOr.get();
+                postFeedManager.updateActionType(
+                        (String)notes.get("postId"), (ActionType)notes.get("actionType"));
+            }
+        };
+    }
+
+    private Location testLocation() {
+        return new Location("-13.71000000", "-76.22000000",
+                new Location.Area("-13.71", "-76.22",
+                        "Seattle", "WA", "United States"));
+    }
+
+    private String testUser() {
+        return "user1";
     }
 }

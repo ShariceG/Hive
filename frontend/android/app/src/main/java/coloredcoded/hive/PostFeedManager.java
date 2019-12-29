@@ -46,6 +46,7 @@ public class PostFeedManager implements PostView.Delegate {
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            Log.d("GETVIEW", "getView: ");
             return PostView.newInstance(getItem(position), postViewDelegate, parent);
         }
     }
@@ -119,13 +120,58 @@ public class PostFeedManager implements PostView.Delegate {
         reload();
     }
 
+    public void updateActionType(String postId, ActionType actionType) {
+        // Find post with id.
+        Post post = null;
+        Iterator<Post> itr = posts.iterator();
+        while (itr.hasNext()) {
+            post = itr.next();
+            if (post.getPostId().equals(postId)) {
+                break;
+            }
+        }
+
+        // Now change the # of likes and dislikes by 1 depending on the old and
+        // new action type.
+        ActionType newActionType = actionType;
+        ActionType oldActionType = post.getUserActionType();
+        if (oldActionType == ActionType.LIKE) {
+            post.addLikes(-1);
+            if (newActionType == ActionType.DISLIKE) {
+                post.addDislikes(1);
+            }
+        }
+        if (oldActionType == ActionType.DISLIKE) {
+            post.addDislikes(-1);
+            if (newActionType == ActionType.LIKE) {
+                post.addLikes(1);
+            }
+        }
+        if (oldActionType == ActionType.NO_ACTION) {
+            switch (newActionType) {
+                case LIKE:
+                    post.addLikes(1);
+                    break;
+                case DISLIKE:
+                    post.addDislikes(1);
+                    break;
+                case NO_ACTION:
+                    Log.e("updateActionType",
+                            "WARNING: This shouldn't happen but its not really an error.");
+                    break;
+            }
+        }
+        post.setUserActionType(newActionType);
+        reload();
+    }
+
     @Override
     public void commentButtonClick(PostView postView) {
-        Log.d("commentButtonClick", "commentButtonClick: ");
+        delegate.showComments(postView);
     }
 
     @Override
     public void performAction(PostView postView, ActionType actionType) {
-        Log.d("performAction", "performAction: ");
+        delegate.performAction(postView.getPost(), actionType);
     }
 }
