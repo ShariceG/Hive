@@ -29,6 +29,7 @@ public class PostView {
     private Button commentButton;
     private Button likeButton;
     private Button dislikeButton;
+    // The entire inflated view of a post.
     private View postView;
 
     private Delegate delegate;

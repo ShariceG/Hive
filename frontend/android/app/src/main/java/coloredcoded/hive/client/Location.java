@@ -2,9 +2,11 @@ package coloredcoded.hive.client;
 
 import org.json.simple.JSONObject;
 
-public class Location {
+import java.io.Serializable;
+
+public class Location implements Serializable {
 	
-	public static class Area {
+	public static class Area implements Serializable {
 		private String latStr;
 		private String lonStr;
 		private String city;

@@ -1,5 +1,6 @@
 package coloredcoded.hive;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +9,6 @@ import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,7 +68,9 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
 
     @Override
     public void showComments(PostView postView) {
-
+        Intent intent = new Intent(getActivity(), SeeCommentsActivity.class);
+        intent.putExtra("post", postView.getPost());
+        getActivity().startActivity(intent);
     }
 
     @Override
@@ -93,8 +95,8 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
     }
 
     private Location testLocation() {
-        return new Location("-13.71000000", "-76.22000000",
-                new Location.Area("-13.71", "-76.22",
+        return new Location("47.608013", "-122.335167",
+                new Location.Area("47.60", "-122.33",
                         "Seattle", "WA", "United States"));
     }
 

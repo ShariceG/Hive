@@ -37,16 +37,15 @@ public class PostFeedManager implements PostView.Delegate {
 
         private PostView.Delegate postViewDelegate;
 
-        public PostFeedAdapter(Context context, PostView.Delegate delegate, ArrayList<Post> thePosts) {
+        public PostFeedAdapter(Context context, PostView.Delegate delegate,
+                               ArrayList<Post> thePosts) {
             super(context, -1, thePosts);
-            posts = thePosts;
             postViewDelegate = delegate;
         }
 
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            Log.d("GETVIEW", "getView: ");
             return PostView.newInstance(getItem(position), postViewDelegate, parent);
         }
     }
@@ -63,9 +62,9 @@ public class PostFeedManager implements PostView.Delegate {
         postFeedAdapter = new PostFeedAdapter(context, this, posts);
     }
 
-    public void configure(ListView listView, Delegate d) {
+    public void configure(ListView listView, Delegate delegate) {
         postFeedListView = listView;
-        delegate = d;
+        this.delegate = delegate;
         postFeedListView.setAdapter(postFeedAdapter);
 
         // Fetch an initial set of posts.

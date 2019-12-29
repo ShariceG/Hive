@@ -4,13 +4,15 @@ import android.util.Log;
 
 import org.json.simple.JSONObject;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author
  * This is a class representing a post by a user.
  *
  */
-public final class Post {
+public final class Post implements Serializable {
 	
 	private static long POST_LIFESPAN_SEC = 24 * 60 * 60;
 	
