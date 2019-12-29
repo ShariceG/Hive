@@ -153,7 +153,7 @@ class PostFeedManager: NSObject, PostViewDelegate {
     
     private func fetchMorePosts(getNewer: Bool) {
         if (!getNewer && !(prevFetchQueryMetadata.hasMoreOlderData ?? true)) {
-            print("Server already told us there are no more new posts. Returning.")
+            print("Server already told us there are no more old posts. Returning.")
             return
         }
         let params: QueryParams = QueryParams(getNewer: getNewer,

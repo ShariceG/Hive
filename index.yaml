@@ -56,11 +56,6 @@ indexes:
   - name: "Location.Area.Latitude"
   - name: "Location.Area.Longitude"
   - name: "CreationTimestampSec"
-- kind: "CommentModel"
-  properties:
-  - name: "PostID"
-  - name: "CreationTimestampSec"
-    direction: desc
 - kind: "ActionModel"
   properties:
   - name: "PostID"
@@ -76,6 +71,11 @@ indexes:
   - name: "Location.Area.Latitude"
   - name: "Location.Area.Longitude"
   - name: "PopularityIndex"
+- kind: "CommentModel"
+  properties:
+  - name: "PostID"
+  - name: "CreationTimestampSec"
+    direction: desc
 - kind: "PostModel"
   properties:
   - name: "Location.AreaLatitude"

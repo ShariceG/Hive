@@ -287,7 +287,6 @@ public class ServerClientImp implements ServerClient {
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestProperty("Content-Type", "application/json");
 			connection.setRequestMethod("GET");
-			connection.setDoOutput(true);
 			connection.setConnectTimeout(CONNECTION_TIMEOUT_MS);
 		    connection.setReadTimeout(READ_TIMEOUT_MS);
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
