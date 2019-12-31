@@ -1,5 +1,6 @@
 package coloredcoded.hive;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,8 +45,18 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.home_layout, container, false);
         ListView postFeedListView = v.findViewById(R.id.postFeedListView);
+        SwipeRefreshLayout refreshLayout = v.findViewById(R.id.postFeedSwipeRefresh);
         postFeedManager = new PostFeedManager(getContext());
-        postFeedManager.configure(postFeedListView, this);
+        postFeedManager.configure(postFeedListView, refreshLayout, this);
+
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+        alert.setTitle("Make a Post!");
+        alert.setMessage("now!");
+        alert.setView(inflater.inflate(R.layout.make_post_layout, container, false));
+
+        alert.show();
+
         return v;
     }
 

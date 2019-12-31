@@ -2,9 +2,13 @@ package coloredcoded.hive.client;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * 
@@ -90,7 +94,21 @@ public final class Post implements Serializable {
 	public String toString() {
 		return jsonPost.toJSONString();
 	}
-	
+
+	@Override
+	public boolean equals(@Nullable Object obj) {
+		if (!(obj instanceof Post)) {
+			return false;
+		}
+		Post p = (Post) obj;
+		return getPostId().equals(p.getPostId());
+	}
+
+	@Override
+	public int hashCode() {
+		return postId.hashCode();
+	}
+
 	public static Post jsonToPost(JSONObject jsonPost) {
 		int likes = jsonPost.get("likes") == null ? 0 : Integer.parseInt((String)jsonPost.get("likes"));
 		int dislikes = jsonPost.get("dislikes") == null ? 0 : Integer.parseInt((String)jsonPost.get("dislikes"));

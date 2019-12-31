@@ -4,15 +4,18 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import coloredcoded.hive.client.ActionType;
@@ -46,7 +49,7 @@ public class PostFeedManager implements PostView.Delegate {
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            return PostView.newInstance(getItem(position), postViewDelegate, parent);
+            return PostView.newViewInstance(getItem(position), postViewDelegate, parent);
         }
     }
 
@@ -54,6 +57,7 @@ public class PostFeedManager implements PostView.Delegate {
     private QueryMetadata prevQueryMetadata;
     private ArrayAdapter<Post> postFeedAdapter;
     private ListView postFeedListView;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private Delegate delegate;
 
     public PostFeedManager(Context context) {
@@ -62,13 +66,39 @@ public class PostFeedManager implements PostView.Delegate {
         postFeedAdapter = new PostFeedAdapter(context, this, posts);
     }
 
-    public void configure(ListView listView, Delegate delegate) {
+    public void configure(ListView listView, SwipeRefreshLayout refreshLayout, Delegate delegate) {
         postFeedListView = listView;
         this.delegate = delegate;
         postFeedListView.setAdapter(postFeedAdapter);
+        swipeRefreshLayout = refreshLayout;
+
+        setupListeners();
 
         // Fetch an initial set of posts.
         fetchMorePosts(true);
+    }
+
+    private void setupListeners() {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchMorePosts(true);
+            }
+        });
+        postFeedListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
+                                 int totalItemCount) {
+                // If we are displaying the last set of items in the list view.
+                if (firstVisibleItem + visibleItemCount >= totalItemCount -1) {
+                    fetchMorePosts(false);
+                }
+            }
+        });
     }
 
     private void fetchMorePosts(boolean getNewer) {
@@ -90,6 +120,7 @@ public class PostFeedManager implements PostView.Delegate {
                     @Override
                     public void run() {
                         postFeedAdapter.notifyDataSetChanged();
+                        swipeRefreshLayout.setRefreshing(false);
                     }
                 }
         );
@@ -99,11 +130,14 @@ public class PostFeedManager implements PostView.Delegate {
         prevQueryMetadata.updateMetadata(newMetadata);
         posts.addAll(morePosts);
 
-        // Remove expired hosts.
-        Iterator<Post> itr = posts.iterator();
+        // Remove duplicates, if any.
+        // Don't include expired hosts while transferring from set to post.
+        Iterator<Post> itr = new HashSet<>(posts).iterator();
+        posts.clear();
         while (itr.hasNext()) {
-            if (itr.next().isExpired()) {
-                itr.remove();
+            Post p = itr.next();
+            if (!p.isExpired()) {
+                posts.add(p);
             }
         }
 

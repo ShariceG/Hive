@@ -1,5 +1,6 @@
 package coloredcoded.hive;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,21 +36,47 @@ public class PostView {
     private Delegate delegate;
     private Post post;
 
-    public static View newInstance(Post post, Delegate delegate, ViewGroup parent) {
+    public static View newViewInstance(Post post, Delegate delegate, ViewGroup parent) {
+        return newInstance(post, delegate, parent).getPostView();
+    }
+
+    public static PostView newInstance(Post post, Delegate delegate, ViewGroup parent) {
         PostView view = new PostView();
         view.configure(post, delegate, parent);
-        return view.getPostView();
+        return view;
+    }
+
+    // Overload of newInstance but this time, we take an existing post view and fill it with the
+    // post information. Yes this is confusing. This function so that we can reconstruct a post view
+    // when we see comments.
+    public static PostView newInstance(Post post, View view, Delegate delegate, ViewGroup parent) {
+        PostView pView = new PostView();
+        pView.configure(post, view, delegate, parent);
+        return pView;
+    }
+
+    public PostView() {
+        postView = null;
     }
 
     public void instantiate(ViewGroup parent) {
-        postView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.post_layout, parent, false);
+        if (postView == null) {
+            postView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.post_layout, parent, false);
+            Log.d("LOL", "instantiate: DONT SEE");
+        }
+        Log.d("LOL", "instantiate: SEE THIS");
         userTextView = postView.findViewById(R.id.userTextView);
         dateTextView = postView.findViewById(R.id.dateTextView);
         postTextView = postView.findViewById(R.id.postTextView);
         commentButton = postView.findViewById(R.id.commentButton);
         likeButton = postView.findViewById(R.id.likeButton);
         dislikeButton = postView.findViewById(R.id.dislikeButton);
+    }
+
+    public void configure(Post p, View view, Delegate d, ViewGroup parent) {
+        postView = view;
+        configure(p, d, parent);
     }
 
     public void configure(Post p, Delegate d, ViewGroup parent) {
