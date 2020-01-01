@@ -10,7 +10,7 @@
         layout="@layout/post_layout" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/postFeedSwipeRefresh"
+        android:id="@+id/commentFeedSwipeRefresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 

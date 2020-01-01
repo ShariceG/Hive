@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.Map;
 
@@ -42,7 +43,8 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
 
         client = new ServerClientImp();
         commentFeedManager = new CommentFeedManager(getApplicationContext());
-        commentFeedManager.configure((ListView) findViewById(R.id.commentFeedListView), this);
+        commentFeedManager.configure((ListView) findViewById(R.id.commentFeedListView),
+                (SwipeRefreshLayout) findViewById(R.id.commentFeedSwipeRefresh), this);
     }
 
     @Override

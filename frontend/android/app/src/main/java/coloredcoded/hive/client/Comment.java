@@ -1,5 +1,7 @@
 package coloredcoded.hive.client;
 
+import androidx.annotation.Nullable;
+
 import org.json.simple.JSONObject;
 
 public final class Comment {
@@ -48,6 +50,20 @@ public final class Comment {
 	
 	public String toString() {
 		return jsonComment.toJSONString();
+	}
+
+	@Override
+	public boolean equals(@Nullable Object obj) {
+		if (!(obj instanceof Comment)) {
+			return false;
+		}
+		Comment c = (Comment) obj;
+		return getCommentId().equals(c.getCommentId());
+	}
+
+	@Override
+	public int hashCode() {
+		return commentId.hashCode();
 	}
 	
 	public static Comment jsonToComment(JSONObject jsonComment) {
