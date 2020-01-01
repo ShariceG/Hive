@@ -18,7 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SeeCommentsActivity"/>
+        <activity
+            android:name=".SeeCommentsActivity"
+            android:windowSoftInputMode="adjustPan"/>
     </application>
 
 </manifest>

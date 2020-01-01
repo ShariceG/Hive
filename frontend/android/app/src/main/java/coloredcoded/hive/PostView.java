@@ -133,6 +133,12 @@ public class PostView {
         });
     }
 
+    public void disableButtons() {
+        likeButton.setEnabled(false);
+        dislikeButton.setEnabled(false);
+        commentButton.setEnabled(false);
+    }
+
     public View getPostView() {
         return postView;
     }

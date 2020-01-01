@@ -1,8 +1,13 @@
 package coloredcoded.hive;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +32,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
     private CommentFeedManager commentFeedManager;
     private PostView postView;
     private Post post;
+    private Button makeCommentButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +46,60 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         ViewGroup parentGroup = (ViewGroup) getWindow().getDecorView().getRootView();
         postView = PostView.newInstance(post, findViewById(R.id.postViewShell),
                 this, parentGroup);
+        postView.disableButtons();
 
         client = new ServerClientImp();
         commentFeedManager = new CommentFeedManager(getApplicationContext());
         commentFeedManager.configure((ListView) findViewById(R.id.commentFeedListView),
                 (SwipeRefreshLayout) findViewById(R.id.commentFeedSwipeRefresh), this);
+
+        makeCommentButton = findViewById(R.id.makeCommentButton);
+        makeCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeCommentButton.setEnabled(false);
+                EditText et = findViewById(R.id.commentEditText);
+                String text = et.getText().toString();
+                if (text.isEmpty()) {
+                    return;
+                }
+                insertComment(text);
+            }
+        });
+    }
+
+    private void insertComment(String text) {
+        client.insertComment(testUser(), text, post.getPostId(),
+                getInsertCommentCallback(), null);
+    }
+
+    private Callback getInsertCommentCallback() {
+        return new Callback() {
+            @Override
+            public void serverRequestCallback(StatusOr<Response> responseOr,
+                                              Map<String, Object> notes) {
+                Response response = responseOr.get();
+                commentFeedManager.pokeNew();
+                final EditText et = findViewById(R.id.commentEditText);
+                et.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        et.getText().clear();
+                        et.clearFocus();
+                        // Hide keyboard
+                        InputMethodManager mgr = (InputMethodManager) getSystemService(
+                                Context.INPUT_METHOD_SERVICE);
+                        mgr.hideSoftInputFromWindow(et.getWindowToken(), 0);
+                    }
+                });
+                makeCommentButton.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        makeCommentButton.setEnabled(true);
+                    }
+                });
+            }
+        };
     }
 
     @Override
