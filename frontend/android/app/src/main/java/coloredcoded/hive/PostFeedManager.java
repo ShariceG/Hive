@@ -198,6 +198,10 @@ public class PostFeedManager implements PostView.Delegate {
         reload();
     }
 
+    public void pokeNew() {
+        fetchMorePosts(true);
+    }
+
     @Override
     public void commentButtonClick(PostView postView) {
         delegate.showComments(postView);

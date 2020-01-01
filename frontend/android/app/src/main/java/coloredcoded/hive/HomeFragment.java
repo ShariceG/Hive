@@ -1,11 +1,15 @@
 package coloredcoded.hive;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
@@ -29,6 +33,9 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
 
     private ServerClient client;
     private PostFeedManager postFeedManager;
+    private View makePostView;
+    private AlertDialog makePostAlert;
+    private Button writeSomethingButton;
 
     public static HomeFragment newInstance() {
         return new HomeFragment();
@@ -49,15 +56,72 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
         postFeedManager = new PostFeedManager(getContext());
         postFeedManager.configure(postFeedListView, refreshLayout, this);
 
+        // Setup alert dialog box for making a post.
+        makePostView = inflater.inflate(R.layout.make_post_layout, container, false);
+        makePostAlert = new AlertDialog.Builder(getContext()).create();
+        makePostAlert.setView(makePostView);
+        makePostAlert.setCancelable(false);
+        makePostAlert.setCanceledOnTouchOutside(false);
+        makePostView.findViewById(R.id.makePostButton).setOnClickListener(
+                new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText et = makePostView.findViewById(R.id.postEditText);
+                String text = et.getText().toString();
+                if (text.isEmpty()) {
+                    return;
+                }
+                makePostAlert.dismiss();
+                insertPost(text);
+            }
+        });
+        makePostView.findViewById(R.id.cancelMakePostButton).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        writeSomethingButton.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                // We assume this won't be null when this Runnable function fires...
+                                writeSomethingButton.setEnabled(true);
+                            }
+                        });
+                        makePostAlert.dismiss();
+                    }
+                });
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-        alert.setTitle("Make a Post!");
-        alert.setMessage("now!");
-        alert.setView(inflater.inflate(R.layout.make_post_layout, container, false));
 
-        alert.show();
-
+        writeSomethingButton =  v.findViewById(R.id.writeSomethingButton);
+        writeSomethingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                writeSomethingButton.setEnabled(false);
+                makePostAlert.show();
+            }
+        });
         return v;
+    }
+
+    private void insertPost(String text) {
+        client.insertPost(testUser(), text, testLocation(),
+                getInsertPostCallback(), null);
+    }
+
+    private Callback getInsertPostCallback() {
+        return new Callback() {
+            @Override
+            public void serverRequestCallback(StatusOr<Response> responseOr,
+                                              Map<String, Object> notes) {
+                Response response = responseOr.get();
+                postFeedManager.pokeNew();
+                writeSomethingButton.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        writeSomethingButton.setEnabled(true);
+                    }
+                });
+            }
+        };
     }
 
     @Override
