@@ -46,7 +46,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         ViewGroup parentGroup = (ViewGroup) getWindow().getDecorView().getRootView();
         postView = PostView.newInstance(post, findViewById(R.id.postViewShell),
                 this, parentGroup);
-        postView.disableButtons();
+        postView.disableAllButtons();
 
         client = new ServerClientImp();
         commentFeedManager = new CommentFeedManager(getApplicationContext());

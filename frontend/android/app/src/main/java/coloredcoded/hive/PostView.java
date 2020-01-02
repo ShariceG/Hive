@@ -63,9 +63,7 @@ public class PostView {
         if (postView == null) {
             postView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.post_layout, parent, false);
-            Log.d("LOL", "instantiate: DONT SEE");
         }
-        Log.d("LOL", "instantiate: SEE THIS");
         userTextView = postView.findViewById(R.id.userTextView);
         dateTextView = postView.findViewById(R.id.dateTextView);
         postTextView = postView.findViewById(R.id.postTextView);
@@ -133,10 +131,15 @@ public class PostView {
         });
     }
 
-    public void disableButtons() {
+    public void disableAllButtons() {
         likeButton.setEnabled(false);
         dislikeButton.setEnabled(false);
         commentButton.setEnabled(false);
+    }
+
+    public void disableLikeAndDislikeButtons() {
+        likeButton.setEnabled(false);
+        dislikeButton.setEnabled(false);
     }
 
     public View getPostView() {

@@ -49,7 +49,11 @@ public class PostFeedManager implements PostView.Delegate {
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            return PostView.newViewInstance(getItem(position), postViewDelegate, parent);
+            PostView pv = PostView.newInstance(getItem(position), postViewDelegate, parent);
+            if (disableLikeAndDislikeButtons) {
+                pv.disableLikeAndDislikeButtons();
+            }
+            return pv.getPostView();
         }
     }
 
@@ -59,11 +63,13 @@ public class PostFeedManager implements PostView.Delegate {
     private ListView postFeedListView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Delegate delegate;
+    private boolean disableLikeAndDislikeButtons;
 
     public PostFeedManager(Context context) {
         posts = new ArrayList<>();
         prevQueryMetadata = new QueryMetadata();
         postFeedAdapter = new PostFeedAdapter(context, this, posts);
+        disableLikeAndDislikeButtons = false;
     }
 
     public void configure(ListView listView, SwipeRefreshLayout refreshLayout, Delegate delegate) {
@@ -198,8 +204,22 @@ public class PostFeedManager implements PostView.Delegate {
         reload();
     }
 
+    public void resetData() {
+        posts.clear();
+        prevQueryMetadata = new QueryMetadata();
+    }
+
     public void pokeNew() {
         fetchMorePosts(true);
+    }
+
+    public void resetDataAndPokeNew() {
+        resetData();
+        pokeNew();
+    }
+
+    public void setDisableLikeAndDislikeButtons(boolean set) {
+        disableLikeAndDislikeButtons = set;
     }
 
     @Override
