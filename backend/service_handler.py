@@ -395,6 +395,8 @@ class ServiceHandler(object):
                 else:
                     results = []
         else:
+            # By default, assume we have no older data to serve.
+            qm.has_more_older_data = False
             if params.curr_bottom_cursor_str:
                 cursor = Cursor(urlsafe=params.curr_bottom_cursor_str)
                 results, new_bottom_cursor, more = reverse_query.fetch_page(
