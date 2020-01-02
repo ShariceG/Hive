@@ -14,11 +14,11 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_marginStart="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="68dp"
-            android:layout_marginEnd="287dp"
-            android:layout_marginRight="287dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="289dp"
+            android:layout_marginRight="289dp"
             android:text="LOOK HERE" />
 
         <TextView
@@ -31,9 +31,9 @@
             android:layout_centerHorizontal="true"
             android:layout_marginStart="-123dp"
             android:layout_marginLeft="-123dp"
-            android:layout_marginTop="69dp"
-            android:layout_marginEnd="92dp"
-            android:layout_marginRight="92dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="101dp"
+            android:layout_marginRight="101dp"
             android:text="TextView" />
 
         <Button
@@ -45,11 +45,11 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_marginStart="9dp"
-            android:layout_marginLeft="9dp"
-            android:layout_marginTop="210dp"
-            android:layout_marginEnd="316dp"
-            android:layout_marginRight="316dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="134dp"
+            android:layout_marginEnd="323dp"
+            android:layout_marginRight="323dp"
             android:text="Like" />
 
         <Button
@@ -61,11 +61,12 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_marginStart="99dp"
-            android:layout_marginLeft="99dp"
-            android:layout_marginTop="211dp"
-            android:layout_marginEnd="158dp"
-            android:layout_marginRight="158dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="129dp"
+            android:layout_marginLeft="129dp"
+            android:layout_marginTop="133dp"
+            android:layout_marginEnd="128dp"
+            android:layout_marginRight="128dp"
             android:text="Comment" />
 
         <Button
@@ -77,28 +78,28 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_marginStart="295dp"
-            android:layout_marginLeft="295dp"
-            android:layout_marginTop="210dp"
-            android:layout_marginEnd="18dp"
-            android:layout_marginRight="18dp"
+            android:layout_marginStart="302dp"
+            android:layout_marginLeft="302dp"
+            android:layout_marginTop="133dp"
+            android:layout_marginEnd="11dp"
+            android:layout_marginRight="11dp"
             android:text="Dislike" />
 
         <TextView
             android:id="@+id/postTextView"
-            android:layout_width="394dp"
-            android:layout_height="101dp"
+            android:layout_width="390dp"
+            android:layout_height="100dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginStart="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="94dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginRight="12dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="31dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginRight="0dp"
             android:text="TextView" />
 
 </RelativeLayout>

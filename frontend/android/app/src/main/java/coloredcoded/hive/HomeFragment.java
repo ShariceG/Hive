@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
         makePostAlert.setView(makePostView);
         makePostAlert.setCancelable(false);
         makePostAlert.setCanceledOnTouchOutside(false);
+        makePostAlert.getWindow().getAttributes().gravity = Gravity.TOP;
         makePostView.findViewById(R.id.makePostButton).setOnClickListener(
                 new View.OnClickListener() {
             @Override
@@ -90,13 +92,14 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
                     }
                 });
 
-
         writeSomethingButton =  v.findViewById(R.id.writeSomethingButton);
         writeSomethingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 writeSomethingButton.setEnabled(false);
                 makePostAlert.show();
+                makePostAlert.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                        makePostAlert.getWindow().getAttributes().height);
             }
         });
         return v;
@@ -114,6 +117,8 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
                                               Map<String, Object> notes) {
                 Response response = responseOr.get();
                 postFeedManager.pokeNew();
+                EditText et = makePostView.findViewById(R.id.postEditText);
+                et.getText().clear();
                 writeSomethingButton.post(new Runnable() {
                     @Override
                     public void run() {

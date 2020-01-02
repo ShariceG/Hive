@@ -11,19 +11,19 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="2dp"
         android:layout_marginLeft="2dp"
-        android:layout_marginTop="115dp"
+        android:layout_marginTop="117dp"
         android:text="Cancel" />
 
     <Button
         android:id="@+id/makePostButton"
-        android:layout_width="152dp"
+        android:layout_width="148dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="118dp"
-        android:layout_marginEnd="9dp"
-        android:layout_marginRight="9dp"
+        android:layout_marginTop="116dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:text="Post" />
 
     <EditText
@@ -38,5 +38,6 @@
         android:layout_marginTop="0dp"
         android:ems="10"
         android:gravity="start|top|left"
+        android:hint="Write Post"
         android:inputType="textMultiLine" />
 </RelativeLayout>

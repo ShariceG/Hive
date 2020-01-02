@@ -38,7 +38,8 @@
         android:layout_marginBottom="3dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name" />
+        android:hint="Write Comment"
+        android:text="" />
 
     <Button
         android:id="@+id/makeCommentButton"
@@ -54,5 +55,5 @@
         android:layout_marginBottom="6dp"
         android:layout_toEndOf="@+id/commentEditText"
         android:layout_toRightOf="@+id/commentEditText"
-        android:text="Button" />
+        android:text="Comment" />
 </RelativeLayout>
