@@ -48,6 +48,10 @@ public class Location implements Serializable {
 		public String getCountry() {
 			return country;
 		}
+
+		public String toString() {
+			return city + ", " + country;
+		}
 		
 		public JSONObject toJSON() {
 			JSONObject json = new JSONObject();
@@ -114,6 +118,10 @@ public class Location implements Serializable {
 
 	public String getLongitude() {
 		return lonStr;
+	}
+
+	public String toString() {
+		return toJSON().toJSONString();
 	}
 
 	public JSONObject toJSON() {
