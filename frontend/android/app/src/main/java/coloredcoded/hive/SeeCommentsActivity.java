@@ -33,6 +33,9 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
     private PostView postView;
     private Post post;
     private Button makeCommentButton;
+    private EditText commentEditText;
+    // Disallow the ability to make a comment.
+    private boolean disallowMakingComments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         // extra information regarding the post whose comments we are displaying.
         Intent intent = getIntent();
         post = (Post) intent.getSerializableExtra("post");
+        disallowMakingComments = intent.getBooleanExtra("disallowMakingComments", false);
         ViewGroup parentGroup = (ViewGroup) getWindow().getDecorView().getRootView();
         postView = PostView.newInstance(post, findViewById(R.id.postViewShell),
                 this, parentGroup);
@@ -52,20 +56,26 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         commentFeedManager = new CommentFeedManager(getApplicationContext());
         commentFeedManager.configure((ListView) findViewById(R.id.commentFeedListView),
                 (SwipeRefreshLayout) findViewById(R.id.commentFeedSwipeRefresh), this);
+        commentEditText = findViewById(R.id.commentEditText);
+        if (disallowMakingComments) {
+            commentEditText.setVisibility(View.INVISIBLE);
+        }
 
         makeCommentButton = findViewById(R.id.makeCommentButton);
         makeCommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 makeCommentButton.setEnabled(false);
-                EditText et = findViewById(R.id.commentEditText);
-                String text = et.getText().toString();
+                String text = commentEditText.getText().toString();
                 if (text.isEmpty()) {
                     return;
                 }
                 insertComment(text);
             }
         });
+        if (disallowMakingComments) {
+            makeCommentButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void insertComment(String text) {
@@ -80,16 +90,15 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
                                               Map<String, Object> notes) {
                 Response response = responseOr.get();
                 commentFeedManager.pokeNew();
-                final EditText et = findViewById(R.id.commentEditText);
-                et.post(new Runnable() {
+                commentEditText.post(new Runnable() {
                     @Override
                     public void run() {
-                        et.getText().clear();
-                        et.clearFocus();
+                        commentEditText.getText().clear();
+                        commentEditText.clearFocus();
                         // Hide keyboard
                         InputMethodManager mgr = (InputMethodManager) getSystemService(
                                 Context.INPUT_METHOD_SERVICE);
-                        mgr.hideSoftInputFromWindow(et.getWindowToken(), 0);
+                        mgr.hideSoftInputFromWindow(commentEditText.getWindowToken(), 0);
                     }
                 });
                 makeCommentButton.post(new Runnable() {
@@ -128,6 +137,10 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
     @Override
     public void performAction(PostView postView, ActionType actionType) {
         // Ignoring for now.
+    }
+
+    public void setDisallowMakingComments(boolean disallow) {
+        disallowMakingComments = disallow;
     }
 
     private Location testLocation() {

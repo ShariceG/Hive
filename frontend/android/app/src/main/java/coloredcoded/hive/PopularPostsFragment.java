@@ -1,12 +1,11 @@
 package coloredcoded.hive;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
@@ -89,14 +88,19 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
                 }
                 popularLocations.clear();
                 popularLocations.addAll(response.getLocations());
-                popularAdapter.notifyDataSetChanged();
-                boolean firstTime = currentLocation == null;
-                currentLocation = popularLocations.get(0);
-                if (firstTime) {
-                    // This is the first time we're doing this so lets have the posts load without
-                    // having a user needing to click on it.
-                    postFeedManager.resetDataAndPokeNew();
-                }
+                popularRecyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        popularAdapter.notifyDataSetChanged();
+                        boolean firstTime = currentLocation == null;
+                        currentLocation = popularLocations.get(0);
+                        if (firstTime) {
+                            // This is the first time we're doing this so lets have the posts load without
+                            // having a user needing to click on it.
+                            postFeedManager.resetDataAndPokeNew();
+                        }
+                    }
+                });
             }
         };
     }
@@ -117,7 +121,10 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
     // PostFeedManager overrides.
     @Override
     public void showComments(PostView postView) {
-
+        Intent intent = new Intent(getActivity(), SeeCommentsActivity.class);
+        intent.putExtra("post", postView.getPost());
+        intent.putExtra("disallowMakingComments", true);
+        getActivity().startActivity(intent);
     }
 
     @Override
