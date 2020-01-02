@@ -9,15 +9,15 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp" />
+        android:layout_marginTop="47dp" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/commentFeedSwipeRefresh"
         android:layout_width="match_parent"
-        android:layout_height="467dp"
+        android:layout_height="495dp"
         android:layout_above="@+id/commentEditText"
         android:layout_below="@+id/postViewShell"
-        android:layout_marginTop="-1dp"
+        android:layout_marginTop="0dp"
         android:layout_marginBottom="3dp">
 
         <ListView
@@ -56,4 +56,11 @@
         android:layout_toEndOf="@+id/commentEditText"
         android:layout_toRightOf="@+id/commentEditText"
         android:text="Comment" />
+
+    <Button
+        android:id="@+id/seeCommentsBackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="Back" />
 </RelativeLayout>

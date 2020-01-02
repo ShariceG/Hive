@@ -76,6 +76,14 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         if (disallowMakingComments) {
             makeCommentButton.setVisibility(View.INVISIBLE);
         }
+
+        Button backButton = findViewById(R.id.seeCommentsBackButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();  // Pop activity off the stack.
+            }
+        });
     }
 
     private void insertComment(String text) {
