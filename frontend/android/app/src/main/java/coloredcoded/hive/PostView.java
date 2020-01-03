@@ -102,6 +102,7 @@ public class PostView {
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                disableLikeAndDislikeButtons();
                 v.setEnabled(false);
                 switch (post.getUserActionType()) {
                     case NO_ACTION:
@@ -117,6 +118,7 @@ public class PostView {
         dislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                disableLikeAndDislikeButtons();
                 v.setEnabled(false);
                 switch (post.getUserActionType()) {
                     case NO_ACTION:

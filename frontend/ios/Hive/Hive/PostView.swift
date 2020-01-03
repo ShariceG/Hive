@@ -73,12 +73,16 @@ class PostView: UITableViewCell {
         dateLabel.text = self.timestampToDate(timestampSec: post.creationTimestampSec)
         self.post = post
         
+        disableLikeAndDislikeButtons()
+    }
+    
+    public func disableLikeAndDislikeButtons() {
         dislikeBn.isEnabled = false
         likeBn.isEnabled = false
     }
     
     @IBAction func dislikeBnAction(_ sender: UIButton) {
-        sender.isEnabled = false
+        disableLikeAndDislikeButtons()
         switch post.userActionType {
         case ActionType.NO_ACTION, ActionType.LIKE:
             delegate.performAction(postView: self, actionType: ActionType.DISLIKE)
@@ -89,7 +93,7 @@ class PostView: UITableViewCell {
         }
     }
     @IBAction func likeBnAction(_ sender: UIButton) {
-        sender.isEnabled = false
+        disableLikeAndDislikeButtons()
         switch post.userActionType {
         case ActionType.NO_ACTION, ActionType.DISLIKE:
             delegate.performAction(postView: self, actionType: ActionType.LIKE)
