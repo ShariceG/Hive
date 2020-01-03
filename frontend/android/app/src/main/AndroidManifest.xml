@@ -28,6 +28,8 @@
             android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".MapActivity"/>
+        <activity
+            android:name=".PostFeedFromMapActivity"/>
     </application>
 
 </manifest>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/mapPostFeedBackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="59dp"
+        android:text="Back" />
+
+    <TextView
+        android:id="@+id/locationTextView"
+        android:layout_width="393dp"
+        android:layout_height="58dp"
+        android:gravity="center"
+        android:text=""
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textStyle="bold" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/mapPostFeedSwipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="667dp">
+
+        <ListView
+            android:id="@+id/mapPostFeedListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</LinearLayout>
