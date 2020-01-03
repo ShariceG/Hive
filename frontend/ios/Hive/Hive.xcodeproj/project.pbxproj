@@ -28,6 +28,8 @@
 		13AE7A6521661419003C898A /* ServerStatusCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13AE7A6421661419003C898A /* ServerStatusCode.swift */; };
 		13B74A70216AA4F100A64216 /* PostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13B74A6F216AA4F100A64216 /* PostView.swift */; };
 		13B74A72216ABF4D00A64216 /* PostView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B74A71216ABF4C00A64216 /* PostView.xib */; };
+		BA23FC6823BFDD08002911B5 /* MakePostView.xib in Resources */ = {isa = PBXBuildFile; fileRef = BA23FC6723BFDD08002911B5 /* MakePostView.xib */; };
+		BA23FC6A23BFEB7A002911B5 /* MakePostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA23FC6923BFEB7A002911B5 /* MakePostView.swift */; };
 		BA376F242335E25200B66991 /* CommentFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA376F232335E25200B66991 /* CommentFeedView.swift */; };
 		BA376F28233752B200B66991 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA376F27233752B200B66991 /* MenuViewController.swift */; };
 		BA376F2A23375B4C00B66991 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA376F2923375B4C00B66991 /* MapViewController.swift */; };
@@ -63,6 +65,8 @@
 		13AE7A6421661419003C898A /* ServerStatusCode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerStatusCode.swift; sourceTree = "<group>"; };
 		13B74A6F216AA4F100A64216 /* PostView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostView.swift; sourceTree = "<group>"; };
 		13B74A71216ABF4C00A64216 /* PostView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PostView.xib; sourceTree = "<group>"; };
+		BA23FC6723BFDD08002911B5 /* MakePostView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MakePostView.xib; sourceTree = "<group>"; };
+		BA23FC6923BFEB7A002911B5 /* MakePostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MakePostView.swift; sourceTree = "<group>"; };
 		BA376F232335E25200B66991 /* CommentFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentFeedView.swift; sourceTree = "<group>"; };
 		BA376F27233752B200B66991 /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		BA376F2923375B4C00B66991 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -113,6 +117,7 @@
 			children = (
 				138E9356216C1E58003DC7FA /* CommentView.xib */,
 				13B74A71216ABF4C00A64216 /* PostView.xib */,
+				BA23FC6723BFDD08002911B5 /* MakePostView.xib */,
 			);
 			name = xibs;
 			sourceTree = "<group>";
@@ -175,6 +180,7 @@
 				E0D91F3521D803F0007E6916 /* PopularCollectionViewCell.swift */,
 				BA376F2B233765FF00B66991 /* PostFeedManager.swift */,
 				BA376F232335E25200B66991 /* CommentFeedView.swift */,
+				BA23FC6923BFEB7A002911B5 /* MakePostView.swift */,
 			);
 			name = customViews;
 			sourceTree = "<group>";
@@ -243,6 +249,7 @@
 				138E9358216C1E58003DC7FA /* CommentView.xib in Resources */,
 				13AE7A472165F182003C898A /* Assets.xcassets in Resources */,
 				13B74A72216ABF4D00A64216 /* PostView.xib in Resources */,
+				BA23FC6823BFDD08002911B5 /* MakePostView.xib in Resources */,
 				13AE7A452165F182003C898A /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -266,6 +273,7 @@
 				13A3771F2167417A001EA8A2 /* ServerClient.swift in Sources */,
 				BA376F2A23375B4C00B66991 /* MapViewController.swift in Sources */,
 				13AE7A532165F346003C898A /* ActionType.swift in Sources */,
+				BA23FC6A23BFEB7A002911B5 /* MakePostView.swift in Sources */,
 				13AE7A402165F182003C898A /* AppDelegate.swift in Sources */,
 				BA376F242335E25200B66991 /* CommentFeedView.swift in Sources */,
 				13A5CC802166E5B10026F7C7 /* Response.swift in Sources */,
