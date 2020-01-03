@@ -3,6 +3,8 @@
     package="coloredcoded.hive">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBlUbc5jCpNOjc9rGUPWalxVfNKmTQhXKU"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +26,8 @@
         <activity
             android:name=".SeeCommentsActivity"
             android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".MapActivity"/>
     </application>
 
 </manifest>
