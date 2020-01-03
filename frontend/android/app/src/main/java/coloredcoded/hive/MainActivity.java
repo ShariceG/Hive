@@ -19,3 +19,9 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setCurrentItem(viewPagerAdapter.getDefaultFragmentIndex());
     }
 }
+
+/*
+No indication that you can swipe left and right
+Write Something -> change to icon with pencil and circle
+Dynamic counter for character limit in post view
+ */
