@@ -16,7 +16,7 @@ import uuid
 import sys
 
 # Max # of posts to return to a client
-POST_QUERY_LIMIT = 10000
+POST_QUERY_LIMIT = 3
 
 # Max # of comments to return to a client
 COMMENT_QUERY_LIMIT = 10000
