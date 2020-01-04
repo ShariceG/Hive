@@ -379,21 +379,23 @@ class ServiceHandler(object):
                     qm.has_more_older_data = more  # does this make sense??
             else:
                 cursor = Cursor(urlsafe=params.curr_top_cursor_str)
-                # With a forward_query, the bottom_cursor is the new top.
-                results, bottom_cursor, _ = forward_query.fetch_page(
+                # With a forward_query, the bottom_cursor eventually becomes the
+                # new top. So we get the new posts so we can figure out what
+                # the new top cursor should be, ignoring the results.
+                _, bottom_cursor, _ = forward_query.fetch_page(
                     fetch_limit, start_cursor=cursor)
-                # According to GAE docs, there's a chance that a None cursor can
-                # be returned if query reaches end of results. So this accounts
-                # for that. Normally, a None cursor would indicates that there
-                # aren't results, period, but in this case, we have to check
-                # the results list explicitly.
-                if not bottom_cursor:
-                    if not results:
-                        results = []
-                elif not self._cursors_are_eq(cursor, bottom_cursor):
+                if (bottom_cursor and
+                    not self._cursors_are_eq(cursor, bottom_cursor)):
                     qm.new_top_cursor_str = bottom_cursor.urlsafe()
-                else:
-                    results = []
+
+                # Then we fetch again, this time from the new top cursor, to the
+                # original bottom cursor so we can grab all the posts that we
+                # have served the client thus far. This is so that if there are
+                # any updates to any posts, the client can get them.
+                results, _, _ = reverse_query.fetch_page(
+                    page_size=sys.getsizeof(int()),
+                    start_cursor=Cursor(urlsafe=qm.new_top_cursor_str),
+                    end_cursor=Cursor(urlsafe=params.curr_bottom_cursor_str))
         else:
             # By default, assume we have no older data to serve.
             qm.has_more_older_data = False

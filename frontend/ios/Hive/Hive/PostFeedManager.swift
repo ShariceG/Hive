@@ -65,6 +65,7 @@ class PostFeedManager: NSObject, PostViewDelegate {
     // Called by Controller to give us more hosts.
     func addMorePosts(morePosts: Array<Post>, newMetadata: QueryMetadata) {
         self.prevFetchQueryMetadata.updateMetadata(newMetadata: newMetadata)
+        posts.removeAll()
         posts.append(contentsOf: morePosts)
         posts = Array(Set(posts))
         posts = posts.sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
