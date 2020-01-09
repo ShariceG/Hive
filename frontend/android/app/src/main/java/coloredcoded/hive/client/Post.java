@@ -1,14 +1,10 @@
 package coloredcoded.hive.client;
 
-import android.util.Log;
-
 import androidx.annotation.Nullable;
 
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
-import java.util.Objects;
-import java.util.UUID;
 
 /**
  * 

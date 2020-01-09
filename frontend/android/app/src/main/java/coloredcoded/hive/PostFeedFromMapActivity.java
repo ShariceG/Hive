@@ -67,11 +67,11 @@ public class PostFeedFromMapActivity extends AppCompatActivity implements PostFe
 
     @Override
     public void fetchMorePosts(QueryParams queryParams) {
-        client.getAllPostsAtLocation(testUser(), location, queryParams,
-                getAllPostsAtLocationCallback(), null);
+        client.getAllPopularPostsAtLocation(location, queryParams,
+                getAllPopularPostsAtLocationCallback(), null);
     }
 
-    public Callback getAllPostsAtLocationCallback() {
+    public Callback getAllPopularPostsAtLocationCallback() {
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
@@ -85,9 +85,5 @@ public class PostFeedFromMapActivity extends AppCompatActivity implements PostFe
 
     @Override
     public void performAction(Post post, ActionType actionType) {
-    }
-
-    private String testUser() {
-        return "user1";
     }
 }

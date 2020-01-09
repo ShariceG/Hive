@@ -60,6 +60,7 @@ class ServerClient {
     private static let GET_ALL_POSTS_BY_USER_PATH: String = "app.get_all_posts_by_user?"
     private static let GET_ALL_POSTS_COMMENTED_ON_BY_USER_PATH: String = "app.get_all_posts_commented_on_by_user?"
     private static let UPDATE_POST_PATH: String = "app.update_post?"
+    private static let UPDATE_COMMENT_PATH: String = "app.update_comment?"
     private static let GET_ALL_POPULAR_POSTS_AT_LOCATION: String = "app.get_all_popular_posts_at_location?"
     private static let GET_POPULAR_LOCATIONS: String = "app.get_popular_locations?"
     
@@ -128,6 +129,16 @@ class ServerClient {
         request["phone_number"] = phoneNumber
     
         let path: String = constructIncompleteUrlPath() + ServerClient.CREATE_USER_PATH
+        executePost(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
+    }
+    
+    public func updateComment(commentId: String, username: String, actionType: ActionType, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
+        var request: [String:Any] = [String:Any]()
+        request["username"] = username
+        request["comment_id"] = commentId
+        request["action_type"] = ActionType.ToString(actionType: actionType)
+    
+        let path: String = constructIncompleteUrlPath() + ServerClient.UPDATE_POST_PATH
         executePost(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
     }
     

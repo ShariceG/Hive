@@ -22,6 +22,8 @@ public interface ServerClient {
                     Callback callback, Map<String, Object> notes);
 	void updatePost(String username, String postId, ActionType actionType,
                     Callback callback, Map<String, Object> notes);
+	void updateComment(String username, String commentId, ActionType actionType,
+					Callback callback, Map<String, Object> notes);
 	void getAllPostsAtLocation(String username, Location location, QueryParams queryParams,
                                Callback callback, Map<String, Object> notes);
 	void getAllPostsByUser(String username, QueryParams params,

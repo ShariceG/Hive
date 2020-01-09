@@ -138,6 +138,45 @@ class ServiceHandler(object):
                 status=Status(status_code=StatusCode.UNSUPPORTED_ACTION_TYPE))
         return UpdatePostResponse(status=ok_status)
 
+    def handle_update_comment(self, request):
+        if ndb.Key('CommentModel', request.comment_id).get() is None:
+            return UpdateCommentResponse(
+                status=Status(status_code=StatusCode.COMMENT_NOT_FOUND))
+
+        action_type = request.action_type
+        ok_status = Status(status_code=StatusCode.OK)
+        results = ndb.gql(('SELECT * FROM ActionModel '
+                          'WHERE Username = :1 AND '
+                          'CommentID = :2'),
+                          request.username, request.comment_id)
+
+        if results.count() > 1:
+            print 'ERROR: Got %d ActionType query results.' % results.count()
+            return UpdateCommentResponse(
+                status=Status(status_code=StatusCode.INTERNAL_ERROR))
+
+        action_entity = results.get()
+        if action_type == ActionType.NO_ACTION:
+            if not action_entity is None:
+                ndb.Key('ActionModel', action_entity.key.id()).delete()
+        elif (action_type == ActionType.LIKE or
+            action_type == ActionType.DISLIKE):
+            if action_entity is None:
+                model.ActionModel(
+                    id=uuid.uuid4().hex,
+                    Username=request.username,
+                    CommentID=request.comment_id,
+                    ActionType=str(action_type),
+                    CreationTimestampSec=time.time()).put()
+            else:
+                action_entity.ActionType = str(action_type)
+                action_entity.put()
+        else:
+            print 'Unsupported ActionType: %d ' % action_type
+            return UpdateCommentResponse(
+                status=Status(status_code=StatusCode.UNSUPPORTED_ACTION_TYPE))
+        return UpdateCommentResponse(status=ok_status)
+
     def handle_insert_comment(self, request):
         if not self._user_exists(request.username):
             return InsertCommentResponse(

@@ -35,6 +35,7 @@ public class ServerClientImp implements ServerClient {
 	private static final String GET_ALL_POSTS_COMMENTED_ON_BY_USER_PATH =
 			"app.get_all_posts_commented_on_by_user?";
 	private static final String UPDATE_POST_PATH = "app.update_post?";
+	private static final String UPDATE_COMMENT_PATH = "app.update_comment?";
 	private static final String GET_ALL_POPULAR_POSTS_AT_LOCATION_PATH =
 			"app.get_all_popular_posts_at_location?";
     private static final String GET_POPULAR_LOCATIONS_PATH = "app.get_popular_locations?";
@@ -130,8 +131,20 @@ public class ServerClientImp implements ServerClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void updatePost(String username, String postId, ActionType actionType, 
+	public void updateComment(String username, String commentId, ActionType actionType,
 			Callback callback, Map<String, Object> notes) {
+		JSONObject request = new JSONObject();
+		request.put("username", username);
+		request.put("comment_id", commentId);
+		request.put("action_type", actionType.name() + "");
+
+		String path = constructIncompleteUrlPath() + UPDATE_COMMENT_PATH;
+		executeHttpRequestAsync("POST", path, request, callback, notes);
+	}
+
+	@SuppressWarnings("unchecked")
+	public void updatePost(String username, String postId, ActionType actionType,
+						   Callback callback, Map<String, Object> notes) {
 		JSONObject request = new JSONObject();
 		request.put("username", username);
 		request.put("post_id", postId);
