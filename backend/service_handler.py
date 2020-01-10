@@ -228,7 +228,7 @@ class ServiceHandler(object):
         for post_model in results:
             the_post = self._helper.post_model_to_proto(post_model)
             self._fill_post_likes_dislikes_comment_count(the_post)
-            self._fill_requesting_user_action(request.username, the_post)
+            self._fill_post_requesting_user_action(request.username, the_post)
             post_list.append(the_post)
         return GetAllPostsByUserResponse(
             posts=post_list, query_metadata=metadata,
@@ -252,7 +252,7 @@ class ServiceHandler(object):
         for post_model in results:
             the_post = self._helper.post_model_to_proto(post_model)
             self._fill_post_likes_dislikes_comment_count(the_post)
-            self._fill_requesting_user_action(request.username, the_post)
+            self._fill_post_requesting_user_action(request.username, the_post)
             post_list.append(the_post)
         return GetAllPostsCommentedOnByUserResponse(
             posts=post_list, query_metadata=metadata,
@@ -270,8 +270,13 @@ class ServiceHandler(object):
 
         comment_list = []
         for comment_model in comments:
-            comment_list.append(self._helper.comment_model_to_proto(
-                comment_model))
+            the_comment = self._helper.comment_model_to_proto(
+                comment_model)
+            self._fill_comment_likes_dislikes(the_comment)
+            self._fill_comment_requesting_user_action(request.username,
+                the_comment)
+            comment_list.append(the_comment)
+
         return GetAllCommentsForPostResponse(
             comments=comment_list,
             query_metadata=metadata,
@@ -304,7 +309,7 @@ class ServiceHandler(object):
         for post_model in results:
             the_post = self._helper.post_model_to_proto(post_model)
             self._fill_post_likes_dislikes_comment_count(the_post)
-            self._fill_requesting_user_action(request.username, the_post)
+            self._fill_post_requesting_user_action(request.username, the_post)
             post_list.append(the_post)
         return GetAllPostsAtLocationResponse(
             posts=post_list, query_metadata=metadata,
@@ -473,21 +478,44 @@ class ServiceHandler(object):
                                   'WHERE PostID = :1'), post_id).count()
         return likes, dislikes, number_of_comments
 
+    def _get_comment_likes_dislikes(self, comment_id):
+        likes = ndb.gql(('SELECT * FROM ActionModel WHERE CommentID = :1 '
+                            'AND ActionType = :2'), comment_id, 'LIKE').count()
+        dislikes = ndb.gql(('SELECT * FROM ActionModel '
+                    'WHERE CommentID = :1 AND ActionType = :2'),
+                    comment_id, 'DISLIKE').count()
+        return likes, dislikes
+
     def _fill_post_likes_dislikes_comment_count(self, post):
         info = self._get_post_likes_dislikes_comment_count(post.post_id)
         post.likes = info[0]
         post.dislikes = info[1]
         post.number_of_comments = info[2]
 
-    def _fill_requesting_user_action(self, username, post):
+    def _fill_comment_likes_dislikes(self, comment):
+        info = self._get_post_likes_dislikes_comment_count(comment.comment_id)
+        comment.likes = info[0]
+        comment.dislikes = info[1]
+
+    def _fill_post_requesting_user_action(self, username, post):
         results = ndb.gql(('SELECT * FROM ActionModel '
-                            'WHERE Username = :1 AND PostID = :2'),
-                            username, post.post_id)
+                                'WHERE Username = :1 AND PostID = :2'),
+                                username, post.post_id)
         if results.count() == 0:
             post.user_action_type = ActionType.NO_ACTION
         else:
             action = self._helper.action_model_to_proto(results.get())
             post.user_action_type = action.action_type
+
+    def _fill_comment_requesting_user_action(self, username, comment):
+        results = ndb.gql(('SELECT * FROM ActionModel '
+                            'WHERE Username = :1 AND CommentID = :2'),
+                            username, comment.comment_id)
+        if results.count() == 0:
+            comment.user_action_type = ActionType.NO_ACTION
+        else:
+            action = self._helper.action_model_to_proto(results.get())
+            comment.user_action_type = action.action_type
 
     def _get_area_latitude_longitude(self, lat, lon):
         dec = LOCATION_QUERY_DECIMAL_PLACES

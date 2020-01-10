@@ -13,10 +13,12 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import coloredcoded.hive.client.ActionType;
 import coloredcoded.hive.client.Callback;
+import coloredcoded.hive.client.Comment;
 import coloredcoded.hive.client.Location;
 import coloredcoded.hive.client.Post;
 import coloredcoded.hive.client.QueryParams;
@@ -137,6 +139,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         };
     }
 
+    // PostFeedManager Delegate overrides
     @Override
     public void commentButtonClick(PostView postView) {
         // Ignoring because we are already in the comment view.
@@ -145,6 +148,28 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
     @Override
     public void performAction(PostView postView, ActionType actionType) {
         // Ignoring for now.
+    }
+
+    // CommentFeedManager Delegate overrides
+    @Override
+    public void performAction(Comment comment, ActionType actionType) {
+        Map<String, Object> notes = new HashMap<>();
+        notes.put("commentId", comment.getCommentId());
+        notes.put("actionType", actionType);
+        client.updateComment(testUser(), comment.getPostId(), actionType,
+                updateCommentCallback(), notes);
+    }
+
+    public Callback updateCommentCallback() {
+        return new Callback() {
+            @Override
+            public void serverRequestCallback(StatusOr<Response> responseOr,
+                                              Map<String, Object> notes) {
+                Response response = responseOr.get();
+                commentFeedManager.updateActionType(
+                        (String)notes.get("commentId"), (ActionType)notes.get("actionType"));
+            }
+        };
     }
 
     public void setDisallowMakingComments(boolean disallow) {

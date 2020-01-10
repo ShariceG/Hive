@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import coloredcoded.hive.client.ActionType;
 import coloredcoded.hive.client.Comment;
 import coloredcoded.hive.client.QueryMetadata;
 import coloredcoded.hive.client.QueryParams;
@@ -27,6 +28,7 @@ public class CommentFeedManager implements CommentView.Delegate {
     // Will delegate tasks to the activity that created it.
     public interface Delegate {
         void fetchMoreComments(QueryParams queryParams);
+        void performAction(Comment comment, ActionType actionType);
     }
 
     private class CommentFeedAdapter extends ArrayAdapter<Comment> {
@@ -122,15 +124,21 @@ public class CommentFeedManager implements CommentView.Delegate {
 
     public void addMoreComments(ArrayList<Comment> moreComments, QueryMetadata newMetadata) {
         prevQueryMetadata.updateMetadata(newMetadata);
-        comments.addAll(moreComments);
-        // Remove duplicates, if any.
-        Iterator<Comment> itr = new HashSet<>(comments).iterator();
-        comments.clear();
-        while (itr.hasNext()) {
-            comments.add(itr.next());
+
+        HashSet<Comment> set = new HashSet<>(comments);
+        for (Comment comment : moreComments) {
+            set.add(comment);
         }
 
-        // Sort comments.
+        // Don't include expired hosts while transferring from set to post.
+        Iterator<Comment> itr = set.iterator();
+        comments.clear();
+        while (itr.hasNext()) {
+            Comment p = itr.next();
+            comments.add(p);
+        }
+
+        // Sort posts.
         Collections.sort(comments, new Comparator<Comment>() {
             @Override
             public int compare(Comment o1, Comment o2) {
@@ -138,6 +146,58 @@ public class CommentFeedManager implements CommentView.Delegate {
                         o1.getCreationTimestampSec());
             }
         });
+
         reload();
     }
+
+    public void updateActionType(String commentId, ActionType actionType) {
+        // Find comment with id.
+        Comment comment = null;
+        Iterator<Comment> itr = comments.iterator();
+        while (itr.hasNext()) {
+            comment = itr.next();
+            if (comment.getCommentId().equals(commentId)) {
+                break;
+            }
+        }
+
+        // Now change the # of likes and dislikes by 1 depending on the old and
+        // new action type.
+        ActionType newActionType = actionType;
+        ActionType oldActionType = comment.getUserActionType();
+        if (oldActionType == ActionType.LIKE) {
+            comment.addLikes(-1);
+            if (newActionType == ActionType.DISLIKE) {
+                comment.addDislikes(1);
+            }
+        }
+        if (oldActionType == ActionType.DISLIKE) {
+            comment.addDislikes(-1);
+            if (newActionType == ActionType.LIKE) {
+                comment.addLikes(1);
+            }
+        }
+        if (oldActionType == ActionType.NO_ACTION) {
+            switch (newActionType) {
+                case LIKE:
+                    comment.addLikes(1);
+                    break;
+                case DISLIKE:
+                    comment.addDislikes(1);
+                    break;
+                case NO_ACTION:
+                    Log.e("updateActionType",
+                            "WARNING: This shouldn't happen but its not really an error.");
+                    break;
+            }
+        }
+        comment.setUserActionType(newActionType);
+        reload();
+    }
+
+    @Override
+    public void performAction(CommentView commentView, ActionType actionType) {
+        delegate.performAction(commentView.getComment(), actionType);
+    }
+
 }
