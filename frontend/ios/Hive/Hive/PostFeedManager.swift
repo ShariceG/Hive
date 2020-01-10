@@ -10,9 +10,9 @@ import Foundation
 import UIKit
 
 protocol PostFeedDelegate: class {
-    func showComments(postView: PostView);
-    func fetchMorePosts(queryParams: QueryParams);
-    func performAction(post: Post, actionType: ActionType);
+    func showComments(postView: PostView)
+    func fetchMorePosts(queryParams: QueryParams)
+    func performAction(post: Post, actionType: ActionType)
 }
 
 class PostFeedManager: NSObject, PostViewDelegate {

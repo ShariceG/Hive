@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Comment {
+class Comment: Hashable, Equatable {
     private(set) var commentId: String
     // Username of author of comment.
     private(set) var username: String
@@ -22,6 +22,14 @@ class Comment {
     public var userActionType: ActionType
     public var likes: Int
     public var dislikes: Int
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(commentId)
+    }
+    
+    static func ==(left:Comment, right:Comment) -> Bool {
+        return left.commentId == right.commentId
+    }
     
     init(commentId: String, username: String, postId: String, commentText: String, creationTimestampSec: Decimal,  likes: Int, dislikes: Int, userActionType: ActionType) {
         self.commentId = commentId

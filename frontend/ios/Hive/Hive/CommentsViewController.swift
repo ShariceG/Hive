@@ -127,6 +127,38 @@ class CommentsViewController: UIViewController {
             self.commentBn.isEnabled = true
         }
     }
+    
+    private func updateComment(comment: Comment, actionType: ActionType) {
+        client.updateComment(commentId: comment.commentId, username: getTestUser(),
+            actionType: actionType, completion: updateCommentCompletion,
+            notes: ["actionType": actionType, "commentId": comment.commentId])
+    }
+    
+    private func updateCommentCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
+        let baseStr: String = "updateCommentCompletion => "
+        if (responseOr.hasError()) {
+            // Handle likley connection error
+            print(baseStr + "Connection Failure: " + responseOr.getErrorMessage())
+            return
+        }
+        let response = responseOr.get()
+        if (!response.ok()) {
+            // Handle server error
+            print(baseStr + "ServerStatusCode: " + String(describing: response.serverStatusCode))
+            return
+        }
+        if notes == nil {
+            print(baseStr + "Expected notes!")
+            return
+        }
+        let actionType = notes!["actionType"] as! ActionType
+        let commentId = notes!["commentId"] as! String
+        DispatchQueue.main.async {
+            self.commentFeedView.reconfigureWithAction(commentId: commentId, actionType: actionType)
+        }
+    }
+    
+    
 }
 
 // --------------- Extensions ----------------
@@ -161,5 +193,9 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
 extension CommentsViewController: CommentFeedViewDelegate {
     func fetchComments(queryParams: QueryParams) {
         self.getAllPostComments(queryParams: queryParams)
+    }
+    
+    func performAction(comment: Comment, actionType: ActionType) {
+        self.updateComment(comment: comment, actionType: actionType)
     }
 }

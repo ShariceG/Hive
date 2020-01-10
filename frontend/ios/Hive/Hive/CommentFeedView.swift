@@ -9,8 +9,16 @@
 import Foundation
 import UIKit
 
+// Note: This entire file might as well be renamed to CommentFeedManager because
+// that's basically what it is. The only difference is that this class is
+// literally a View where as the PostFeedManager is not. Why did I do it this
+// way instead of being consistent and following the manager pattern? I have no
+// idea, I think i was experimenting on different ways of doing it and I was
+// still learning.
+
 protocol CommentFeedViewDelegate: class {
     func fetchComments(queryParams: QueryParams)
+    func performAction(comment: Comment, actionType: ActionType)
 }
 
 class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, CommentViewDelegate {
@@ -58,6 +66,69 @@ class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, Comm
         self.prevFetchQueryMetadata.updateMetadata(newMetadata: newMetadata)
         comments.append(contentsOf: moreComments)
         comments = comments.sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
+        var set: Set = Set(comments)
+        moreComments.forEach({set.insert($0)})
+        comments = Array(set)
+            .sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
+    }
+    
+    func reconfigureWithAction(commentId: String, actionType: ActionType) {
+        let index = comments.firstIndex(where: {$0.commentId == commentId})
+        if index == nil {
+            return;
+        }
+        let i = index!
+        // filter will return a list but it should be one item long, unless
+        // the post doesn't exist anymore or some weird duplicate error, which
+        // shouldn't happen since we remove duplicates.
+
+        // Now change the # of likes and dislikes by 1 depending on the old and
+        // new action type.
+        let newActionType = actionType
+        let oldActionType = comments[i].userActionType
+        if oldActionType == ActionType.LIKE {
+            switch newActionType {
+            case ActionType.LIKE:
+                comments[i].likes -= 1;
+                break;
+            case ActionType.DISLIKE:
+                comments[i].likes -= 1;
+                comments[i].dislikes += 1;
+                break;
+            case ActionType.NO_ACTION:
+                comments[i].likes -= 1;
+                break;
+            }
+        }
+        if oldActionType == ActionType.DISLIKE {
+            switch newActionType {
+            case ActionType.LIKE:
+                comments[i].dislikes -= 1;
+                comments[i].likes += 1;
+                break;
+            case ActionType.DISLIKE:
+                comments[i].dislikes -= 1;
+                break;
+            case ActionType.NO_ACTION:
+                comments[i].dislikes -= 1;
+                break;
+            }
+        }
+        if oldActionType == ActionType.NO_ACTION {
+            switch newActionType {
+            case ActionType.LIKE:
+                comments[i].likes += 1;
+                break;
+            case ActionType.DISLIKE:
+                comments[i].dislikes += 1;
+                break;
+            case ActionType.NO_ACTION:
+                print("WARNING: This shouldn't happen but its not really an error.")
+                break;
+            }
+        }
+        comments[i].userActionType = newActionType
+        reload()
     }
     
     func fetchMoreComments(getNewer: Bool) {
@@ -70,6 +141,12 @@ class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, Comm
                                               currBottomCursorStr: self.prevFetchQueryMetadata.newBottomCursorStr)
         delegate?.fetchComments(queryParams: params)
     }
+    
+    // CommentViewDelegate overrides
+    
+    func performAction(commentView: CommentView, actionType: ActionType) {
+        delegate!.performAction(comment: commentView.comment!, actionType: actionType)
+    }
 
     // UITableViewDataSource protocol overrides
     
@@ -80,7 +157,6 @@ class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, Comm
     // Asks for cell to display at indexPath
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: COMMENT_VIEW_CELL_REUSE_IDENTIFIER) as! CommentView
-        print("Attempting to show: " + indexPath.description)
         cell.configure(comment: comments[indexPath.section], delegate: self)
         cell.layer.borderWidth = 2
         cell.layer.cornerRadius = 5
