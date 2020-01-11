@@ -25,10 +25,10 @@ public class CommentView {
     private Delegate delegate;
     private Comment comment;
 
-    public static View newInstance(Comment comment, Delegate delegate, ViewGroup parent) {
+    public static CommentView newInstance(Comment comment, Delegate delegate, ViewGroup parent) {
         CommentView view = new CommentView();
         view.configure(comment, delegate, parent);
-        return view.getCommentView();
+        return view;
     }
 
     public void instantiate(ViewGroup parent) {

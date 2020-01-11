@@ -32,7 +32,7 @@ public interface ServerClient {
                                       Callback callback, Map<String, Object> notes);
 	void getAllPostComments(String postId, QueryParams params,
                             Callback callback, Map<String, Object> notes);
-	void getAllPopularPostsAtLocation(Location location, QueryParams params,
+	void getAllPopularPostsAtLocation(String username, Location location, QueryParams params,
                                       Callback callback, Map<String, Object> notes);
 	void getPopularLocations(Callback callback, Map<String, Object> notes);
 	void getAllPostLocations(Callback callback, Map<String, Object> notes);

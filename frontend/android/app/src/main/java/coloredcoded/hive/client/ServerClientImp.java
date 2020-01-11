@@ -64,9 +64,10 @@ public class ServerClientImp implements ServerClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void getAllPopularPostsAtLocation(Location location, QueryParams params, 
+	public void getAllPopularPostsAtLocation(String username, Location location, QueryParams params,
 			Callback callback, Map<String, Object> notes) {
 		JSONObject request = new JSONObject();
+		request.put("username", username);
 		request.put("location", location.toJSON());
 		request.put("query_params", params.toJson());
 

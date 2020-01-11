@@ -20,6 +20,7 @@ class CommentsViewController: UIViewController {
     @IBOutlet weak var commentTextView: UITextView!
     
     private(set) var post: Post? = nil
+    private var disallowInteractingWithComments: Bool = false
     
     private let client: ServerClient = ServerClient()
     
@@ -31,12 +32,21 @@ class CommentsViewController: UIViewController {
         setupCommentTv()
         commentFeedView.configure(delegate: self)
         DispatchQueue.main.async {
+            if self.disallowInteractingWithComments {
+                self.commentBn.isHidden = true
+                self.commentTextView.isHidden = true
+            }
             self.postTableView.reloadData()
         }
     }
     
     public func controllerInit(post: Post) {
         self.post = post
+    }
+    
+    public func controllerInit(post: Post, disallowInteractingWithComments: Bool) {
+        self.post = post
+        self.disallowInteractingWithComments = disallowInteractingWithComments
     }
     
     private func setupCommentTv() {
@@ -171,7 +181,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: PostView = tableView.dequeueReusableCell(withIdentifier: POST_VIEW_CELL_REUSE_IDENTIFIER) as! PostView
-        cell.configureDisableButtons(post: self.post!)
+        cell.configureDisable(post: self.post!)
         cell.layer.borderWidth = 2
         cell.layer.cornerRadius = 5
         cell.layer.borderColor = UIColor.blue.cgColor
@@ -196,6 +206,9 @@ extension CommentsViewController: CommentFeedViewDelegate {
     }
     
     func performAction(comment: Comment, actionType: ActionType) {
+        if self.disallowInteractingWithComments {
+            return
+        }
         self.updateComment(comment: comment, actionType: actionType)
     }
 }

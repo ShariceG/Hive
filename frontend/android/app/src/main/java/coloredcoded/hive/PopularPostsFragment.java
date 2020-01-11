@@ -123,7 +123,7 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
     public void showComments(PostView postView) {
         Intent intent = new Intent(getActivity(), SeeCommentsActivity.class);
         intent.putExtra("post", postView.getPost());
-        intent.putExtra("disallowMakingComments", true);
+        intent.putExtra("disallowCommentInteraction", true);
         getActivity().startActivity(intent);
     }
 
@@ -133,11 +133,11 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
             Log.d("PopularPostsFragment", "No currentLocation set yet.");
             return;
         }
-        client.getAllPostsAtLocation(testUser(), currentLocation, queryParams,
-                getAllPostsAtLocationCallback(), null);
+        client.getAllPopularPostsAtLocation(testUser(), currentLocation, queryParams,
+                getAllPopularPostsAtLocationCallback(), null);
     }
 
-    public Callback getAllPostsAtLocationCallback() {
+    public Callback getAllPopularPostsAtLocationCallback() {
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
@@ -151,7 +151,6 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
 
     @Override
     public void performAction(Post post, ActionType actionType) {
-
     }
 
     private String testUser() {

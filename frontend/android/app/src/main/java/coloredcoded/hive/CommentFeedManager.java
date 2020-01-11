@@ -44,7 +44,11 @@ public class CommentFeedManager implements CommentView.Delegate {
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            return CommentView.newInstance(getItem(position), commentViewDelegate, parent);
+            CommentView view = CommentView.newInstance(getItem(position), commentViewDelegate, parent);
+            if (disableCommentInteraction) {
+                view.disableAllButtons();
+            }
+            return view.getCommentView();
         }
     }
 
@@ -54,11 +58,13 @@ public class CommentFeedManager implements CommentView.Delegate {
     private ListView commentFeedListView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Delegate delegate;
+    private boolean disableCommentInteraction;
 
     public CommentFeedManager(Context context) {
         comments = new ArrayList<>();
         prevQueryMetadata = new QueryMetadata();
         commentFeedAdapter = new CommentFeedAdapter(context, this, comments);
+        disableCommentInteraction = false;
     }
 
     public void configure(ListView listView, SwipeRefreshLayout refreshLayout, Delegate d) {
@@ -198,6 +204,10 @@ public class CommentFeedManager implements CommentView.Delegate {
     @Override
     public void performAction(CommentView commentView, ActionType actionType) {
         delegate.performAction(commentView.getComment(), actionType);
+    }
+
+    public void setDisableCommentInteration(boolean disable) {
+        disableCommentInteraction = disable;
     }
 
 }

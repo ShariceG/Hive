@@ -69,7 +69,8 @@ class PostFeedModalViewController: UIViewController {
         if (segue.identifier == COMMENTS_SEGUE_IDENTIFIER) {
             let postView: PostView = sender as! PostView
             let commentsViewController: CommentsViewController = segue.destination as! CommentsViewController
-            commentsViewController.controllerInit(post: postView.post)
+            commentsViewController.controllerInit(post: postView.post,
+                                                  disallowInteractingWithComments:  true)
             return
         }
     }

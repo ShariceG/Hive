@@ -27,14 +27,12 @@ class CommentView: UITableViewCell {
         get { return _delegate! }
     }
     
-    public func configure(comment: Comment, delegate: CommentViewDelegate) {
-        self.delegate = delegate
+    public func configure(comment: Comment) {
         userLabel.text = comment.username
         commentTextView.text = comment.commentText
         self.comment = comment
         commentDislikeBn.setTitle("Dislike: " + String(comment.dislikes), for: UIControl.State.normal)
         commentLikeBn.setTitle("Like: " + String(comment.likes), for: UIControl.State.normal)
-        self.delegate = delegate
         
         commentLikeBn.isEnabled = true;
         commentDislikeBn.isEnabled = true;
@@ -55,6 +53,16 @@ class CommentView: UITableViewCell {
                 break;
             }
         }
+    }
+    
+    public func configure(comment: Comment, delegate: CommentViewDelegate) {
+        configure(comment: comment)
+        self.delegate = delegate
+    }
+    
+    public func configureDisable(comment: Comment) {
+        configure(comment: comment)
+        self.isUserInteractionEnabled = false
     }
     
     public func disableLikeAndDislikeButtons() {

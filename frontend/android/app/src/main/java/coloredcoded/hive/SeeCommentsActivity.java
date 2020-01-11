@@ -37,7 +37,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
     private Button makeCommentButton;
     private EditText commentEditText;
     // Disallow the ability to make a comment.
-    private boolean disallowMakingComments;
+    private boolean disallowCommentInteraction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,8 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         // extra information regarding the post whose comments we are displaying.
         Intent intent = getIntent();
         post = (Post) intent.getSerializableExtra("post");
-        disallowMakingComments = intent.getBooleanExtra("disallowMakingComments", false);
+        disallowCommentInteraction = intent.getBooleanExtra("disallowCommentInteraction",
+                false);
         ViewGroup parentGroup = (ViewGroup) getWindow().getDecorView().getRootView();
         postView = PostView.newInstance(post, findViewById(R.id.postViewShell),
                 this, parentGroup);
@@ -59,7 +60,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         commentFeedManager.configure((ListView) findViewById(R.id.commentFeedListView),
                 (SwipeRefreshLayout) findViewById(R.id.commentFeedSwipeRefresh), this);
         commentEditText = findViewById(R.id.commentEditText);
-        if (disallowMakingComments) {
+        if (disallowCommentInteraction) {
             commentEditText.setVisibility(View.INVISIBLE);
         }
 
@@ -75,8 +76,9 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
                 insertComment(text);
             }
         });
-        if (disallowMakingComments) {
+        if (disallowCommentInteraction) {
             makeCommentButton.setVisibility(View.INVISIBLE);
+            commentFeedManager.setDisableCommentInteration(disallowCommentInteraction);
         }
 
         Button backButton = findViewById(R.id.seeCommentsBackButton);
@@ -147,7 +149,6 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
 
     @Override
     public void performAction(PostView postView, ActionType actionType) {
-        // Ignoring for now.
     }
 
     // CommentFeedManager Delegate overrides
@@ -170,10 +171,6 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
                         (String)notes.get("commentId"), (ActionType)notes.get("actionType"));
             }
         };
-    }
-
-    public void setDisallowMakingComments(boolean disallow) {
-        disallowMakingComments = disallow;
     }
 
     private Location testLocation() {
