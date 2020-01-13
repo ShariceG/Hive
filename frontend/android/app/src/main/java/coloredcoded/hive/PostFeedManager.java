@@ -134,11 +134,14 @@ public class PostFeedManager implements PostView.Delegate {
 
     public void addMorePosts(ArrayList<Post> morePosts, QueryMetadata newMetadata) {
         prevQueryMetadata.updateMetadata(newMetadata);
-        posts.addAll(morePosts);
 
-        // Remove duplicates, if any.
+        HashSet<Post> set = new HashSet<>(posts);
+        for (Post post : morePosts) {
+            set.add(post);
+        }
+
         // Don't include expired hosts while transferring from set to post.
-        Iterator<Post> itr = new HashSet<>(posts).iterator();
+        Iterator<Post> itr = set.iterator();
         posts.clear();
         while (itr.hasNext()) {
             Post p = itr.next();

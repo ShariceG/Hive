@@ -16,7 +16,7 @@ import uuid
 import sys
 
 # Max # of posts to return to a client
-POST_QUERY_LIMIT = 10000
+POST_QUERY_LIMIT = 3
 
 # Max # of comments to return to a client
 COMMENT_QUERY_LIMIT = 10000
@@ -138,6 +138,45 @@ class ServiceHandler(object):
                 status=Status(status_code=StatusCode.UNSUPPORTED_ACTION_TYPE))
         return UpdatePostResponse(status=ok_status)
 
+    def handle_update_comment(self, request):
+        if ndb.Key('CommentModel', request.comment_id).get() is None:
+            return UpdateCommentResponse(
+                status=Status(status_code=StatusCode.COMMENT_NOT_FOUND))
+
+        action_type = request.action_type
+        ok_status = Status(status_code=StatusCode.OK)
+        results = ndb.gql(('SELECT * FROM ActionModel '
+                          'WHERE Username = :1 AND '
+                          'CommentID = :2'),
+                          request.username, request.comment_id)
+
+        if results.count() > 1:
+            print 'ERROR: Got %d ActionType query results.' % results.count()
+            return UpdateCommentResponse(
+                status=Status(status_code=StatusCode.INTERNAL_ERROR))
+
+        action_entity = results.get()
+        if action_type == ActionType.NO_ACTION:
+            if not action_entity is None:
+                ndb.Key('ActionModel', action_entity.key.id()).delete()
+        elif (action_type == ActionType.LIKE or
+            action_type == ActionType.DISLIKE):
+            if action_entity is None:
+                model.ActionModel(
+                    id=uuid.uuid4().hex,
+                    Username=request.username,
+                    CommentID=request.comment_id,
+                    ActionType=str(action_type),
+                    CreationTimestampSec=time.time()).put()
+            else:
+                action_entity.ActionType = str(action_type)
+                action_entity.put()
+        else:
+            print 'Unsupported ActionType: %d ' % action_type
+            return UpdateCommentResponse(
+                status=Status(status_code=StatusCode.UNSUPPORTED_ACTION_TYPE))
+        return UpdateCommentResponse(status=ok_status)
+
     def handle_insert_comment(self, request):
         if not self._user_exists(request.username):
             return InsertCommentResponse(
@@ -189,7 +228,7 @@ class ServiceHandler(object):
         for post_model in results:
             the_post = self._helper.post_model_to_proto(post_model)
             self._fill_post_likes_dislikes_comment_count(the_post)
-            self._fill_requesting_user_action(request.username, the_post)
+            self._fill_post_requesting_user_action(request.username, the_post)
             post_list.append(the_post)
         return GetAllPostsByUserResponse(
             posts=post_list, query_metadata=metadata,
@@ -213,7 +252,7 @@ class ServiceHandler(object):
         for post_model in results:
             the_post = self._helper.post_model_to_proto(post_model)
             self._fill_post_likes_dislikes_comment_count(the_post)
-            self._fill_requesting_user_action(request.username, the_post)
+            self._fill_post_requesting_user_action(request.username, the_post)
             post_list.append(the_post)
         return GetAllPostsCommentedOnByUserResponse(
             posts=post_list, query_metadata=metadata,
@@ -231,8 +270,13 @@ class ServiceHandler(object):
 
         comment_list = []
         for comment_model in comments:
-            comment_list.append(self._helper.comment_model_to_proto(
-                comment_model))
+            the_comment = self._helper.comment_model_to_proto(
+                comment_model)
+            self._fill_comment_likes_dislikes(the_comment)
+            self._fill_comment_requesting_user_action(request.username,
+                the_comment)
+            comment_list.append(the_comment)
+
         return GetAllCommentsForPostResponse(
             comments=comment_list,
             query_metadata=metadata,
@@ -265,7 +309,7 @@ class ServiceHandler(object):
         for post_model in results:
             the_post = self._helper.post_model_to_proto(post_model)
             self._fill_post_likes_dislikes_comment_count(the_post)
-            self._fill_requesting_user_action(request.username, the_post)
+            self._fill_post_requesting_user_action(request.username, the_post)
             post_list.append(the_post)
         return GetAllPostsAtLocationResponse(
             posts=post_list, query_metadata=metadata,
@@ -379,21 +423,23 @@ class ServiceHandler(object):
                     qm.has_more_older_data = more  # does this make sense??
             else:
                 cursor = Cursor(urlsafe=params.curr_top_cursor_str)
-                # With a forward_query, the bottom_cursor is the new top.
-                results, bottom_cursor, _ = forward_query.fetch_page(
+                # With a forward_query, the bottom_cursor eventually becomes the
+                # new top. So we get the new posts so we can figure out what
+                # the new top cursor should be, ignoring the results.
+                _, bottom_cursor, _ = forward_query.fetch_page(
                     fetch_limit, start_cursor=cursor)
-                # According to GAE docs, there's a chance that a None cursor can
-                # be returned if query reaches end of results. So this accounts
-                # for that. Normally, a None cursor would indicates that there
-                # aren't results, period, but in this case, we have to check
-                # the results list explicitly.
-                if not bottom_cursor:
-                    if not results:
-                        results = []
-                elif not self._cursors_are_eq(cursor, bottom_cursor):
+                if (bottom_cursor and
+                    not self._cursors_are_eq(cursor, bottom_cursor)):
                     qm.new_top_cursor_str = bottom_cursor.urlsafe()
-                else:
-                    results = []
+
+                # Then we fetch again, this time from the new top cursor, to the
+                # original bottom cursor so we can grab all the posts that we
+                # have served the client thus far. This is so that if there are
+                # any updates to any posts, the client can get them.
+                results, _, _ = reverse_query.fetch_page(
+                    page_size=sys.getsizeof(int()),
+                    start_cursor=Cursor(urlsafe=qm.new_top_cursor_str),
+                    end_cursor=Cursor(urlsafe=params.curr_bottom_cursor_str))
         else:
             # By default, assume we have no older data to serve.
             qm.has_more_older_data = False
@@ -432,21 +478,44 @@ class ServiceHandler(object):
                                   'WHERE PostID = :1'), post_id).count()
         return likes, dislikes, number_of_comments
 
+    def _get_comment_likes_dislikes(self, comment_id):
+        likes = ndb.gql(('SELECT * FROM ActionModel WHERE CommentID = :1 '
+                            'AND ActionType = :2'), comment_id, 'LIKE').count()
+        dislikes = ndb.gql(('SELECT * FROM ActionModel '
+                    'WHERE CommentID = :1 AND ActionType = :2'),
+                    comment_id, 'DISLIKE').count()
+        return likes, dislikes
+
     def _fill_post_likes_dislikes_comment_count(self, post):
         info = self._get_post_likes_dislikes_comment_count(post.post_id)
         post.likes = info[0]
         post.dislikes = info[1]
         post.number_of_comments = info[2]
 
-    def _fill_requesting_user_action(self, username, post):
+    def _fill_comment_likes_dislikes(self, comment):
+        info = self._get_post_likes_dislikes_comment_count(comment.comment_id)
+        comment.likes = info[0]
+        comment.dislikes = info[1]
+
+    def _fill_post_requesting_user_action(self, username, post):
         results = ndb.gql(('SELECT * FROM ActionModel '
-                            'WHERE Username = :1 AND PostID = :2'),
-                            username, post.post_id)
+                                'WHERE Username = :1 AND PostID = :2'),
+                                username, post.post_id)
         if results.count() == 0:
             post.user_action_type = ActionType.NO_ACTION
         else:
             action = self._helper.action_model_to_proto(results.get())
             post.user_action_type = action.action_type
+
+    def _fill_comment_requesting_user_action(self, username, comment):
+        results = ndb.gql(('SELECT * FROM ActionModel '
+                            'WHERE Username = :1 AND CommentID = :2'),
+                            username, comment.comment_id)
+        if results.count() == 0:
+            comment.user_action_type = ActionType.NO_ACTION
+        else:
+            action = self._helper.action_model_to_proto(results.get())
+            comment.user_action_type = action.action_type
 
     def _get_area_latitude_longitude(self, lat, lon):
         dec = LOCATION_QUERY_DECIMAL_PLACES

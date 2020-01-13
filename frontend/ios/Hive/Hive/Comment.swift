@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Comment {
+class Comment: Hashable, Equatable {
     private(set) var commentId: String
     // Username of author of comment.
     private(set) var username: String
@@ -16,21 +16,38 @@ class Comment {
     private(set) var commentText: String
     private(set) var creationTimestampSec: Decimal
     private(set) var jsonComment: [String: Any]?
+    // Type of action requesting user did on this post.
+    // Can be mutated. Let's keep the amount of mutable things
+    // small.
+    public var userActionType: ActionType
+    public var likes: Int
+    public var dislikes: Int
     
-    init(commentId: String, username: String, postId: String, commentText: String, creationTimestampSec: Decimal) {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(commentId)
+    }
+    
+    static func ==(left:Comment, right:Comment) -> Bool {
+        return left.commentId == right.commentId
+    }
+    
+    init(commentId: String, username: String, postId: String, commentText: String, creationTimestampSec: Decimal,  likes: Int, dislikes: Int, userActionType: ActionType) {
         self.commentId = commentId
         self.username = username
         self.postId = postId
         self.commentText = commentText
         self.creationTimestampSec = creationTimestampSec
         self.jsonComment = Optional.none
+        self.likes = likes
+        self.dislikes = dislikes
+        self.userActionType = userActionType
     }
     
     convenience init(commentId: String, username: String, postId: String, commentText: String,
                      creationTimestampSec: Decimal,
-                     jsonComment: [String: Any]) {
+                     jsonComment: [String: Any], likes: Int, dislikes: Int, userActionType: ActionType) {
         self.init(commentId: commentId, username: username, postId: postId, commentText: commentText,
-                  creationTimestampSec: creationTimestampSec)
+                  creationTimestampSec: creationTimestampSec, likes: likes, dislikes: dislikes, userActionType: userActionType)
         self.jsonComment = jsonComment
     }
     
@@ -45,11 +62,15 @@ class Comment {
     }
     
     public static func jsonToComment(jsonComment: [String: Any]) -> Comment {
+        let likes = jsonComment["likes"] == nil ? 0 : Int(jsonComment["likes"] as! String)
+        let dislikes = jsonComment["dislikes"] == nil ? 0 : Int(jsonComment["dislikes"] as! String)
+        let userActionType = jsonComment["user_action_type"] == nil ? ActionType.NO_ACTION :
+            ActionType.FromString(str: jsonComment["user_action_type"] as! String)
         return Comment(commentId: jsonComment["comment_id"]  as! String,
                        username: jsonComment["username"] as! String,
                        postId: jsonComment["post_id"] as! String,
                        commentText: jsonComment["comment_text"] as! String,
         creationTimestampSec: (jsonComment["creation_timestamp_sec"] as! NSNumber).decimalValue,
-        jsonComment: jsonComment)
+        jsonComment: jsonComment, likes: likes!, dislikes: dislikes!, userActionType: userActionType)
     }
 }

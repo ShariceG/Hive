@@ -44,6 +44,9 @@ class Comment(messages.Message):
     post_id = messages.StringField(3, required=False)
     comment_text = messages.StringField(4, required=False)
     creation_timestamp_sec = messages.FloatField(5, required=False)
+    likes = messages.IntegerField(6, required=False)
+    dislikes = messages.IntegerField(7, required=False)
+    user_action_type = messages.EnumField(ActionType, 8, required=False)
 
 class Action(messages.Message):
     # Username of person who made the action.

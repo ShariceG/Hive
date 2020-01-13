@@ -20,6 +20,7 @@ class CommentsViewController: UIViewController {
     @IBOutlet weak var commentTextView: UITextView!
     
     private(set) var post: Post? = nil
+    private var disallowInteractingWithComments: Bool = false
     
     private let client: ServerClient = ServerClient()
     
@@ -31,12 +32,21 @@ class CommentsViewController: UIViewController {
         setupCommentTv()
         commentFeedView.configure(delegate: self)
         DispatchQueue.main.async {
+            if self.disallowInteractingWithComments {
+                self.commentBn.isHidden = true
+                self.commentTextView.isHidden = true
+            }
             self.postTableView.reloadData()
         }
     }
     
     public func controllerInit(post: Post) {
         self.post = post
+    }
+    
+    public func controllerInit(post: Post, disallowInteractingWithComments: Bool) {
+        self.post = post
+        self.disallowInteractingWithComments = disallowInteractingWithComments
     }
     
     private func setupCommentTv() {
@@ -127,6 +137,38 @@ class CommentsViewController: UIViewController {
             self.commentBn.isEnabled = true
         }
     }
+    
+    private func updateComment(comment: Comment, actionType: ActionType) {
+        client.updateComment(commentId: comment.commentId, username: getTestUser(),
+            actionType: actionType, completion: updateCommentCompletion,
+            notes: ["actionType": actionType, "commentId": comment.commentId])
+    }
+    
+    private func updateCommentCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
+        let baseStr: String = "updateCommentCompletion => "
+        if (responseOr.hasError()) {
+            // Handle likley connection error
+            print(baseStr + "Connection Failure: " + responseOr.getErrorMessage())
+            return
+        }
+        let response = responseOr.get()
+        if (!response.ok()) {
+            // Handle server error
+            print(baseStr + "ServerStatusCode: " + String(describing: response.serverStatusCode))
+            return
+        }
+        if notes == nil {
+            print(baseStr + "Expected notes!")
+            return
+        }
+        let actionType = notes!["actionType"] as! ActionType
+        let commentId = notes!["commentId"] as! String
+        DispatchQueue.main.async {
+            self.commentFeedView.reconfigureWithAction(commentId: commentId, actionType: actionType)
+        }
+    }
+    
+    
 }
 
 // --------------- Extensions ----------------
@@ -139,7 +181,7 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: PostView = tableView.dequeueReusableCell(withIdentifier: POST_VIEW_CELL_REUSE_IDENTIFIER) as! PostView
-        cell.configureDisableButtons(post: self.post!)
+        cell.configureDisable(post: self.post!)
         cell.layer.borderWidth = 2
         cell.layer.cornerRadius = 5
         cell.layer.borderColor = UIColor.blue.cgColor
@@ -161,5 +203,12 @@ extension CommentsViewController: UITableViewDataSource, UITableViewDelegate {
 extension CommentsViewController: CommentFeedViewDelegate {
     func fetchComments(queryParams: QueryParams) {
         self.getAllPostComments(queryParams: queryParams)
+    }
+    
+    func performAction(comment: Comment, actionType: ActionType) {
+        if self.disallowInteractingWithComments {
+            return
+        }
+        self.updateComment(comment: comment, actionType: actionType)
     }
 }

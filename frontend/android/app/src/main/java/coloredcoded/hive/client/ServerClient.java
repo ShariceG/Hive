@@ -22,6 +22,8 @@ public interface ServerClient {
                     Callback callback, Map<String, Object> notes);
 	void updatePost(String username, String postId, ActionType actionType,
                     Callback callback, Map<String, Object> notes);
+	void updateComment(String username, String commentId, ActionType actionType,
+					Callback callback, Map<String, Object> notes);
 	void getAllPostsAtLocation(String username, Location location, QueryParams queryParams,
                                Callback callback, Map<String, Object> notes);
 	void getAllPostsByUser(String username, QueryParams params,
@@ -30,7 +32,7 @@ public interface ServerClient {
                                       Callback callback, Map<String, Object> notes);
 	void getAllPostComments(String postId, QueryParams params,
                             Callback callback, Map<String, Object> notes);
-	void getAllPopularPostsAtLocation(Location location, QueryParams params,
+	void getAllPopularPostsAtLocation(String username, Location location, QueryParams params,
                                       Callback callback, Map<String, Object> notes);
 	void getPopularLocations(Callback callback, Map<String, Object> notes);
 	void getAllPostLocations(Callback callback, Map<String, Object> notes);

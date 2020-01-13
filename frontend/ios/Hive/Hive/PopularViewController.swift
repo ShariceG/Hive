@@ -31,7 +31,6 @@ class PopularViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-//        self.view.isUserInteractionEnabled = false
         initialize()
     }
     
@@ -118,7 +117,8 @@ class PopularViewController: UIViewController {
         if (segue.identifier == "seeCommentsSegue") {
             let postView: PostView = sender as! PostView
             let commentsViewController: CommentsViewController = segue.destination as! CommentsViewController
-            commentsViewController.controllerInit(post: postView.post)
+            commentsViewController.controllerInit(post: postView.post,
+                                                  disallowInteractingWithComments:  true)
             return
         }
     }
