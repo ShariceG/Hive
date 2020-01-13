@@ -21,6 +21,8 @@ class PostView: UITableViewCell {
     @IBOutlet weak var commentBn: UIButton!
     @IBOutlet weak var likeBn: UIButton!
     @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var netLikesLabel: UILabel!
+    
     
     private var _delegate: PostViewDelegate?
     private var _post: Post? = nil
@@ -38,8 +40,10 @@ class PostView: UITableViewCell {
     public func configure(post: Post, delegate: PostViewDelegate) {
         userLabel.text = post.username
         postTextView.text = post.postText
-        dislikeBn.setTitle("Dislike: " + String(post.dislikes), for: UIControl.State.normal)
-        likeBn.setTitle("Like: " + String(post.likes), for: UIControl.State.normal)
+        let netLikes = post.likes - post.dislikes
+        netLikesLabel.text = String(netLikes)
+//        dislikeBn.setTitle("Dislike: " + String(post.dislikes), for: UIControl.State.normal)
+//        likeBn.setTitle("Like: " + String(post.likes), for: UIControl.State.normal)
         dateLabel.text = self.timestampToDate(timestampSec: post.creationTimestampSec)
         self.post = post
         self.delegate = delegate

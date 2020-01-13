@@ -181,15 +181,26 @@ extension PostFeedManager: UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: POST_VIEW_CELL_REUSE_IDENTIFIER) as! PostView
         cell.configure(post: posts[indexPath.section], delegate: self)
         cell.layer.borderWidth = 2
-        cell.layer.cornerRadius = 5
-        cell.layer.borderColor = UIColor.blue.cgColor
+        cell.layer.shadowColor = UIColor.black.cgColor
+        cell.layer.shadowOpacity = 0.5
+        cell.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
+//        cell.layer.cornerRadius = 5
+        cell.layer.borderColor = UIColor.white.cgColor
         return cell
     }
 }
 
 extension PostFeedManager: UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 10
+        return 30
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
+    {
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: 10))
+        headerView.backgroundColor = UIColor.clear
+        
+        return headerView
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
