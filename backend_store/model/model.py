@@ -34,7 +34,9 @@ class CommentModel(ndb.Model):
 
 class ActionModel(ndb.Model):
     Username = ndb.StringProperty(required=False)
+    # Either a post id or comment id should be provided but not both.
     PostID = ndb.StringProperty(required=False)
+    CommentID = ndb.StringProperty(required=False)
     ActionType = ndb.StringProperty(required=False)
     CreationTimestampSec = ndb.FloatProperty(required=False)
 

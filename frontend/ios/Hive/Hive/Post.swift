@@ -44,7 +44,7 @@ class Post: Hashable, Equatable {
     }
     
     public func isExpired() -> Bool {
-        let currentTimeSec: Double = Date().getCurrentTimeSec() / 1000
+        let currentTimeSec: Double = Date().getCurrentTimeSec()
         return Double(truncating: self.creationTimestampSec as NSNumber) + Post.POST_LIFESPAN_SEC < currentTimeSec
     }
     

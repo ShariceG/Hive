@@ -61,17 +61,17 @@ public class PostFeedFromMapActivity extends AppCompatActivity implements PostFe
         Intent intent = new Intent(PostFeedFromMapActivity.this,
                 SeeCommentsActivity.class);
         intent.putExtra("post", postView.getPost());
-        intent.putExtra("disallowMakingComments", true);
+        intent.putExtra("disallowCommentInteraction", true);
         startActivity(intent);
     }
 
     @Override
     public void fetchMorePosts(QueryParams queryParams) {
-        client.getAllPostsAtLocation(testUser(), location, queryParams,
-                getAllPostsAtLocationCallback(), null);
+        client.getAllPopularPostsAtLocation(testUser(), location, queryParams,
+                getAllPopularPostsAtLocationCallback(), null);
     }
 
-    public Callback getAllPostsAtLocationCallback() {
+    public Callback getAllPopularPostsAtLocationCallback() {
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,

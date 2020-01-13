@@ -10,9 +10,9 @@ import Foundation
 import UIKit
 
 protocol PostFeedDelegate: class {
-    func showComments(postView: PostView);
-    func fetchMorePosts(queryParams: QueryParams);
-    func performAction(post: Post, actionType: ActionType);
+    func showComments(postView: PostView)
+    func fetchMorePosts(queryParams: QueryParams)
+    func performAction(post: Post, actionType: ActionType)
 }
 
 class PostFeedManager: NSObject, PostViewDelegate {
@@ -65,10 +65,11 @@ class PostFeedManager: NSObject, PostViewDelegate {
     // Called by Controller to give us more hosts.
     func addMorePosts(morePosts: Array<Post>, newMetadata: QueryMetadata) {
         self.prevFetchQueryMetadata.updateMetadata(newMetadata: newMetadata)
-        posts.append(contentsOf: morePosts)
-        posts = Array(Set(posts))
-        posts = posts.sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
-        posts = posts.filter {!$0.isExpired()}
+        var set: Set = Set(posts)
+        morePosts.forEach({set.insert($0)})
+        posts = Array(set)
+            .filter {!$0.isExpired()}
+            .sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
     }
     
     func resetData() {

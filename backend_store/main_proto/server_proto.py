@@ -48,6 +48,14 @@ class UpdatePostRequest(messages.Message):
 class UpdatePostResponse(messages.Message):
     status = messages.MessageField(Status, 1, required=False)
 
+class UpdateCommentRequest(messages.Message):
+    comment_id = messages.StringField(1, required=False)
+    action_type = messages.EnumField(entity_proto.ActionType, 2, required=False)
+    username = messages.StringField(3, required=False)
+
+class UpdateCommentResponse(messages.Message):
+    status = messages.MessageField(Status, 1, required=False)
+
 class InsertCommentRequest(messages.Message):
     username = messages.StringField(1, required=False)
     post_id = messages.StringField(2, required=False)
@@ -87,9 +95,10 @@ class GetAllPostsCommentedOnByUserResponse(messages.Message):
 #     post = messages.MessageField(entity_proto.Post, 1, required=False)
 
 class GetAllCommentsForPostRequest(messages.Message):
-    post_id = messages.StringField(1, required=False)
+    username = messages.StringField(1, required=False)
+    post_id = messages.StringField(2, required=False)
     query_params = messages.MessageField(
-        entity_proto.QueryParams, 2, required=False)
+        entity_proto.QueryParams, 3, required=False)
 
 class GetAllCommentsForPostResponse(messages.Message):
     comments = messages.MessageField(entity_proto.Comment, 1, repeated=True)

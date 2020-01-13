@@ -13,10 +13,12 @@ import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import coloredcoded.hive.client.ActionType;
 import coloredcoded.hive.client.Callback;
+import coloredcoded.hive.client.Comment;
 import coloredcoded.hive.client.Location;
 import coloredcoded.hive.client.Post;
 import coloredcoded.hive.client.QueryParams;
@@ -35,7 +37,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
     private Button makeCommentButton;
     private EditText commentEditText;
     // Disallow the ability to make a comment.
-    private boolean disallowMakingComments;
+    private boolean disallowCommentInteraction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +48,8 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         // extra information regarding the post whose comments we are displaying.
         Intent intent = getIntent();
         post = (Post) intent.getSerializableExtra("post");
-        disallowMakingComments = intent.getBooleanExtra("disallowMakingComments", false);
+        disallowCommentInteraction = intent.getBooleanExtra("disallowCommentInteraction",
+                false);
         ViewGroup parentGroup = (ViewGroup) getWindow().getDecorView().getRootView();
         postView = PostView.newInstance(post, findViewById(R.id.postViewShell),
                 this, parentGroup);
@@ -57,7 +60,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         commentFeedManager.configure((ListView) findViewById(R.id.commentFeedListView),
                 (SwipeRefreshLayout) findViewById(R.id.commentFeedSwipeRefresh), this);
         commentEditText = findViewById(R.id.commentEditText);
-        if (disallowMakingComments) {
+        if (disallowCommentInteraction) {
             commentEditText.setVisibility(View.INVISIBLE);
         }
 
@@ -73,8 +76,9 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
                 insertComment(text);
             }
         });
-        if (disallowMakingComments) {
+        if (disallowCommentInteraction) {
             makeCommentButton.setVisibility(View.INVISIBLE);
+            commentFeedManager.setDisableCommentInteration(disallowCommentInteraction);
         }
 
         Button backButton = findViewById(R.id.seeCommentsBackButton);
@@ -137,6 +141,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         };
     }
 
+    // PostFeedManager Delegate overrides
     @Override
     public void commentButtonClick(PostView postView) {
         // Ignoring because we are already in the comment view.
@@ -144,11 +149,28 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
 
     @Override
     public void performAction(PostView postView, ActionType actionType) {
-        // Ignoring for now.
     }
 
-    public void setDisallowMakingComments(boolean disallow) {
-        disallowMakingComments = disallow;
+    // CommentFeedManager Delegate overrides
+    @Override
+    public void performAction(Comment comment, ActionType actionType) {
+        Map<String, Object> notes = new HashMap<>();
+        notes.put("commentId", comment.getCommentId());
+        notes.put("actionType", actionType);
+        client.updateComment(testUser(), comment.getPostId(), actionType,
+                updateCommentCallback(), notes);
+    }
+
+    public Callback updateCommentCallback() {
+        return new Callback() {
+            @Override
+            public void serverRequestCallback(StatusOr<Response> responseOr,
+                                              Map<String, Object> notes) {
+                Response response = responseOr.get();
+                commentFeedManager.updateActionType(
+                        (String)notes.get("commentId"), (ActionType)notes.get("actionType"));
+            }
+        };
     }
 
     private Location testLocation() {

@@ -50,6 +50,12 @@ class LocationBasedSocialMediaAPI(remote.Service):
     def update_post(self, request):
         return self._handler.handle_update_post(request)
 
+    @endpoints.method(server_proto.UpdateCommentRequest,
+        server_proto.UpdateCommentResponse, name='update_comment',
+        path='app.update_comment')
+    def update_comment(self, request):
+        return self._handler.handle_update_comment(request)
+
     @endpoints.method(server_proto.InsertCommentRequest,
         server_proto.InsertCommentResponse, name='insert_comment',
         path='app.insert_comment', http_method='POST')
@@ -83,13 +89,6 @@ class LocationBasedSocialMediaAPI(remote.Service):
         path='app.get_all_posts_commented_on_by_user', http_method='GET')
     def get_all_posts_commented_on_by_user(self, request):
         return self._handler.handle_get_all_posts_commented_on_by_user(request)
-
-    # @endpoints.method(server_proto.GetPostRequest,
-    #     server_proto.GetPostResponse,
-    #     name='get_post',
-    #     path='app.get_post', http_method='GET')
-    # def get_post(self, request):
-    #     return server_proto.GetPostResponse()
 
     @endpoints.method(server_proto.GetAllCommentsForPostRequest,
         server_proto.GetAllCommentsForPostResponse,

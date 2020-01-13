@@ -35,14 +35,13 @@ class PostView: UITableViewCell {
         get { return _post! }
     }
     
-    public func configure(post: Post, delegate: PostViewDelegate) {
+    public func configure(post: Post) {
         userLabel.text = post.username
         postTextView.text = post.postText
         dislikeBn.setTitle("Dislike: " + String(post.dislikes), for: UIControl.State.normal)
         likeBn.setTitle("Like: " + String(post.likes), for: UIControl.State.normal)
         dateLabel.text = self.timestampToDate(timestampSec: post.creationTimestampSec)
         self.post = post
-        self.delegate = delegate
         
         likeBn.isEnabled = true;
         dislikeBn.isEnabled = true;
@@ -65,15 +64,14 @@ class PostView: UITableViewCell {
         }
     }
     
-    public func configureDisableButtons(post: Post) {
-        userLabel.text = post.username
-        postTextView.text = post.postText
-        dislikeBn.setTitle("Dislike: " + String(post.dislikes), for: UIControl.State.normal)
-        likeBn.setTitle("Like: " + String(post.likes), for: UIControl.State.normal)
-        dateLabel.text = self.timestampToDate(timestampSec: post.creationTimestampSec)
-        self.post = post
-        
-        disableLikeAndDislikeButtons()
+    public func configure(post: Post, delegate: PostViewDelegate) {
+        configure(post: post)
+        self.delegate = delegate
+    }
+    
+    public func configureDisable(post: Post) {
+        configure(post: post)
+        self.isUserInteractionEnabled = false
     }
     
     public func disableLikeAndDislikeButtons() {

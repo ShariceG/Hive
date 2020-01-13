@@ -18,7 +18,6 @@ class ViewController: UIViewController {
     
     private var postFeedManager = PostFeedManager()
     private(set) var client: ServerClient = ServerClient()
-    private(set) var fetchPostsMetadata: QueryMetadata = QueryMetadata()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,8 +105,6 @@ class ViewController: UIViewController {
         
         let newPosts = response.posts
         let newMetdata = response.queryMetadata
-        fetchPostsMetadata.updateMetadata(newMetadata: response.queryMetadata)
-        print(baseStr + "Fetched " + String(newPosts.count) + " posts around user")
     
         self.postFeedManager.addMorePosts(morePosts: newPosts, newMetadata: newMetdata)
         DispatchQueue.main.async {
