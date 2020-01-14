@@ -27,6 +27,10 @@ class PostView: UITableViewCell {
     private var _delegate: PostViewDelegate?
     private var _post: Post? = nil
     
+    private let likeColor = UIColor(red:0.00, green:0.51, blue:0.28, alpha:1.0)
+    private let dislikeColor = UIColor(red:0.89, green:0.09, blue:0.04, alpha:1.0)
+    private let noActionColor = UIColor(red:0.75, green:0.74, blue:0.76, alpha:1.0)
+    
     var delegate: PostViewDelegate {
         set { _delegate = newValue }
         get { return _delegate! }
@@ -53,16 +57,23 @@ class PostView: UITableViewCell {
         DispatchQueue.main.async {
             switch post.userActionType {
             case ActionType.LIKE:
-                self.likeBn.setTitleColor(UIColor.orange, for: UIControl.State.normal)
-                self.dislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
+                self.likeBn.tintColor = self.likeColor
+                self.dislikeBn.tintColor = self.noActionColor
+                
+//                self.likeBn.setTitleColor(UIColor.orange, for: UIControl.State.normal)
+//                self.dislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
                 break;
             case ActionType.DISLIKE:
-                self.dislikeBn.setTitleColor(UIColor.orange, for: UIControl.State.normal)
-                self.likeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
+                self.likeBn.tintColor = self.noActionColor
+                self.dislikeBn.tintColor = self.dislikeColor
+//                self.dislikeBn.setTitleColor(UIColor.orange, for: UIControl.State.normal)
+//                self.likeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
                 break;
             case ActionType.NO_ACTION:
-                self.likeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
-                self.dislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
+                self.likeBn.tintColor = self.noActionColor
+                self.dislikeBn.tintColor = self.noActionColor
+//                self.likeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
+//                self.dislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
                 break;
             }
         }
