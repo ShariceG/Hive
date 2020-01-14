@@ -25,6 +25,7 @@ class PopularViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.postFeedTable.separatorColor = UIColor(red:0.97, green:0.82, blue:0.33, alpha:1.0)
         initialize()
     }
     
