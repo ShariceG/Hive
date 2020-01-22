@@ -59,23 +59,35 @@ class PostView: UITableViewCell {
             case ActionType.LIKE:
                 self.likeBn.tintColor = self.likeColor
                 self.dislikeBn.tintColor = self.noActionColor
-                
+                self.setNetLikesColor(netLikes: netLikes)
 //                self.likeBn.setTitleColor(UIColor.orange, for: UIControl.State.normal)
 //                self.dislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
                 break;
             case ActionType.DISLIKE:
                 self.likeBn.tintColor = self.noActionColor
                 self.dislikeBn.tintColor = self.dislikeColor
+                self.setNetLikesColor(netLikes: netLikes)
 //                self.dislikeBn.setTitleColor(UIColor.orange, for: UIControl.State.normal)
 //                self.likeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
                 break;
             case ActionType.NO_ACTION:
                 self.likeBn.tintColor = self.noActionColor
                 self.dislikeBn.tintColor = self.noActionColor
+                self.setNetLikesColor(netLikes: netLikes)
 //                self.likeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
 //                self.dislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
                 break;
             }
+        }
+    }
+    
+    private func setNetLikesColor(netLikes: Int) {
+        if netLikes >  0 {
+            self.netLikesLabel.textColor = likeColor
+        } else if netLikes < 0{
+            self.netLikesLabel.textColor = dislikeColor
+        } else {
+            self.netLikesLabel.textColor = noActionColor
         }
     }
     
