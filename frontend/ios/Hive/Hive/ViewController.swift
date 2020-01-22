@@ -13,7 +13,7 @@ class ViewController: UIViewController {
     let COMMENTS_SEGUE_IDENTIFIER = "seeCommentsSegue"
     
     @IBOutlet weak var postFeedTable: UITableView!
-    @IBOutlet weak var writeSomethingBn: UIButton!
+    @IBOutlet weak var writePostButtonItem: UIBarButtonItem!
     private var makePostView: MakePostView!;
     
     private var postFeedManager = PostFeedManager()
@@ -24,6 +24,11 @@ class ViewController: UIViewController {
         self.hideKeyboardWhenTapped()
         setupMakePostAlert()
         setupPostFeedView()
+        writePostButtonItem.action = #selector(showMakePostView)
+    }
+    
+    @objc func showMakePostView(){
+        makePostView.show()
     }
     
     private func setupPostFeedView() {
@@ -33,10 +38,6 @@ class ViewController: UIViewController {
     private func setupMakePostAlert() {
         makePostView = UIView.loadFromNibNamed(nibNamed: "MakePostView") as? MakePostView
         makePostView.configure(parent: self.view, delegate: self)
-    }
-    
-    @IBAction func writeSomethingBnAction(_ sender: UIButton) {
-        makePostView.show()
     }
     
     private func insertPostCompletion(response: StatusOr<Response>, notes: [String:Any]?) {
