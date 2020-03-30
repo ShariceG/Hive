@@ -48,7 +48,7 @@ class PostView: UITableViewCell {
         netLikesLabel.text = String(netLikes)
 //        dislikeBn.setTitle("Dislike: " + String(post.dislikes), for: UIControl.State.normal)
 //        likeBn.setTitle("Like: " + String(post.likes), for: UIControl.State.normal)
-        dateLabel.text = self.timestampToDate(timestampSec: post.creationTimestampSec)
+        dateLabel.text = post.timeDiffToString()
         self.post = post
         
         likeBn.isEnabled = true;
@@ -78,16 +78,6 @@ class PostView: UITableViewCell {
 //                self.dislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
                 break;
             }
-        }
-    }
-    
-    private func setNetLikesColor(netLikes: Int) {
-        if netLikes >  0 {
-            self.netLikesLabel.textColor = likeColor
-        } else if netLikes < 0{
-            self.netLikesLabel.textColor = dislikeColor
-        } else {
-            self.netLikesLabel.textColor = noActionColor
         }
     }
     
@@ -130,5 +120,15 @@ class PostView: UITableViewCell {
     }
     @IBAction func commentBnAction(_ sender: UIButton) {
         delegate.commentButtonClick(postView: self)
+    }
+    
+    private func setNetLikesColor(netLikes: Int) {
+        if netLikes >  0 {
+            self.netLikesLabel.textColor = likeColor
+        } else if netLikes < 0{
+            self.netLikesLabel.textColor = dislikeColor
+        } else {
+            self.netLikesLabel.textColor = noActionColor
+        }
     }
 }
