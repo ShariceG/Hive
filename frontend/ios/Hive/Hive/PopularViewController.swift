@@ -16,6 +16,7 @@ class PopularViewController: UIViewController {
     
     @IBOutlet weak var popularCollectionView: UICollectionView!
     @IBOutlet weak var postFeedTable: UITableView!
+    @IBOutlet weak var navBarTitle: UINavigationItem!
     
     public private(set) var popularLocations: Array<Location> = []
     private var client: ServerClient = ServerClient()
@@ -42,6 +43,7 @@ class PopularViewController: UIViewController {
         postFeedManager.configure(tableView: postFeedTable, delegate: self)
         getPopularLocations()
     }
+    
     
     private func setupSwipeGestures() {
         let swipeDown = UISwipeGestureRecognizer(

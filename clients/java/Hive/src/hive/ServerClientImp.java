@@ -23,7 +23,7 @@ public class ServerClientImp implements ServerClient {
 	private static final int READ_TIMEOUT_MS = 55000;
 
 //	private static final String SERVER_DOMAIN = "http://localhost:8080";
-	private static final String SERVER_DOMAIN = "http://192.168.1.84:8080";
+	private static final String SERVER_DOMAIN = "http://192.168.0.43:8080";
 	private static final String COMMON_PATH = "/_ah/api/media_api/v1/";
 	private static final String CREATE_USER_PATH = "app.create_user?";
 	private static final String INSERT_COMMENT_PATH = "app.insert_comment?";

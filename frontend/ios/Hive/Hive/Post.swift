@@ -73,4 +73,51 @@ class Post: Hashable, Equatable {
                     creationTimestampSec: (jsonPost["creation_timestamp_sec"] as! NSNumber).decimalValue,
                     jsonPost: jsonPost, userActionType: userActionType)
     }
+    
+    private func getTimeDifferenceSec() -> Int{
+        let postDateSec = Int(truncating: self.creationTimestampSec as NSNumber)
+        let currDate = Int(Date().getCurrentTimeSec())
+        let diff = currDate - postDateSec
+        print(diff)
+        return diff
+    }
+    
+    public func timeDiffToString() -> String {
+        let diffInSec = self.getTimeDifferenceSec()
+        let days =  diffInSec/86400
+        let hours = diffInSec/3600
+        let minutes = diffInSec/60
+        
+        var time = 0
+        var numString = ""
+        var timePercisionString = ""
+
+        if days >= 1 {
+            time = days
+            numString = String(days)
+            timePercisionString = " days"
+        } else if hours >= 1{
+            time =  hours
+            numString = String(hours)
+            timePercisionString = " hours"
+        } else if minutes >= 1{
+            time =  minutes
+            numString = String(minutes)
+            timePercisionString = " minutes"
+        } else {
+            time =  diffInSec
+            numString = String(diffInSec)
+            timePercisionString = " seconds"
+        }
+        
+        return numString + pluralOrSingular(timeNum: time, timeString: timePercisionString) + " ago"
+    }
+    
+    private func pluralOrSingular(timeNum: Int, timeString: String) -> String {
+        if timeNum == 1 {
+            return String(timeString.dropLast())
+            
+        }
+        return timeString
+    }
 }
