@@ -76,7 +76,8 @@ class CommentsViewController: UIViewController {
     }
     
     public func getAllPostComments(queryParams: QueryParams) {
-        client.getAllCommentsForPost(postId: (post?.postId)!, queryParams: queryParams,
+        client.getAllCommentsForPost(username: self.getTestUser(),
+                                     postId: (post?.postId)!, queryParams: queryParams,
                                      completion: getAllPostCommentsCompletion, notes: nil)
     }
     

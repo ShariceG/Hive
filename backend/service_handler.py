@@ -493,7 +493,7 @@ class ServiceHandler(object):
         post.number_of_comments = info[2]
 
     def _fill_comment_likes_dislikes(self, comment):
-        info = self._get_post_likes_dislikes_comment_count(comment.comment_id)
+        info = self._get_comment_likes_dislikes(comment.comment_id)
         comment.likes = info[0]
         comment.dislikes = info[1]
 

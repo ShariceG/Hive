@@ -114,10 +114,12 @@ class ServerClient {
         executeGet(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
     }
 
-    public func getAllCommentsForPost(postId: String, queryParams: QueryParams, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
+    public func getAllCommentsForPost(username: String,
+                                      postId: String, queryParams: QueryParams, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
         var request: [String:Any] = [String:Any]()
         request["post_id"] = postId
         request["query_params"] = queryParams.toJson()
+        request["username"] = username
 
         let path: String = constructIncompleteUrlPath() + ServerClient.GET_ALL_POST_COMMENTS_PATH
         executeGet(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
