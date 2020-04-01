@@ -36,8 +36,7 @@ class CommentView: UITableViewCell {
         
         commentLikeBn.isEnabled = true;
         commentDislikeBn.isEnabled = true;
-        print("LMAO")
-        print(comment.userActionType)
+
         // Handle like/dislike behavior.
         DispatchQueue.main.async {
             switch comment.userActionType {

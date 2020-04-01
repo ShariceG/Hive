@@ -16,6 +16,7 @@ class Post: Hashable, Equatable {
     private(set) var location: Location
     private(set) var creationTimestampSec: Decimal
     private(set) var jsonPost: [String: Any]?
+    private(set) var numberOfComments: Int
     // Type of action requesting user did on this post.
     // Can be mutated. Let's keep the amount of mutable things
     // small.
@@ -31,7 +32,8 @@ class Post: Hashable, Equatable {
         return left.postId == right.postId
     }
     
-    init(username: String, postId: String, postText: String, locationJson: [String: Any], likes: Int, dislikes: Int, creationTimestampSec: Decimal, jsonPost: [String: Any], userActionType: ActionType) {
+    init(username: String, postId: String, postText: String, locationJson: [String: Any], likes: Int, dislikes: Int, creationTimestampSec: Decimal, userActionType: ActionType,
+         numberOfComments: Int, jsonPost: [String: Any]) {
         self.username = username
         self.postId = postId
         self.postText = postText
@@ -39,8 +41,9 @@ class Post: Hashable, Equatable {
         self.likes = likes
         self.dislikes = dislikes
         self.creationTimestampSec = creationTimestampSec
-        self.jsonPost = jsonPost
         self.userActionType = userActionType
+        self.numberOfComments = numberOfComments
+        self.jsonPost = jsonPost
     }
     
     public func isExpired() -> Bool {
@@ -71,7 +74,9 @@ class Post: Hashable, Equatable {
                     likes: likes!,
                     dislikes: dislikes!,
                     creationTimestampSec: (jsonPost["creation_timestamp_sec"] as! NSNumber).decimalValue,
-                    jsonPost: jsonPost, userActionType: userActionType)
+                    userActionType: userActionType,
+                    numberOfComments: Int(jsonPost["number_of_comments"] as! String) ?? -1,
+                    jsonPost: jsonPost)
     }
     
     private func getTimeDifferenceSec() -> Int{
@@ -110,14 +115,6 @@ class Post: Hashable, Equatable {
             timePercisionString = " seconds"
         }
         
-        return numString + pluralOrSingular(timeNum: time, timeString: timePercisionString) + " ago"
-    }
-    
-    private func pluralOrSingular(timeNum: Int, timeString: String) -> String {
-        if timeNum == 1 {
-            return String(timeString.dropLast())
-            
-        }
-        return timeString
+        return numString + UtilityBelt.pluralOrSingular(num: time, word: timePercisionString) + " ago"
     }
 }

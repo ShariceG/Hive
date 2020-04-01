@@ -14,14 +14,21 @@ class UtilityBelt {
         case expectedTrueStatement
     }
     
-    public func checkStringNotEmpty(str: String) {
+    public static func checkStringNotEmpty(str: String) {
         trueOrFail(truth: !str.isEmpty)
     }
     
-    public func trueOrFail(truth: Bool) {
+    public static func trueOrFail(truth: Bool) {
         if (!truth) {
             fatalError("Expected true statement.")
         }
+    }
+    
+    public static func pluralOrSingular(num: Int, word: String) -> String {
+        if num == 1 {
+            return String(word.dropLast())
+        }
+        return word
     }
     
 }

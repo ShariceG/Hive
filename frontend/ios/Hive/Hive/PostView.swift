@@ -43,6 +43,7 @@ class PostView: UITableViewCell {
     public func configure(post: Post) {
         userLabel.text = post.username
         postTextView.text = post.postText
+        commentBn.titleLabel?.adjustsFontSizeToFitWidth = true
         let netLikes = post.likes - post.dislikes
         netLikesLabel.text = String(netLikes)
         dateLabel.text = post.timeDiffToString()
@@ -50,7 +51,8 @@ class PostView: UITableViewCell {
         
         likeBn.isEnabled = true;
         dislikeBn.isEnabled = true;
-        // Handle like/dislike behavior.
+        // Handle like/dislike behavior and other things that need to happen on
+        // the dispatch queue.
         DispatchQueue.main.async {
             switch post.userActionType {
             case ActionType.LIKE:
@@ -69,6 +71,8 @@ class PostView: UITableViewCell {
                 self.setNetLikesColor(netLikes: netLikes)
                 break;
             }
+            let word = UtilityBelt.pluralOrSingular(num: post.numberOfComments, word: " comments")
+            self.commentBn.setTitle(String(post.numberOfComments) + word, for:.normal)
         }
     }
     

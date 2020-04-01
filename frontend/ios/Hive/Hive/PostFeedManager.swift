@@ -185,7 +185,6 @@ extension PostFeedManager: UITableViewDelegate {
         cell.layer.shadowColor = UIColor.black.cgColor
         cell.layer.shadowOpacity = 0.5
         cell.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
-//        cell.layer.cornerRadius = 5
         cell.layer.borderColor = UIColor.white.cgColor
         return cell
     }
