@@ -50,6 +50,11 @@ extension Date {
 
 extension UIViewController{
     
+    func newViewController(storyboardName: String, storyboardId: String) -> UIViewController {
+        return UIStoryboard(name: storyboardName, bundle: nil) .
+            instantiateViewController(withIdentifier: storyboardId)
+    }
+    
     func hideKeyboardWhenTapped() {
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
         tap.cancelsTouchesInView = false
