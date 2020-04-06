@@ -49,6 +49,31 @@ extension Date {
 }
 
 extension UIViewController{
+  
+    func showInternalServerErrorAlert() {
+        showAlert(title: "Um... Yikes", message: "Some server error.")
+    }
+    
+    func showNoTitleAlert(message: String) {
+        showAlert(title: "", message: message)
+    }
+    
+    func showAlert(title: String, message: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(.init(title: "Ok", style: .cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+
+        }
+    }
+    
+    func disableUserActivity() {
+        self.view.isUserInteractionEnabled = false
+    }
+    
+    func enableUserActivity() {
+        self.view.isUserInteractionEnabled = true
+    }
     
     func newViewController(storyboardName: String, storyboardId: String) -> UIViewController {
         return UIStoryboard(name: storyboardName, bundle: nil) .

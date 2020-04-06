@@ -30,9 +30,10 @@ class EmailViewController : UIViewController, SignInPageFragment {
     @IBAction func nextBnAction(_ sender: UIButton) {
         let email = emailTextField.text!
         if (email.isEmpty) {
+            showNoTitleAlert(message: "Email cannot be empty")
             return
         }
-        print("Email: " + email)
+        disableUserActivity()
         client.verifyExistingUser(email: email, completion: verifyExistingUserCompletion, notes: ["email": email])
     }
     
@@ -41,20 +42,13 @@ class EmailViewController : UIViewController, SignInPageFragment {
     }
     
     private func verifyExistingUserCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
-        let baseStr: String = "createNewUserCompletion => "
         if (responseOr.hasError()) {
-            // Handle likley connection error
-            print(baseStr + "Connection Failure: " + responseOr.getErrorMessage())
+            showInternalServerErrorAlert()
             return
         }
         let response = responseOr.get()
         if (!response.ok()) {
-            // Handle server error
-            print(baseStr + "ServerStatusCode: " + String(describing: response.serverStatusCode))
-            return
-        }
-        if notes == nil {
-            print(baseStr + "Expected notes!")
+            showAlert(title: "Oh...", message: response.serverMessage)
             return
         }
         let username = response.username

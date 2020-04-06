@@ -33,9 +33,10 @@ class EmailAndUsernameViewController : UIViewController, SignInPageFragment {
         let username = usernameTextField.text!
         let email = emailTextField.text!
         if (username.isEmpty || email.isEmpty) {
+            showNoTitleAlert(message: "Username and Email cannot be empty")
             return
         }
-        self.view.isUserInteractionEnabled = false
+        disableUserActivity()
         print("Username: " + username)
         print("Email: " + email)
         client.createNewUser(username: username, email: email, completion: createNewUserCompletion, notes: ["username": username, "email": email])
@@ -46,20 +47,13 @@ class EmailAndUsernameViewController : UIViewController, SignInPageFragment {
     }
     
     private func createNewUserCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
-        let baseStr: String = "createNewUserCompletion => "
         if (responseOr.hasError()) {
-            // Handle likley connection error
-            print(baseStr + "Connection Failure: " + responseOr.getErrorMessage())
+            showInternalServerErrorAlert()
             return
         }
         let response = responseOr.get()
         if (!response.ok()) {
-            // Handle server error
-            print(baseStr + "ServerStatusCode: " + String(describing: response.serverStatusCode))
-            return
-        }
-        if notes == nil {
-            print(baseStr + "Expected notes!")
+            showAlert(title: "Oh...", message: response.serverMessage)
             return
         }
         let username = notes!["username"] as! String

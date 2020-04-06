@@ -30,8 +30,10 @@ class EnterPinCodeViewController : UIViewController, SignInPageFragment {
     @IBAction func hiveInBnAction(_ sender: UIButton) {
         let pin = pinCodeTextField.text!
         if (pin.isEmpty) {
+            showNoTitleAlert(message: "Code cannot be empty")
             return
         }
+        disableUserActivity()
         print("Pin: " + pin)
         let username = args!["username"] as! String
         let email = args!["email"] as! String
@@ -39,16 +41,13 @@ class EnterPinCodeViewController : UIViewController, SignInPageFragment {
     }
     
     private func checkVerificationCode(responseOr: StatusOr<Response>, notes: [String:Any]?) {
-        let baseStr: String = "createNewUserCompletion => "
         if (responseOr.hasError()) {
-            // Handle likley connection error
-            print(baseStr + "Connection Failure: " + responseOr.getErrorMessage())
+            showInternalServerErrorAlert()
             return
         }
         let response = responseOr.get()
         if (!response.ok()) {
-            // Handle server error
-            print(baseStr + "ServerStatusCode: " + String(describing: response.serverStatusCode))
+            showAlert(title: "Oh...", message: response.serverMessage)
             return
         }
         DispatchQueue.main.async {
