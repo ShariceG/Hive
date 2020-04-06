@@ -58,6 +58,7 @@ class EmailAndUsernameViewController : UIViewController, SignInPageFragment {
         }
         let username = notes!["username"] as! String
         let email = notes!["email"] as! String
+        signInDelegate!.saveLogInData(username: username, email: email, isSignUpVerified: false)
         DispatchQueue.main.async {
             self.signInDelegate?.goEnterPinCode(
                 args: ["username": username, "email": email])

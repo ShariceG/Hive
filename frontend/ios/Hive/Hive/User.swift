@@ -8,21 +8,15 @@
 
 import Foundation
 
-class User {
+struct User: Codable {
     
-    private(set) var username: String
-    private(set) var phoneNumber: String
-    private(set) var location: String
+    public var username: String
+    public var email: String
+    public var isSignUpVerified: Bool
     
-    init(username: String, phoneNumber: String, location: String) {
+    init(username: String, email: String, isSignUpVerified: Bool) {
         self.username = username
-        self.phoneNumber = phoneNumber
-        self.location = location
-    }
-    
-    init(username: String, phoneNumber: String) {
-        self.username = username
-        self.phoneNumber = phoneNumber
-        self.location = ""
+        self.email = email
+        self.isSignUpVerified = isSignUpVerified
     }
 }

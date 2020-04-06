@@ -16,6 +16,7 @@ protocol SignInDelegate: class {
     func goWelcome(args: [String:Any])
     func goToMainAppOrWelcomeIfLogIn(args: [String:Any])
     func goToMainApp()
+    func saveLogInData(username: String, email: String, isSignUpVerified: Bool)
 }
 
 protocol SignInPageFragment: class {
@@ -28,13 +29,32 @@ class SignInPageViewController : UIPageViewController, SignInDelegate  {
     private let GO_TO_MAIN_APP_SEGUE: String = "GoToMainAppSegue"
     private var isSignUp: Bool = false
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        goLogInOrSignUp()
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        let userObj = UserDefaults.standard.object(forKey: "user")
+        if userObj != nil {
+            let userData = userObj as! Data
+            let decoder = JSONDecoder()
+            if let user = try? decoder.decode(User.self, from: userData) {
+                if user.isSignUpVerified {
+                    goToMainApp()
+                } else {
+                    goEnterEmailAddress(args: [String:Any]())
+                }
+            }
+        } else {
+            goLogInOrSignUp()
+        }
     }
     
-    private func alreadyVerified() -> Bool {
-        return UserDefaults.standard.string(forKey: "username") != nil
+    func saveLogInData(username: String, email: String, isSignUpVerified: Bool) {
+        let user = User(username: username, email: email, isSignUpVerified: isSignUpVerified)
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(user) {
+            UserDefaults.standard.set(encoded, forKey: "user")
+        } else {
+            showNoTitleAlert(message: "Unable to save locally")
+        }
     }
     
     private func setCurrentController(storyboardId: String, args: [String:Any]) {
