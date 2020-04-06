@@ -57,6 +57,7 @@ class SignInPageViewController : UIPageViewController, SignInDelegate  {
     }
     
     func goLogInOrSignUp() {
+        isSignUp = false
         setCurrentController(storyboardId: "LogInSignUpViewController", args: [String:Any]())
     }
     
