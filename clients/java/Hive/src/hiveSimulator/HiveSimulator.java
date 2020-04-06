@@ -69,7 +69,9 @@ public class HiveSimulator {
 		users = new SimulatedUser[numUsers];
 		System.out.println("Creating " + numUsers + " users.");
 		for (int i = 0; i < users.length; i++) {
-			users[i] = new SimulatedUser("user" + (i+1), "1111111111", 
+			String username = "user" + (i+1);
+			String email = username + "@email.com";
+			users[i] = new SimulatedUser("user" + (i+1), email, 
 					randomLocation());
 			try {
 				Thread.sleep(500);

@@ -17,21 +17,21 @@ public class SimulatedUser {
 	private ServerClient client;
 	
 	private String username;
-	private String phoneNumber;
+	private String email;
 	private Location location;
 	private QueryParams queryParams;
 		
-	public SimulatedUser(String username, String phoneNumber, Location location) {
+	public SimulatedUser(String username, String email, Location location) {
 		this.client = ServerClient.newServerClient();
 		this.username = username;
-		this.phoneNumber = phoneNumber;
+		this.email = email;
 		this.location = location;
 		this.queryParams = new QueryParams(true, "", "");
 		createNewUser();
 	}
 	
 	public void createNewUser() {
-		client.createUser(username, phoneNumber, new Callback() {
+		client.createNewUser(username, email, new Callback() {
 			public void serverRequestCallback(StatusOr<Response> responseOr, 
 					Map<String, Object> notes) {
 				try {
@@ -41,9 +41,26 @@ public class SimulatedUser {
 					if (responseOr.get().serverReturnedWithError()) {
 						throw new RuntimeException(responseOr.get().getServerStatusCode().name());
 					}
-					System.out.println(username + " has been created.");
+					client.checkVerificationCode(username, email, "123456", new Callback() {
+						public void serverRequestCallback(StatusOr<Response> responseOr, 
+								Map<String, Object> notes) {
+							try {
+								if (responseOr.hasError()) {
+									throw new RuntimeException(responseOr.toString());
+								}
+								if (responseOr.get().serverReturnedWithError()) {
+									throw new RuntimeException(responseOr.get().getServerStatusCode().name());
+								}
+								System.out.println(username + " has been created.");
+							} catch (RuntimeException e) {
+								if (!responseOr.get().serverReturnedWithError()) {
+									e.printStackTrace();
+								}
+							}
+						}
+					}, /*notes=*/null);
 				} catch (RuntimeException e) {
-					if (!e.getMessage().contains("USER_ALREADY_EXISTS")) {
+					if (!responseOr.get().serverReturnedWithError()) {
 						e.printStackTrace();
 					}
 				}

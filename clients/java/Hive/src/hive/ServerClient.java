@@ -18,8 +18,12 @@ public interface ServerClient {
 	public static ServerClient newServerClient() {
 		return new ServerClientImp();
 	}
-
-	void createUser(String username, String phoneNumber, 
+	
+	void checkVerificationCode(String username, String email, String code,
+			Callback callback, Map<String, Object> notes);
+	void verifyExistingUser(String email, 
+			Callback callback, Map<String, Object> notes);
+	void createNewUser(String username, String email, 
 			Callback callback, Map<String, Object> notes);
 	void insertComment(String username, String commentText, String postId, 
 			Callback callback, Map<String, Object> notes);
