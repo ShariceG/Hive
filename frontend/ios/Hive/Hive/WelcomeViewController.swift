@@ -10,6 +10,7 @@ import UIKit
 
 class WelcomeViewController : UIViewController, SignInPageFragment {
     public var signInDelegate: SignInDelegate?
+    private var args: [String:Any]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,6 +20,10 @@ class WelcomeViewController : UIViewController, SignInPageFragment {
         signInDelegate = delegate
     }
     
+    func setArgs(args: [String:Any]) {
+        self.args = args
+    }
+
     @IBAction func beginBnAction(_ sender: UIButton) {
         signInDelegate?.goToMainApp()
     }

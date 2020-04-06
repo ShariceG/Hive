@@ -49,6 +49,7 @@ class ServerClient {
 //    private static let SERVER_DOMAIN: String = "http://192.168.0.43:8080"
     private static let COMMON_PATH: String = "/_ah/api/media_api/v1/"
     private static let CREATE_USER_PATH: String = "app.create_user?"
+    private static let VERIFY_CODE_PATH: String = "app.verify_code?"
     private static let INSERT_COMMENT_PATH: String = "app.insert_comment?"
     private static let INSERT_POST_PATH: String = "app.insert_post?"
     private static let GET_ALL_POST_COMMENTS_PATH: String = "app.get_all_comments_for_post?"
@@ -124,11 +125,33 @@ class ServerClient {
         let path: String = constructIncompleteUrlPath() + ServerClient.GET_ALL_POST_COMMENTS_PATH
         executeGet(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
     }
-
-    public func createUser(username: String, phoneNumber: String, completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
+    
+    public func checkVerificationCode(username: String, email: String, code: String,
+                                      completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
         var request: [String:Any] = [String:Any]()
         request["username"] = username
-        request["phone_number"] = phoneNumber
+        request["email"] = email
+        request["verification_code"] = code
+
+        let path: String = constructIncompleteUrlPath() + ServerClient.VERIFY_CODE_PATH
+        executePost(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
+    }
+    
+    public func verifyExistingUser(email: String,
+            completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
+        var request: [String:Any] = [String:Any]()
+        request["email"] = email
+        request["verify_email_only"] = true
+
+        let path: String = constructIncompleteUrlPath() + ServerClient.CREATE_USER_PATH
+        executePost(targetUrl: path, jsonParams: request, completion: completion, notes: notes)
+    }
+    
+    public func createNewUser(username: String, email: String,
+                                      completion:@escaping ((StatusOr<Response>, [String:Any]?) -> ()), notes: [String:Any]?) {
+        var request: [String:Any] = [String:Any]()
+        request["username"] = username
+        request["email"] = email
 
         let path: String = constructIncompleteUrlPath() + ServerClient.CREATE_USER_PATH
         executePost(targetUrl: path, jsonParams: request, completion: completion, notes: notes)

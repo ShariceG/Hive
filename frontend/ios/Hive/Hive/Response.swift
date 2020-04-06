@@ -57,6 +57,8 @@ class Response {
     private(set) var serverStatusCode: ServerStatusCode
     private(set) var locations: Array<Location>
     private(set) var queryMetadata: QueryMetadata
+    private(set) var verificationCode: String
+    private(set) var username: String
     
     init(jsonObject: [String: Any]) {
         // Must initialize all member variables before calling class helper functions
@@ -65,6 +67,8 @@ class Response {
         self.serverStatusCode = ServerStatusCode.UNKNOWN_ERROR
         self.locations = []
         self.queryMetadata = QueryMetadata()
+        self.verificationCode = ""
+        self.username = ""
 
         if (jsonObject["posts"] != nil) {
             self.posts = getPostList(jsonPosts: jsonObject["posts"] as! [[String:Any]])
@@ -81,6 +85,12 @@ class Response {
         }
         if (jsonObject["query_metadata"] != nil) {
             self.queryMetadata = QueryMetadata(jsonMetadata: jsonObject["query_metadata"] as! [String : Any])
+        }
+        if (jsonObject["verification_code"] != nil) {
+            self.verificationCode = jsonObject["verification_code"] as! String
+        }
+        if (jsonObject["username"] != nil) {
+            self.username = jsonObject["username"] as! String
         }
     }
     

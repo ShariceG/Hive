@@ -10,7 +10,8 @@ import UIKit
 
 class LogInViewController : UIViewController, SignInPageFragment {
     
-    public var signInDelegate: SignInDelegate?
+    private var signInDelegate: SignInDelegate?
+    private var args: [String:Any]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,11 +21,15 @@ class LogInViewController : UIViewController, SignInPageFragment {
         signInDelegate = delegate
     }
     
+    func setArgs(args: [String:Any]) {
+        self.args = args
+    }
+    
     @IBAction func logInBnAction(_ sender: UIButton) {
-        signInDelegate?.goEnterEmailAddress()
+        signInDelegate?.goEnterEmailAddress(args: [String:Any]())
     }
     
     @IBAction func signUpBnAction(_ sender: UIButton) {
-        signInDelegate?.goEnterEmailAddressAndUsername()
+        signInDelegate?.goEnterEmailAddressAndUsername(args: [String: String]())
     }
 }

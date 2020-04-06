@@ -151,6 +151,14 @@
                                     <action selector="nextBnAction:" destination="Rsp-Pq-PXS" eventType="touchUpInside" id="Wgo-lV-nHF"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zyV-R0-dvX">
+                                <rect key="frame" x="178" y="337" width="58" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Go Back"/>
+                                <connections>
+                                    <action selector="goBackBnAction:" destination="Rsp-Pq-PXS" eventType="touchUpInside" id="PcE-Ih-NQ9"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <viewLayoutGuide key="safeArea" id="dgf-me-ctN"/>
@@ -162,7 +170,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o2T-Yi-TdZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="867" y="1728"/>
+            <point key="canvasLocation" x="866.66666666666674" y="1727.6785714285713"/>
         </scene>
         <!--Email View Controller-->
         <scene sceneID="SJI-B2-HSc">
@@ -195,6 +203,14 @@
                                 <state key="normal" title="Next"/>
                                 <connections>
                                     <action selector="nextBnAction:" destination="rzD-ot-T1Y" eventType="touchUpInside" id="hbk-54-D3C"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CDt-7T-z4g">
+                                <rect key="frame" x="178" y="209" width="58" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Go Back"/>
+                                <connections>
+                                    <action selector="goBackBnAction:" destination="rzD-ot-T1Y" eventType="touchUpInside" id="daG-yp-tre"/>
                                 </connections>
                             </button>
                         </subviews>

@@ -9,37 +9,39 @@
 import UIKit
 
 protocol SignInDelegate: class {
-    func goEnterEmailAddress()
-    func goEnterEmailAddressAndUsername()
-    func goEnterPinCode()
-    func goWelcome()
-    func goToMainAppOrWelcomeIfLogIn()
+    func goLogInOrSignUp()
+    func goEnterEmailAddress(args: [String:Any])
+    func goEnterEmailAddressAndUsername(args: [String:Any])
+    func goEnterPinCode(args: [String:Any])
+    func goWelcome(args: [String:Any])
+    func goToMainAppOrWelcomeIfLogIn(args: [String:Any])
     func goToMainApp()
 }
 
 protocol SignInPageFragment: class {
     func setSignInPageDelegate(delegate: SignInDelegate)
+    func setArgs(args: [String:Any])
 }
 
 class SignInPageViewController : UIPageViewController, SignInDelegate  {
     
     private let GO_TO_MAIN_APP_SEGUE: String = "GoToMainAppSegue"
-    private let client: ServerClient = ServerClient()
     private var isSignUp: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setCurrentController(storyboardId: "LogInSignUpViewController")
+        goLogInOrSignUp()
     }
     
     private func alreadyVerified() -> Bool {
         return UserDefaults.standard.string(forKey: "username") != nil
     }
     
-    private func setCurrentController(storyboardId: String) {
+    private func setCurrentController(storyboardId: String, args: [String:Any]) {
         let controller = newViewController(storyboardName: "SignIn", storyboardId: storyboardId)
         controller.hideKeyboardWhenTapped()
         (controller as! SignInPageFragment).setSignInPageDelegate(delegate: self)
+        (controller as! SignInPageFragment).setArgs(args: args)
         setViewControllers([controller], direction: .forward, animated: false, completion: nil)
     }
     
@@ -54,26 +56,30 @@ class SignInPageViewController : UIPageViewController, SignInDelegate  {
         }
     }
     
-    func goEnterEmailAddress() {
-        setCurrentController(storyboardId: "EmailViewController")
+    func goLogInOrSignUp() {
+        setCurrentController(storyboardId: "LogInSignUpViewController", args: [String:Any]())
     }
     
-    func goEnterEmailAddressAndUsername() {
+    func goEnterEmailAddress(args: [String:Any]) {
+        setCurrentController(storyboardId: "EmailViewController", args: args)
+    }
+    
+    func goEnterEmailAddressAndUsername(args: [String:Any]) {
         isSignUp = true
-        setCurrentController(storyboardId: "EmailAndUsernameViewController")
+        setCurrentController(storyboardId: "EmailAndUsernameViewController", args: args)
     }
     
-    func goEnterPinCode() {
-        setCurrentController(storyboardId: "EnterPinViewController")
+    func goEnterPinCode(args: [String:Any]) {
+        setCurrentController(storyboardId: "EnterPinViewController", args: args)
     }
     
-    func goWelcome() {
-        setCurrentController(storyboardId: "WelcomeViewController")
+    func goWelcome(args: [String:Any]) {
+        setCurrentController(storyboardId: "WelcomeViewController", args: args)
     }
     
-    func goToMainAppOrWelcomeIfLogIn() {
+    func goToMainAppOrWelcomeIfLogIn(args: [String:Any]) {
         if isSignUp {
-            goWelcome()
+            goWelcome(args: args)
         } else {
             goToMainApp()
         }
