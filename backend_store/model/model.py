@@ -2,7 +2,12 @@ from google.appengine.ext import ndb
 
 class UserModel(ndb.Model):
     Username = ndb.StringProperty(required=False)
-    PhoneNumber = ndb.StringProperty(required=False)
+    PhoneNumber = ndb.StringProperty(required=False)  # TODO: Get rid of this.
+    Email = ndb.StringProperty(required=False)
+    # Most recent verification code sent to user.
+    VerificationCode = ndb.StringProperty(required=False)
+    # If false, user sign up is not verified.
+    SignUpVerified = ndb.BooleanProperty(default=False)
     CreationTimestampSec = ndb.FloatProperty(required=False)
 
 class Area(ndb.Model):

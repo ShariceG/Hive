@@ -4,16 +4,24 @@ import entity_proto
 from backend.status import Status
 from backend.status import StatusCode
 
-'''
-    Only need to provide username and phone_number.
-    The server will decide the radius.
-'''
+class VerifyCodeRequest(messages.Message):
+    username = messages.StringField(1, required=False)
+    email = messages.StringField(2, required=False)
+    verification_code = messages.StringField(3, required=False)
+
+class VerifyCodeResponse(messages.Message):
+    status = messages.MessageField(Status, 1, required=False)
+
 class CreateUserRequest(messages.Message):
     username = messages.StringField(1, required=False)
     phone_number = messages.StringField(2, required=False)
+    email = messages.StringField(3, required=False)
+    verify_email_only = messages.BooleanField(4, required=False)
 
 class CreateUserResponse(messages.Message):
     status = messages.MessageField(Status, 1, required=False)
+    verification_code = messages.StringField(2, required=False)
+    username = messages.StringField(3, required=False)
 
 # '''
 #     Only need to provide the username

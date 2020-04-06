@@ -20,7 +20,13 @@
             "UNSUPPORTED_ACTION_TYPE",
             "INTERNAL_ERROR",
             "NO_LOCATION_PROVIDED",
-            "INVALID_LOCATION"
+            "INVALID_LOCATION",
+            "EMAIL_ALREADY_EXISTS",
+            "FAILED_PRECONDITION",
+            "NOT_FOUND",
+            "USER_MISMATCH_WTH_EMAIL",
+            "USER_MISMATCH_WTH_VERIFICATION_CODE",
+            "EMAIL_NOT_FOUND"
           ],
           "type": "string"
         },
@@ -62,7 +68,24 @@
           "format": "double",
           "type": "number"
         },
+        "dislikes": {
+          "format": "int64",
+          "type": "string"
+        },
+        "likes": {
+          "format": "int64",
+          "type": "string"
+        },
         "post_id": {
+          "type": "string"
+        },
+        "user_action_type": {
+          "enum": [
+            "NO_ACTION",
+            "LIKE",
+            "DISLIKE",
+            "NUMBER_OF_ACTIONS"
+          ],
           "type": "string"
         },
         "username": {
@@ -112,6 +135,15 @@
         "post_text": {
           "type": "string"
         },
+        "user_action_type": {
+          "enum": [
+            "NO_ACTION",
+            "LIKE",
+            "DISLIKE",
+            "NUMBER_OF_ACTIONS"
+          ],
+          "type": "string"
+        },
         "username": {
           "type": "string"
         }
@@ -146,11 +178,17 @@
     },
     "BackendStoreMainProtoServerProtoCreateUserRequest": {
       "properties": {
+        "email": {
+          "type": "string"
+        },
         "phone_number": {
           "type": "string"
         },
         "username": {
           "type": "string"
+        },
+        "verify_email_only": {
+          "type": "boolean"
         }
       },
       "type": "object"
@@ -159,6 +197,12 @@
       "properties": {
         "status": {
           "$ref": "#/definitions/BackendStatusStatus"
+        },
+        "username": {
+          "type": "string"
+        },
+        "verification_code": {
+          "type": "string"
         }
       },
       "type": "object"
@@ -332,6 +376,34 @@
       },
       "type": "object"
     },
+    "BackendStoreMainProtoServerProtoUpdateCommentRequest": {
+      "properties": {
+        "action_type": {
+          "enum": [
+            "NO_ACTION",
+            "LIKE",
+            "DISLIKE",
+            "NUMBER_OF_ACTIONS"
+          ],
+          "type": "string"
+        },
+        "comment_id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoUpdateCommentResponse": {
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
     "BackendStoreMainProtoServerProtoUpdatePostRequest": {
       "properties": {
         "action_type": {
@@ -353,6 +425,28 @@
       "type": "object"
     },
     "BackendStoreMainProtoServerProtoUpdatePostResponse": {
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/BackendStatusStatus"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoVerifyCodeRequest": {
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "verification_code": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "BackendStoreMainProtoServerProtoVerifyCodeResponse": {
       "properties": {
         "status": {
           "$ref": "#/definitions/BackendStatusStatus"
@@ -420,6 +514,11 @@
         "parameters": [
           {
             "in": "query",
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "in": "query",
             "name": "post_id",
             "type": "string"
           }
@@ -471,7 +570,13 @@
     "/media_api/v1/app.get_all_posts_at_location": {
       "get": {
         "operationId": "LocationBasedSocialMediaAPI_getAllPostsAtLocation",
-        "parameters": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "username",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "A successful response",
@@ -582,6 +687,29 @@
         }
       }
     },
+    "/media_api/v1/app.update_comment": {
+      "post": {
+        "operationId": "LocationBasedSocialMediaAPI_updateComment",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoUpdateCommentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoUpdateCommentResponse"
+            }
+          }
+        }
+      }
+    },
     "/media_api/v1/app.update_post": {
       "post": {
         "operationId": "LocationBasedSocialMediaAPI_updatePost",
@@ -600,6 +728,29 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/BackendStoreMainProtoServerProtoUpdatePostResponse"
+            }
+          }
+        }
+      }
+    },
+    "/media_api/v1/app.verify_code": {
+      "post": {
+        "operationId": "LocationBasedSocialMediaAPI_verifyCode",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoVerifyCodeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/BackendStoreMainProtoServerProtoVerifyCodeResponse"
             }
           }
         }

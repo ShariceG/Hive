@@ -30,28 +30,108 @@ LOCATION_QUERY_DECIMAL_PLACES = 2
 # How many seconds ago to consider a post for popularity
 POPULAR_TIME_THRESHOLD_SEC = 3 * 24 * 60 * 60
 
+TESTONLY_verification_code = "123456"
+
 class ServiceHandler(object):
 
     def __init__(self):
         self._helper = service_helper.ServiceHelper
 
-    def handle_create_user(self, request):
-        if self._user_exists(request.username):
-            return CreateUserResponse(
-                status=Status(status_code=StatusCode.USER_ALREADY_EXISTS))
+    def handle_verify_code(self, request):
+        user = ndb.Key('UserModel', request.username).get()
+        if not user:
+            msg = 'No such username exists.'
+            return VerifyCodeResponse(
+                status=Status(status_code=StatusCode.NOT_FOUND,
+                status_message=msg))
+        if user.Email != request.email:
+            msg = 'Email is not associated with this username.'
+            return VerifyCodeResponse(
+                status=Status(status_code=StatusCode.USER_MISMATCH_WTH_EMAIL,
+                status_message=msg))
+        if user.VerificationCode != request.verification_code:
+            msg = 'Incorrect verification code.'
+            return VerifyCodeResponse(
+                status=Status(
+                status_code=StatusCode.USER_MISMATCH_WTH_VERIFICATION_CODE,
+                status_message=msg))
+        if not user.SignUpVerified:
+            user.SignUpVerified = True
+            user.put()
+        return VerifyCodeResponse(
+            status=Status(status_code=StatusCode.OK))
 
+    def _send_verification_email(self, email):
+        print 'Sending verification to: %s' % (email)
+        # TODO: Implement.
+        pass
+
+    def _handle_verify_email_only(self, email):
+        results = ndb.gql(('SELECT * FROM UserModel '
+                                'WHERE Email = :1'), email)
+        if results.count() == 0:
+            msg = 'No user with such email.'
+            return CreateUserResponse(
+                status=Status(status_code=StatusCode.FAILED_PRECONDITION,
+                status_message=msg))
+
+        if results.count() > 1:
+            print 'ERROR: More than one user for email: %s' % email
+            return CreateUserResponse(
+                status=Status(status_code=StatusCode.INTERNAL_ERROR))
+
+        user = results.get()
+        # Generate verification code.
+        self._send_verification_email(email)
+        return CreateUserResponse(
+            status=Status(status_code=StatusCode.OK),
+            username=user.Username,
+            verification_code=TESTONLY_verification_code)
+
+    def handle_create_user(self, request):
+        if request.verify_email_only:
+            return self._handle_verify_email_only(request.email)
+
+        if not request.username:
+            msg = 'No username provided.'
+            return CreateUserResponse(
+                status=Status(status_code=StatusCode.FAILED_PRECONDITION,
+                status_message=msg))
+        if not request.email:
+            msg = 'No email provided.'
+            return CreateUserResponse(
+                status=Status(status_code=StatusCode.FAILED_PRECONDITION,
+                status_message=msg))
+        if self._user_exists_and_verified(request.username):
+            msg = 'This username already exists.'
+            return CreateUserResponse(
+                status=Status(status_code=StatusCode.USER_ALREADY_EXISTS,
+                status_message=msg))
+        if self._email_exists(request.email):
+            msg = 'This email is already associated with another username.'
+            return CreateUserResponse(
+                status=Status(status_code=StatusCode.EMAIL_ALREADY_EXISTS,
+                status_message=msg))
+
+        # Generate verification code.
+        verification_code = TESTONLY_verification_code
         model.UserModel(
             id=request.username,
             Username=request.username,
-            PhoneNumber=request.phone_number,
+            Email=request.email,
+            VerificationCode=verification_code,
             CreationTimestampSec=time.time()).put()
+
+        self._send_verification_email(request.email)
         return CreateUserResponse(
-            status=Status(status_code=StatusCode.OK))
+            status=Status(status_code=StatusCode.OK),
+            username=request.username,
+            verification_code=verification_code)
 
     def handle_insert_post(self, request):
         username = request.username
         location = request.location
-        if not self._user_exists(username):
+        if not self._user_exists_and_verified(username):
             return InsertPostResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
         # TODO: validate post
@@ -178,7 +258,7 @@ class ServiceHandler(object):
         return UpdateCommentResponse(status=ok_status)
 
     def handle_insert_comment(self, request):
-        if not self._user_exists(request.username):
+        if not self._user_exists_and_verified(request.username):
             return InsertCommentResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
         if not self._post_exists(request.post_id):
@@ -214,7 +294,7 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK))
 
     def handle_get_all_posts_by_user(self, request):
-        if not self._user_exists(request.username):
+        if not self._user_exists_and_verified(request.username):
             return GetAllPostsByUserResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
 
@@ -235,7 +315,7 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK))
 
     def handle_get_all_posts_commented_on_by_user(self, request):
-        if not self._user_exists(request.username):
+        if not self._user_exists_and_verified(request.username):
             return GetAllPostsCommentedOnByUserResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
         query = ndb.gql(('SELECT DISTINCT PostID FROM CommentModel '
@@ -283,7 +363,7 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK))
 
     def handle_get_all_posts_at_location(self, request):
-        if not self._user_exists(request.username):
+        if not self._user_exists_and_verified(request.username):
             return GetAllPostsAtLocationResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
         location = request.location
@@ -318,7 +398,7 @@ class ServiceHandler(object):
 
     def handle_get_all_popular_posts_at_location(self, request):
         location = request.location
-        if not self._user_exists(request.username):
+        if not self._user_exists_and_verified(request.username):
             return GetAllPopularPostsAtLocationResponse(
                 status=Status(status_code=StatusCode.USER_NOT_FOUND))
         ok, location = self._validate_and_get_location_with_precision(location)
@@ -558,3 +638,12 @@ class ServiceHandler(object):
 
     def _user_exists(self, username):
         return not ndb.Key('UserModel', username).get() is None
+
+    def _user_exists_and_verified(self, username):
+        user = ndb.Key('UserModel', username).get()
+        exists = not user is None
+        return exists and user.SignUpVerified
+
+    def _email_exists(self, email):
+        return ndb.gql(('SELECT * FROM UserModel '
+                                'WHERE Email = :1'), email).count() > 0
