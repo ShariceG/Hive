@@ -30,7 +30,7 @@ class EmailViewController : UIViewController, SignInPageFragment {
     @IBAction func nextBnAction(_ sender: UIButton) {
         let email = emailTextField.text!
         if (email.isEmpty) {
-            showNoTitleAlert(message: "Email cannot be empty")
+            showAlert(message: "Email cannot be empty")
             return
         }
         disableUserActivity()

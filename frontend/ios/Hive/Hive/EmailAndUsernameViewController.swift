@@ -33,7 +33,7 @@ class EmailAndUsernameViewController : UIViewController, SignInPageFragment {
         let username = usernameTextField.text!
         let email = emailTextField.text!
         if (username.isEmpty || email.isEmpty) {
-            showNoTitleAlert(message: "Username and Email cannot be empty")
+            showAlert(message: "Username and Email cannot be empty")
             return
         }
         disableUserActivity()

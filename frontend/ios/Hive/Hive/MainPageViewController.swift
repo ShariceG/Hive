@@ -6,7 +6,7 @@
 //  Copyright © 2019 Chuck Onwuzuruike. All rights reserved.
 //
 
-import Foundation
+import CoreLocation
 import UIKit
 
 class MainPageViewController : UIPageViewController {
@@ -15,11 +15,20 @@ class MainPageViewController : UIPageViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupLocationServices()
+    }
+    
+    private func initPageViewController() {
         self.dataSource = self
         pages.append(newViewController(storyboardId: "MenuViewController"))
         pages.append(newViewController(storyboardId: "ViewController"))
         pages.append(newViewController(storyboardId: "PopularViewController"))
         self.setViewControllers([pages[1]], direction: .forward, animated: true, completion: nil)
+    }
+    
+    private func setupLocationServices() {
+        Global.environment?.initLocationHandler()
+        Global.environment?.setLocationHandlerDelegate(delegate: self)
     }
     
     private func newViewController(storyboardId: String) -> UIViewController {
@@ -53,5 +62,29 @@ extension MainPageViewController: UIPageViewControllerDataSource {
         }
         return pages[next]
     }
+}
+
+extension MainPageViewController: LocationHandlerDelegate {
+    func userDeniedLocationPermission() {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "Please enable location services", message: "", preferredStyle: .alert)
+            let settingsAction = UIAlertAction(title: "Settings", style: .default, handler: { action in
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            })
+            alert.addAction(settingsAction)
+            alert.preferredAction = settingsAction
+            self.presentAlert(alert: alert)
+        }
+    }
     
+    func userApprovedLocationPermission() {
+        showPermanentAlert(title: "Trying to Find Your Location", message: "If this takes a while, restart the app")
+    }
+    
+    func locationUpdate(location: CLLocation) {
+        dismissAlert()
+        if pages.isEmpty {
+            initPageViewController()
+        }
+    }
 }

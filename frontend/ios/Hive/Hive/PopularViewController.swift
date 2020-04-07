@@ -170,7 +170,7 @@ extension PopularViewController: PostFeedDelegate {
             print("No set location.")
             return
         }
-        client.getAllPopularPostsAtLocation(username: self.getTestUser(), queryParams: queryParams,
+        client.getAllPopularPostsAtLocation(username: self.getLoggedInUsername(), queryParams: queryParams,
                                             location: self.currLocation!,
                                             completion: getPopularPostsFromLocationCompletion,
                                             notes: nil)

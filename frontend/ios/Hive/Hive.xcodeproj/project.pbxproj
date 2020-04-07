@@ -42,6 +42,9 @@
 		BA72FB942439C6B100CDA654 /* EmailAndUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA72FB932439C6B100CDA654 /* EmailAndUsernameViewController.swift */; };
 		BA72FB962439C6C900CDA654 /* EnterPinCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA72FB952439C6C900CDA654 /* EnterPinCodeViewController.swift */; };
 		BA72FB982439D71400CDA654 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA72FB972439D71400CDA654 /* WelcomeViewController.swift */; };
+		BA72FB9E243B012100CDA654 /* LocationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA72FB9D243B012100CDA654 /* LocationHandler.swift */; };
+		BA72FBA0243B119500CDA654 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA72FB9F243B119500CDA654 /* Environment.swift */; };
+		BA72FBA2243C534B00CDA654 /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA72FBA1243C534B00CDA654 /* Global.swift */; };
 		BAC2CA88233FF9A20051C6D8 /* MainPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC2CA87233FF9A20051C6D8 /* MainPageViewController.swift */; };
 		E067E56721D6A52600D3095D /* PopularViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E067E56621D6A52600D3095D /* PopularViewController.swift */; };
 		E0D91F3621D803F0007E6916 /* PopularCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D91F3521D803F0007E6916 /* PopularCollectionViewCell.swift */; };
@@ -86,6 +89,9 @@
 		BA72FB932439C6B100CDA654 /* EmailAndUsernameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmailAndUsernameViewController.swift; sourceTree = "<group>"; };
 		BA72FB952439C6C900CDA654 /* EnterPinCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnterPinCodeViewController.swift; sourceTree = "<group>"; };
 		BA72FB972439D71400CDA654 /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
+		BA72FB9D243B012100CDA654 /* LocationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationHandler.swift; sourceTree = "<group>"; };
+		BA72FB9F243B119500CDA654 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
+		BA72FBA1243C534B00CDA654 /* Global.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
 		BAC2CA87233FF9A20051C6D8 /* MainPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPageViewController.swift; sourceTree = "<group>"; };
 		E067E56621D6A52600D3095D /* PopularViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularViewController.swift; sourceTree = "<group>"; };
 		E0D91F3521D803F0007E6916 /* PopularCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopularCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -184,6 +190,9 @@
 				13A5CC7F2166E5B00026F7C7 /* Response.swift */,
 				13A3771E2167417A001EA8A2 /* ServerClient.swift */,
 				E0D91F3721D8A1C9007E6916 /* Location.swift */,
+				BA72FB9D243B012100CDA654 /* LocationHandler.swift */,
+				BA72FB9F243B119500CDA654 /* Environment.swift */,
+				BA72FBA1243C534B00CDA654 /* Global.swift */,
 			);
 			name = client;
 			sourceTree = "<group>";
@@ -304,8 +313,11 @@
 				13A3771F2167417A001EA8A2 /* ServerClient.swift in Sources */,
 				BA376F2A23375B4C00B66991 /* MapViewController.swift in Sources */,
 				13AE7A532165F346003C898A /* ActionType.swift in Sources */,
+				BA72FBA2243C534B00CDA654 /* Global.swift in Sources */,
 				BA23FC6A23BFEB7A002911B5 /* MakePostView.swift in Sources */,
+				BA72FB9E243B012100CDA654 /* LocationHandler.swift in Sources */,
 				13AE7A402165F182003C898A /* AppDelegate.swift in Sources */,
+				BA72FBA0243B119500CDA654 /* Environment.swift in Sources */,
 				BA376F242335E25200B66991 /* CommentFeedView.swift in Sources */,
 				BA72FB8B24399F1800CDA654 /* SignInPageViewController.swift in Sources */,
 				13A5CC802166E5B10026F7C7 /* Response.swift in Sources */,

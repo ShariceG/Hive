@@ -56,6 +56,13 @@ class Location {
         lonStr = ""
         area = Area()
     }
+    
+    init(loc: CLLocation) {
+        location = loc
+        latStr = String(loc.coordinate.latitude)
+        lonStr = String(loc.coordinate.longitude)
+        area = Area()
+    }
 
     init(locationJson: [String: Any]) {
         self.latStr = locationJson["latitude"] as! String

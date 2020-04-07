@@ -67,6 +67,8 @@ class Post: Hashable, Equatable {
         let dislikes = jsonPost["dislikes"] == nil ? 0 : Int(jsonPost["dislikes"] as! String)
         let userActionType = jsonPost["user_action_type"] == nil ? ActionType.NO_ACTION :
             ActionType.FromString(str: jsonPost["user_action_type"] as! String)
+        let numberOfComments = jsonPost["number_of_comments"] == nil ? 0 :
+            Int(jsonPost["number_of_comments"] as! String)
         return Post(username: jsonPost["username"] as! String,
                     postId: jsonPost["post_id"] as! String,
                     postText: jsonPost["post_text"] as! String,
@@ -75,7 +77,7 @@ class Post: Hashable, Equatable {
                     dislikes: dislikes!,
                     creationTimestampSec: (jsonPost["creation_timestamp_sec"] as! NSNumber).decimalValue,
                     userActionType: userActionType,
-                    numberOfComments: Int(jsonPost["number_of_comments"] as! String) ?? -1,
+                    numberOfComments: numberOfComments!,
                     jsonPost: jsonPost)
     }
     

@@ -30,7 +30,7 @@ class EnterPinCodeViewController : UIViewController, SignInPageFragment {
     @IBAction func hiveInBnAction(_ sender: UIButton) {
         let pin = pinCodeTextField.text!
         if (pin.isEmpty) {
-            showNoTitleAlert(message: "Code cannot be empty")
+            showAlert(message: "Code cannot be empty")
             return
         }
         disableUserActivity()

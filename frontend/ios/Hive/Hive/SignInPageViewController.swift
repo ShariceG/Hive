@@ -31,6 +31,8 @@ class SignInPageViewController : UIPageViewController, SignInDelegate  {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        // If the user is already saved locally, we can skip signing in and go
+        // directly to the app.
         let userObj = UserDefaults.standard.object(forKey: "user")
         if userObj != nil {
             let userData = userObj as! Data
@@ -47,13 +49,29 @@ class SignInPageViewController : UIPageViewController, SignInDelegate  {
         }
     }
     
+    func getUserFromDefaults() -> User? {
+        let userObj = UserDefaults.standard.object(forKey: "user")
+        if userObj != nil {
+            let userData = userObj as! Data
+            let decoder = JSONDecoder()
+            if let user = try? decoder.decode(User.self, from: userData) {
+                return user
+            } else {
+                print("Error: Unable to get user from defaults but got obj: " + userObj.debugDescription)
+            }
+        } else {
+            print("Error: No user in defaults.")
+        }
+        return nil
+    }
+    
     func saveLogInData(username: String, email: String, isSignUpVerified: Bool) {
         let user = User(username: username, email: email, isSignUpVerified: isSignUpVerified)
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(user) {
             UserDefaults.standard.set(encoded, forKey: "user")
         } else {
-            showNoTitleAlert(message: "Unable to save locally")
+            showAlert(message: "Unable to save locally")
         }
     }
     
@@ -107,7 +125,15 @@ class SignInPageViewController : UIPageViewController, SignInDelegate  {
     }
     
     func goToMainApp() {
+        setupUserInEnvironment()
         self.performSegue(withIdentifier: GO_TO_MAIN_APP_SEGUE, sender: self)
+    }
+    
+    func setupUserInEnvironment() {
+        print("Creating global environment with user...")
+        Environment.createGlobalEnvironment()
+        Global.environment?.setUser(user: getUserFromDefaults()!)
+        print("Done.")
     }
     
 }
