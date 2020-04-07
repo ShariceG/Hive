@@ -597,8 +597,37 @@ class ServiceHandler(object):
             action = self._helper.action_model_to_proto(results.get())
             comment.user_action_type = action.action_type
 
+    def _round_to_nearest_hundreths_region(self, x_str):
+        '''Rounds as number to the nearest hundredths region.
+        Assumes precision of at least 3 decimal places.
+
+        Let n be the number after the tenths decimal place,
+        Ex: if x = 12.456, n = 56
+
+        if n <= 33 then n = 0 else
+        if n <= 66 then n = 5 else
+        if n <= 99 then n = 9
+        '''
+        x = x_str
+        split_x = x.split('.')
+        before_dec = split_x[0]
+        tenths_n = split_x[1][0]  # digit in tenths place
+        n = int(split_x[1][1:])
+        if n <= 33:
+            n = 0
+        elif n <= 66:
+            n = 5
+        else:
+             n = 9
+        return before_dec + '.' + tenths_n + str(n)
+
+    def _round_lat_lon(self, lat, lon):
+        return (self._round_to_nearest_hundreths_region(lat),
+            self._round_to_nearest_hundreths_region(lon))
+
     def _get_area_latitude_longitude(self, lat, lon):
         dec = LOCATION_QUERY_DECIMAL_PLACES
+        lat, lon = self._round_lat_lon(lat, lon)
         return (self._truncate_float_str(lat, dec),
             self._truncate_float_str(lon, dec))
 

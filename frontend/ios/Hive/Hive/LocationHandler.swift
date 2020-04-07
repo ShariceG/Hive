@@ -20,10 +20,12 @@ class LocationHandler : NSObject, CLLocationManagerDelegate {
     
     private var manager: CLLocationManager
     private weak var handlerDelegate: LocationHandlerDelegate?
+    private var isAuthorized: Bool
     
     override init() {
         manager = CLLocationManager()
         handlerDelegate = nil
+        isAuthorized = false
     }
     
     func start() {
@@ -39,8 +41,7 @@ class LocationHandler : NSObject, CLLocationManagerDelegate {
     }
     
     func requestAuthorizationIfNeeded() -> Bool {
-        let authStatus = CLLocationManager.authorizationStatus()
-        if authStatus != .authorizedWhenInUse || authStatus != .authorizedAlways {
+        if !isAuthorized {
             manager.requestWhenInUseAuthorization()
             return true
         }
@@ -48,8 +49,7 @@ class LocationHandler : NSObject, CLLocationManagerDelegate {
     }
     
     func requestAuthorizationOnForegroundIfNeeded() -> Bool {
-        let authStatus = CLLocationManager.authorizationStatus()
-        if authStatus != .authorizedWhenInUse || authStatus != .authorizedAlways {
+        if !isAuthorized {
             if handlerDelegate != nil {
                 handlerDelegate?.userDeniedLocationPermission()
             }
@@ -72,10 +72,15 @@ class LocationHandler : NSObject, CLLocationManagerDelegate {
         return CLLocation()
     }
     
+    func hasCurrentLocation() -> Bool {
+        return manager.location != nil
+    }
+    
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
         case .authorizedWhenInUse, .authorizedAlways:
             print("Got user authorization.")
+            isAuthorized = true
             manager.startUpdatingLocation()
             if handlerDelegate != nil {
                 handlerDelegate?.userApprovedLocationPermission()

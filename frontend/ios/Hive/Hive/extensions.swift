@@ -62,7 +62,11 @@ extension UIViewController{
     }
     
     func dismissAlert() {
-        if let controller = presentedViewController as? UIAlertController {
+        if presentedViewController == nil {
+            return
+        }
+        let controller = presentedViewController!
+        if controller .isKind(of: UIAlertController.self) {
             controller.dismiss(animated: true, completion: nil)
         }
     }

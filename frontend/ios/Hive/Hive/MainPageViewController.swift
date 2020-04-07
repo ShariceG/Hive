@@ -78,6 +78,9 @@ extension MainPageViewController: LocationHandlerDelegate {
     }
     
     func userApprovedLocationPermission() {
+        if Global.environment!.locationHandler!.hasCurrentLocation() {
+            return
+        }
         showPermanentAlert(title: "Trying to Find Your Location", message: "If this takes a while, restart the app")
     }
     
