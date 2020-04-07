@@ -82,7 +82,9 @@ extension UIViewController{
     func showAlert(title: String, message: String) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(.init(title: "Ok", style: .cancel, handler: nil))
+            alert.addAction(.init(title: "Ok", style: .cancel, handler: { action in
+                self.enableUserActivity()
+            }))
             self.presentAlert(alert: alert)
         }
     }
