@@ -32,6 +32,9 @@ POPULAR_TIME_THRESHOLD_SEC = 3 * 24 * 60 * 60
 
 TESTONLY_verification_code = "123456"
 
+# The number of miles we should return posts from, for a user.
+MAX_MILES_TO_SHOW_USER_POSTS_OF = 1
+
 class ServiceHandler(object):
 
     def __init__(self):
@@ -139,17 +142,18 @@ class ServiceHandler(object):
         if not ok:
             return InsertPostResponse(
                 status=Status(status_code=StatusCode.INVALID_LOCATION))
-        # Truncate user location before putting in database.
+        # Round user location before putting in database.
         lat = location.latitude
         lon = location.longitude
-        area_lat, area_long = self._get_area_latitude_longitude(lat, lon)
+        region_lat, region_long = self._get_region_latitude_longitude(lat, lon)
+        region_lat = str(region_lat)
+        region_long = str(region_long)
 
         # Get reverse geo area
-        location.area = geo_helper.geo_to_area(area_lat, area_long)
+        location.area = geo_helper.geo_to_area(region_lat, region_long)
 
         post_id = uuid.uuid4().hex
         timestamp = time.time()
-
         model.PostModel(
             id=post_id,
             PostText=request.post_text,
@@ -158,8 +162,8 @@ class ServiceHandler(object):
                 Longitude=lon,
                 Latitude=lat,
                 Area=model.Area(
-                    Latitude=area_lat,
-                    Longitude=area_long,
+                    Latitude=region_lat,
+                    Longitude=region_long,
                     City=location.area.city,
                     State=location.area.state,
                     Country=location.area.country
@@ -375,15 +379,25 @@ class ServiceHandler(object):
 
         lat = location.latitude
         lon = location.longitude
-        # Truncate user location before querying.
-        area_lat, area_long = self._get_area_latitude_longitude(lat, lon)
+        # Round user location before querying.
+        region_lat, region_long = self._get_region_latitude_longitude(lat, lon)
+        regions = geo_helper.get_regions_n_miles_from_rounded_lat_lon(
+            region_lat, region_long, MAX_MILES_TO_SHOW_USER_POSTS_OF)
 
-        query = model.PostModel.query().filter(
-            model.PostModel.Location.Area.Latitude == area_lat).filter(
-            model.PostModel.Location.Area.Longitude == area_long)
+        and_filters = []
+        for region in regions:
+            latitude = str(region[0])
+            longitude = str(region[1])
+            and_filters.append(ndb.AND(
+                model.PostModel.Location.Area.Latitude == latitude,
+                model.PostModel.Location.Area.Longitude == longitude))
+        query = model.PostModel.query().filter(ndb.OR(*and_filters))
+
         results, metadata = self._run_query_with_cursor(query=query,
             params=query_params, fetch_limit=POST_QUERY_LIMIT,
-            order_property=model.PostModel.CreationTimestampSec)
+            order_property=model.PostModel.CreationTimestampSec,
+            # Must order by key to use OR filtering. 
+            extra_ordering=[model.PostModel.key])
 
         post_list = []
         for post_model in results:
@@ -408,13 +422,13 @@ class ServiceHandler(object):
 
         lat = location.latitude
         lon = location.longitude
-        # Truncate user location before querying.
-        area_lat, area_long = self._get_area_latitude_longitude(lat, lon)
+        # Round user location before querying.
+        region_lat, region_long = self._get_region_latitude_longitude(lat, lon)
 
         query = ndb.gql(('SELECT * '
                  'FROM PostModel WHERE Location.Area.Latitude = :1 AND '
                  'Location.Area.Longitude = :2 AND PopularityIndex > 0 '),
-                 area_lat, area_long)
+                 region_lat, region_long)
         results, metadata = self._run_query_with_cursor(query=query,
             params=request.query_params, fetch_limit=POST_QUERY_LIMIT,
             order_property=model.PostModel.PopularityIndex)
@@ -481,11 +495,11 @@ class ServiceHandler(object):
             status=Status(status_code=StatusCode.OK))
 
     def _run_query_with_cursor(self, query, params, fetch_limit,
-        order_property):
+        order_property, extra_ordering=[]):
         qm = QueryMetadata()
         results = []
-        forward_query = query.order(order_property)  # Sort ascending
-        reverse_query = query.order(-order_property)  # Sort descending
+        forward_query = query.order(order_property, *extra_ordering)  # Sort ascending
+        reverse_query = query.order(-order_property, *extra_ordering)  # Sort descending
         # By default, set new cursors to old cursors, to begin
         qm.new_top_cursor_str = params.curr_top_cursor_str
         qm.new_bottom_cursor_str = params.curr_bottom_cursor_str
@@ -625,11 +639,10 @@ class ServiceHandler(object):
         return (self._round_to_nearest_hundreths_region(lat),
             self._round_to_nearest_hundreths_region(lon))
 
-    def _get_area_latitude_longitude(self, lat, lon):
-        dec = LOCATION_QUERY_DECIMAL_PLACES
-        lat, lon = self._round_lat_lon(lat, lon)
-        return (self._truncate_float_str(lat, dec),
-            self._truncate_float_str(lon, dec))
+    def _get_region_latitude_longitude(self, lat, lon):
+        lat = float(lat)
+        lon = float(lon)
+        return geo_helper.get_rounded_lat_lon(lat, lon)
 
     def _validate_location(self, location):
         if not location:
