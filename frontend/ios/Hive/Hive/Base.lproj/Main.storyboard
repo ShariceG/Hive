@@ -218,6 +218,16 @@
             </objects>
             <point key="canvasLocation" x="380" y="748.52216748768478"/>
         </scene>
+        <!--SignInPageViewController-->
+        <scene sceneID="FgG-Ax-Dif">
+            <objects>
+                <viewControllerPlaceholder storyboardIdentifier="SignIn" storyboardName="SignIn" referencedIdentifier="SignInPageViewController" id="erb-vm-Nj1" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="gtI-DH-gUd"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Lwy-78-42g" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2782" y="865"/>
+        </scene>
         <!--Menu View Controller-->
         <scene sceneID="x1F-xM-cYh">
             <objects>
@@ -231,25 +241,42 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jla-Sv-lF4">
-                                <rect key="frame" x="72" y="415" width="230" height="80"/>
+                                <rect key="frame" x="74" y="366" width="230" height="80"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Help And FAQ"/>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sir-DZ-otv">
+                                <rect key="frame" x="74" y="454" width="230" height="80"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Log Out"/>
+                                <connections>
+                                    <action selector="logoutBnAction:" destination="ySL-8N-dSu" eventType="touchUpInside" id="XOF-cF-xXn"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0RS-zN-6pG">
-                                <rect key="frame" x="72" y="317" width="230" height="80"/>
+                                <rect key="frame" x="72" y="270" width="230" height="80"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Map"/>
                                 <connections>
                                     <action selector="mapButtonAction:" destination="ySL-8N-dSu" eventType="touchUpInside" id="0Ji-jk-pAa"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pXE-cI-ztQ">
+                                <rect key="frame" x="165" y="175" width="45" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     </view>
                     <navigationItem key="navigationItem" id="9fW-Ri-67K"/>
                     <connections>
                         <outlet property="mapButton" destination="0RS-zN-6pG" id="Bu8-aV-RZ4"/>
+                        <outlet property="usernameLabel" destination="pXE-cI-ztQ" id="yLg-fI-sNT"/>
                         <segue destination="9bE-mo-tTZ" kind="presentation" identifier="seeMapViewSegue" modalPresentationStyle="fullScreen" modalTransitionStyle="flipHorizontal" id="Gj1-zU-Wd0"/>
+                        <segue destination="erb-vm-Nj1" kind="show" identifier="GoToSignInSeugue" id="XbG-zc-qYv"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ecx-fL-C9x" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

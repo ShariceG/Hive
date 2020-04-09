@@ -598,7 +598,7 @@ class ServiceHandler(object):
             comment.user_action_type = action.action_type
 
     def _round_to_nearest_hundreths_region(self, x_str):
-        '''Rounds as number to the nearest hundredths region.
+        '''Rounds number to the nearest hundredths region.
         Assumes precision of at least 3 decimal places.
 
         Let n be the number after the tenths decimal place,
