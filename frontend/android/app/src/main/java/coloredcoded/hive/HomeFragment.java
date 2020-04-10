@@ -3,7 +3,6 @@ package coloredcoded.hive;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,6 @@ import java.util.Map;
 
 import coloredcoded.hive.client.ActionType;
 import coloredcoded.hive.client.Callback;
-import coloredcoded.hive.client.Location;
 import coloredcoded.hive.client.Post;
 import coloredcoded.hive.client.QueryMetadata;
 import coloredcoded.hive.client.QueryParams;
@@ -29,7 +27,7 @@ import coloredcoded.hive.client.ServerClient;
 import coloredcoded.hive.client.ServerClientImp;
 import coloredcoded.hive.client.StatusOr;
 
-public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
+public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
 
     private ServerClient client;
     private PostFeedManager postFeedManager;
