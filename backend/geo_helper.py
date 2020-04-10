@@ -18,10 +18,9 @@ _RAPID_HOST = 'geocodeapi.p.rapidapi.com'
 _RAPID_API_KEY = 'a54e0796e8msh2a21bd76558c31ap1c3e17jsn109dd24cb81f'
 
 def _round_x_to_nearest_multiple_of_n(x, n):
-    # How many decimal places to round to. This really just has to be anything
-    # greater than the number of decimal places python is using for whatever is
-    # in UNITS_PER_MILE.
-    precision = len(str(UNITS_PER_MILE).split('.')[1])
+    # How many decimal places to round to. This really just has to be reasonably
+    # large enough since we're working with fractions.
+    precision = 10
     return round(n * round(float(x)/n), precision)
 
 def _round_x_to_nearest_post_region(x):

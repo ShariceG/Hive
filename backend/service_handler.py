@@ -396,7 +396,7 @@ class ServiceHandler(object):
         results, metadata = self._run_query_with_cursor(query=query,
             params=query_params, fetch_limit=POST_QUERY_LIMIT,
             order_property=model.PostModel.CreationTimestampSec,
-            # Must order by key to use OR filtering. 
+            # Must order by key to use OR filtering.
             extra_ordering=[model.PostModel.key])
 
         post_list = []
@@ -642,7 +642,8 @@ class ServiceHandler(object):
     def _get_region_latitude_longitude(self, lat, lon):
         lat = float(lat)
         lon = float(lon)
-        return geo_helper.get_rounded_lat_lon(lat, lon)
+        lat, lon = geo_helper.get_rounded_lat_lon(lat, lon)
+        return str(lat), str(lon)
 
     def _validate_location(self, location):
         if not location:
