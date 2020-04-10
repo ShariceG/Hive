@@ -46,6 +46,6 @@ public class LogInOrSignUpFragment extends Fragment implements SignInActivity.Si
     }
 
     @Override
-    public void setNotes(Map<String, Object> notes) {
+    public void setNotes(Map<String, Object> args) {
     }
 }

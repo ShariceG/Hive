@@ -7,7 +7,10 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,11 +21,11 @@ public class SignInActivity extends AppCompatActivity {
 
     public interface SignInDelegate {
         void goLogInOrSignUp();
-        void goEnterEmailAddress(Map<String, Object> notes);
-        void goEnterEmailAddressAndUsername(Map<String, Object> notes);
-        void goEnterPinCode(Map<String, Object> notes);
-        void goWelcome(Map<String, Object> notes);
-        void goToMainAppOrWelcomeIfLogIn(Map<String, Object> notes);
+        void goEnterEmailAddress(Map<String, Object> args);
+        void goEnterEmailAddressAndUsername(Map<String, Object> args);
+        void goEnterPinCode(Map<String, Object> args);
+        void goWelcome(Map<String, Object> args);
+        void goToMainAppOrWelcomeIfLogIn(Map<String, Object> args);
         void goToMainApp();
         void saveLogInData(String username, String email, boolean isSignUpVerified);
     }
@@ -42,6 +45,7 @@ public class SignInActivity extends AppCompatActivity {
 
     private ViewPagerAdapter viewPagerAdapter;
     private CustomViewPager viewPager;
+    private boolean isSignUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +56,16 @@ public class SignInActivity extends AppCompatActivity {
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.setCurrentItem(viewPagerAdapter.getDefaultFragmentIndex());
+        isSignUp = false;
     }
 
-    // FragmentStatePagerAdapter will create a new fragment before viewing instead of caching.
-    public class ViewPagerAdapter extends FragmentStatePagerAdapter implements
+    private void goToMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    public class ViewPagerAdapter extends FragmentPagerAdapter implements
             SignInActivity.SignInDelegate {
 
         private ArrayList<Fragment> fragments;
@@ -80,9 +90,15 @@ public class SignInActivity extends AppCompatActivity {
             fragments.add(setupFragment(fragment));
         }
 
-        public void setCurrentItem(FragmentPosition position, Map<String, Object> notes) {
-            ((SignInFragment)getItem(position.ordinal())).setNotes(notes);
-            viewPager.setCurrentItem(position.ordinal(), false);
+        public void setCurrentItem(final FragmentPosition position,
+                                   final Map<String, Object> notes) {
+            viewPager.post(new Runnable() {
+                @Override
+                public void run() {
+                    ((SignInFragment)getItem(position.ordinal())).setNotes(notes);
+                    viewPager.setCurrentItem(position.ordinal(), false);
+                }
+            });
         }
 
         public int getDefaultFragmentIndex() {
@@ -103,38 +119,42 @@ public class SignInActivity extends AppCompatActivity {
         }
 
         @Override
-        public void goEnterEmailAddress(Map<String, Object> notes) {
-            setCurrentItem(FragmentPosition.ENTER_EMAIL, notes);
+        public void goEnterEmailAddress(Map<String, Object> args) {
+            setCurrentItem(FragmentPosition.ENTER_EMAIL, args);
         }
 
         @Override
-        public void goEnterEmailAddressAndUsername(Map<String, Object> notes) {
-            setCurrentItem(FragmentPosition.ENTER_EMAIL_AND_USERNAME, notes);
+        public void goEnterEmailAddressAndUsername(Map<String, Object> args) {
+            isSignUp = true;
+            setCurrentItem(FragmentPosition.ENTER_EMAIL_AND_USERNAME, args);
         }
 
         @Override
-        public void goEnterPinCode(Map<String, Object> notes) {
-            setCurrentItem(FragmentPosition.ENTER_PIN, notes);
+        public void goEnterPinCode(Map<String, Object> args) {
+            setCurrentItem(FragmentPosition.ENTER_PIN, args);
         }
 
         @Override
-        public void goWelcome(Map<String, Object> notes) {
-            setCurrentItem(FragmentPosition.WELCOME, notes);
+        public void goWelcome(Map<String, Object> args) {
+            setCurrentItem(FragmentPosition.WELCOME, args);
         }
 
         @Override
-        public void goToMainAppOrWelcomeIfLogIn(Map<String, Object> notes) {
-
+        public void goToMainAppOrWelcomeIfLogIn(Map<String, Object> args) {
+            if (isSignUp) {
+                goWelcome(args);
+            } else {
+                goToMainApp();
+            }
         }
 
         @Override
         public void goToMainApp() {
-
+            goToMainActivity();
         }
 
         @Override
         public void saveLogInData(String username, String email, boolean isSignUpVerified) {
-
         }
     }
 }

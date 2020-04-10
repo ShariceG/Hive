@@ -12,6 +12,9 @@ public class Response {
 	private final ServerStatusCode serverStatusCode;
 	private final ArrayList<Location> locations;
 	private final QueryMetadata queryMetadata;
+	private String serverMessage = "";
+	private String verificationCode = "";
+	private String username = "";
 	
 	public Response(JSONObject jsonResponse) {	
 		this.posts = getPostList(jsonResponse);
@@ -19,6 +22,17 @@ public class Response {
 		this.serverStatusCode = getServerStatusCodeFromJson(jsonResponse);
 		this.locations = getLocationList(jsonResponse);
 		this.queryMetadata = getQueryMetadata(jsonResponse);
+
+		if (jsonResponse.get("verification_code") != null) {
+			this.verificationCode = (String) jsonResponse.get("verification_code");
+		}
+		if (jsonResponse.get("username") != null) {
+			this.username = (String) jsonResponse.get("username");
+		}
+		JSONObject status = (JSONObject) jsonResponse.get("status");
+		if (status.get("status_message") != null) {
+			this.serverMessage = (String) status.get("status_message");
+		}
 	}
 	
 	public QueryMetadata getQueryMetadata() {
@@ -35,7 +49,19 @@ public class Response {
 		}
 		return new StatusOr<Post>(posts.get(0));
 	}
-	
+
+	public String getUsername() {
+		return username;
+	}
+
+	public String getVerificationCode() {
+		return verificationCode;
+	}
+
+	public String getServerMessage() {
+		return serverMessage;
+	}
+
 	public ArrayList<Post> getPosts() {
 		return posts;
 	}

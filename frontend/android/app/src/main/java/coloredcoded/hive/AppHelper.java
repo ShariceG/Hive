@@ -1,8 +1,14 @@
 package coloredcoded.hive;
 
 import coloredcoded.hive.client.Location;
+import coloredcoded.hive.client.ServerClient;
+import coloredcoded.hive.client.ServerClientImp;
 
 public class AppHelper {
+
+    static ServerClient serverClient() {
+        return new ServerClientImp();
+    }
 
     static Location getTestUserLocation() {
         return new Location("47.608013", "-122.335167",

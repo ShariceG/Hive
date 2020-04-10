@@ -1,7 +1,7 @@
 package coloredcoded.hive.client;
 
 public enum ServerStatusCode {
-	OK,
+    OK,
     USER_NOT_FOUND,
     USER_ALREADY_EXISTS,
     POST_NOT_FOUND,
@@ -10,5 +10,10 @@ public enum ServerStatusCode {
     UNSUPPORTED_ACTION_TYPE,
     INTERNAL_ERROR,
     NO_LOCATION_PROVIDED,
-    INVALID_LOCATION
+    INVALID_LOCATION,
+    EMAIL_ALREADY_EXISTS,
+    FAILED_PRECONDITION,
+    NOT_FOUND,
+    USER_MISMATCH_WTH_EMAIL,
+    USER_MISMATCH_WTH_VERIFICATION_CODE,
 }

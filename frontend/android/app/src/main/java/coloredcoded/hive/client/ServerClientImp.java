@@ -26,6 +26,7 @@ public class ServerClientImp implements ServerClient {
 	private static final String SERVER_DOMAIN = "http://192.168.0.42:8080";
 	private static final String COMMON_PATH = "/_ah/api/media_api/v1/";
 	private static final String CREATE_USER_PATH = "app.create_user?";
+	private static final String VERIFY_CODE_PATH = "app.verify_code?";
 	private static final String INSERT_COMMENT_PATH = "app.insert_comment?";
 	private static final String INSERT_POST_PATH = "app.insert_post?";
 	private static final String GET_ALL_POST_COMMENTS_PATH = "app.get_all_comments_for_post?";
@@ -120,13 +121,32 @@ public class ServerClientImp implements ServerClient {
 		String path = constructIncompleteUrlPath() + GET_ALL_POST_COMMENTS_PATH;
 		executeHttpRequestAsync("GET", path, request, callback, notes);
 	}
-	
-	@SuppressWarnings("unchecked")
-	public void createUser(String username, String phoneNumber, 
-			Callback callback, Map<String, Object> notes) {
+
+	public void checkVerificationCode(String username, String email, String code,
+									  Callback callback, Map<String, Object> notes) {
 		JSONObject request = new JSONObject();
 		request.put("username", username);
-		request.put("phone_number", phoneNumber);
+		request.put("email", email);
+		request.put("verification_code", code);
+
+		String path = constructIncompleteUrlPath() + VERIFY_CODE_PATH;
+		executeHttpRequestAsync("POST", path, request, callback, notes);
+	}
+
+	public void verifyExistingUser(String email, Callback callback, Map<String, Object> notes) {
+		JSONObject request = new JSONObject();
+		request.put("email", email);
+		request.put("verify_email_only", true);
+
+		String path = constructIncompleteUrlPath() + CREATE_USER_PATH;
+		executeHttpRequestAsync("POST", path, request, callback, notes);
+	}
+
+	public void createNewUser(String username, String email,
+							  Callback callback, Map<String, Object> notes) {
+		JSONObject request = new JSONObject();
+		request.put("username", username);
+		request.put("email", email);
 
 		String path = constructIncompleteUrlPath() + CREATE_USER_PATH;
 		executeHttpRequestAsync("POST", path, request, callback, notes);
