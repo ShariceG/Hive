@@ -84,6 +84,18 @@ public class PostFeedManager implements PostView.Delegate {
         fetchMorePosts(true);
     }
 
+    public Post findPostById(String postId) {
+        Post post = null;
+        Iterator<Post> itr = posts.iterator();
+        while (itr.hasNext()) {
+            post = itr.next();
+            if (post.getPostId().equals(postId)) {
+                break;
+            }
+        }
+        return post;
+    }
+
     private void setupListeners() {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -135,10 +147,7 @@ public class PostFeedManager implements PostView.Delegate {
     public void addMorePosts(ArrayList<Post> morePosts, QueryMetadata newMetadata) {
         prevQueryMetadata.updateMetadata(newMetadata);
 
-        HashSet<Post> set = new HashSet<>(posts);
-        for (Post post : morePosts) {
-            set.add(post);
-        }
+        HashSet<Post> set = new HashSet<>(morePosts);
 
         // Don't include expired hosts while transferring from set to post.
         Iterator<Post> itr = set.iterator();
@@ -162,16 +171,14 @@ public class PostFeedManager implements PostView.Delegate {
         reload();
     }
 
+    public void incrementNumberOfComments(String postId) {
+        findPostById(postId).incrementNumberOfComments();
+    }
+
     public void updateActionType(String postId, ActionType actionType) {
         // Find post with id.
-        Post post = null;
+        Post post = findPostById(postId);
         Iterator<Post> itr = posts.iterator();
-        while (itr.hasNext()) {
-            post = itr.next();
-            if (post.getPostId().equals(postId)) {
-                break;
-            }
-        }
 
         // Now change the # of likes and dislikes by 1 depending on the old and
         // new action type.

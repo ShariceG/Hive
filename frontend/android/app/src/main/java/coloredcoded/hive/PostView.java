@@ -14,6 +14,7 @@ import java.util.TimeZone;
 
 import coloredcoded.hive.client.ActionType;
 import coloredcoded.hive.client.Post;
+import coloredcoded.hive.client.UtilityBelt;
 
 // This class represents a View. It, itself, is not a view but, through, composition, holds a post
 // view. Using getPostView() you may get the real view.
@@ -85,6 +86,8 @@ public class PostView {
         postTextView.setText(post.getPostText());
         likeButton.setText("Like: " + post.getLikes());
         dislikeButton.setText("Dislike: " + post.getDislikes());
+        commentButton.setText(post.getNumberOfComments() +
+                UtilityBelt.pluralOrSingular(post.getNumberOfComments(), " Comments"));
         DateFormat f = new SimpleDateFormat("MM-dd-yyyy HH:mm");
         f.setTimeZone(TimeZone.getDefault());
         dateTextView.setText(f.format(new Date(post.getCreationTimestampSecAsLong() * 1000)));

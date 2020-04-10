@@ -30,10 +30,11 @@ public final class Post implements Serializable {
 	private int dislikes;
 	private double creationTimestampSec;
 	private JSONObject jsonPost;
+	private int numberOfComments;
 	
 	private Post(JSONObject jsonPost, String username, String postId, String postText,
 				 Location location, int likes, int dislikes, double creationTimestampSec,
-				 ActionType userActionType) {
+				 ActionType userActionType, int numberOfComments) {
 		this.username = username;
 		this.postText = postText;
 		this.postId = postId;
@@ -43,6 +44,7 @@ public final class Post implements Serializable {
 		this.creationTimestampSec = creationTimestampSec;
 		this.jsonPost = jsonPost;
 		this.userActionType = userActionType;
+		this.numberOfComments = numberOfComments;
 	}
 	
 	public double getCreationTimestampSec() {
@@ -81,6 +83,13 @@ public final class Post implements Serializable {
 
 	public ActionType getUserActionType() { return userActionType; }
 	public void setUserActionType(ActionType actionType) { userActionType = actionType; }
+
+	public int getNumberOfComments() {
+		return numberOfComments;
+	}
+	public void incrementNumberOfComments() {
+		numberOfComments++;
+	}
 	
 	public boolean isExpired() {
 		double currentTimeSec = System.currentTimeMillis() / 1000;
@@ -111,13 +120,15 @@ public final class Post implements Serializable {
 		double timestamp = Double.parseDouble(jsonPost.get("creation_timestamp_sec")+"");
 		ActionType actionType = jsonPost.get("user_action_type") == null ? ActionType.NO_ACTION
 				: ActionType.valueOf((String)jsonPost.get("user_action_type"));
+		int numberOfComments = jsonPost.get("number_of_comments") == null ? 0 :
+				Integer.parseInt((String) jsonPost.get("number_of_comments"));
 		return new Post(jsonPost,
 				(String)jsonPost.get("username"),
 				(String)jsonPost.get("post_id"),
 				(String)jsonPost.get("post_text"),
 				Location.jsonToLocation((JSONObject) jsonPost.get("location")), 
 				likes, dislikes, timestamp,
-				actionType);
+				actionType, numberOfComments);
 	}
 
 }
