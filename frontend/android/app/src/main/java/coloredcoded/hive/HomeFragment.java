@@ -105,7 +105,8 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
     }
 
     private void insertPost(String text) {
-        client.insertPost(testUser(), text, testLocation(),
+        client.insertPost(AppHelper.getTestUser(), text,
+                AppHelper.getTestUserLocation(),
                 getInsertPostCallback(), null);
     }
 
@@ -130,7 +131,8 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
 
     @Override
     public void fetchMorePosts(QueryParams queryParams) {
-        client.getAllPostsAtLocation(testUser(), testLocation(), queryParams,
+        client.getAllPostsAtLocation(AppHelper.getTestUser(),
+                AppHelper.getTestUserLocation(), queryParams,
                 getAllPostsAtLocationCallback(), null);
     }
 
@@ -158,7 +160,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
         Map<String, Object> notes = new HashMap<>();
         notes.put("postId", post.getPostId());
         notes.put("actionType", actionType);
-        client.updatePost(testUser(), post.getPostId(), actionType,
+        client.updatePost(AppHelper.getTestUser(), post.getPostId(), actionType,
                 updatePostCallback(), notes);
     }
 
@@ -172,15 +174,5 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
                         (String)notes.get("postId"), (ActionType)notes.get("actionType"));
             }
         };
-    }
-
-    private Location testLocation() {
-        return new Location("47.608013", "-122.335167",
-                new Location.Area("47.60", "-122.33",
-                        "Seattle", "WA", "United States"));
-    }
-
-    private String testUser() {
-        return "user1";
     }
 }

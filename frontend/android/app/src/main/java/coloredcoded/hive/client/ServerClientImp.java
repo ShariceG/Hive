@@ -110,9 +110,10 @@ public class ServerClientImp implements ServerClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void getAllPostComments(String postId, QueryParams params, 
+	public void getAllPostComments(String username, String postId, QueryParams params,
 			Callback callback, Map<String, Object> notes) {
 		JSONObject request = new JSONObject();
+		request.put("username", username);
 		request.put("post_id", postId);
 		request.put("query_params", params.toJson());
 		

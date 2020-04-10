@@ -133,7 +133,7 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
             Log.d("PopularPostsFragment", "No currentLocation set yet.");
             return;
         }
-        client.getAllPopularPostsAtLocation(testUser(), currentLocation, queryParams,
+        client.getAllPopularPostsAtLocation(AppHelper.getTestUser(), currentLocation, queryParams,
                 getAllPopularPostsAtLocationCallback(), null);
     }
 
@@ -151,9 +151,5 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
 
     @Override
     public void performAction(Post post, ActionType actionType) {
-    }
-
-    private String testUser() {
-        return "user1";
     }
 }

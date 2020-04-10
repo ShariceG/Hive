@@ -31,8 +31,8 @@ public final class Post implements Serializable {
 	private double creationTimestampSec;
 	private JSONObject jsonPost;
 	
-	private Post(String username, String postId, String postText, Location location, int likes, int dislikes,
-			double creationTimestampSec, JSONObject jsonPost,
+	private Post(JSONObject jsonPost, String username, String postId, String postText,
+				 Location location, int likes, int dislikes, double creationTimestampSec,
 				 ActionType userActionType) {
 		this.username = username;
 		this.postText = postText;
@@ -111,12 +111,12 @@ public final class Post implements Serializable {
 		double timestamp = Double.parseDouble(jsonPost.get("creation_timestamp_sec")+"");
 		ActionType actionType = jsonPost.get("user_action_type") == null ? ActionType.NO_ACTION
 				: ActionType.valueOf((String)jsonPost.get("user_action_type"));
-		return new Post(
+		return new Post(jsonPost,
 				(String)jsonPost.get("username"),
 				(String)jsonPost.get("post_id"),
 				(String)jsonPost.get("post_text"),
 				Location.jsonToLocation((JSONObject) jsonPost.get("location")), 
-				likes, dislikes, timestamp, jsonPost,
+				likes, dislikes, timestamp,
 				actionType);
 	}
 
