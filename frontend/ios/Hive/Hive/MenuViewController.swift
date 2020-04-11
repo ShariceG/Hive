@@ -21,7 +21,7 @@ class MenuViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSwipeGestures()
-        usernameLabel.text = getLoggedInUsername()
+        usernameLabel.text = "User: " + getLoggedInUsername()
     }
     
     private func setupSwipeGestures() {

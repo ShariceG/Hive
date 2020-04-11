@@ -6,8 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+
+import coloredcoded.hive.client.User;
 
 public class MenuFragment extends Fragment {
 
@@ -22,12 +25,25 @@ public class MenuFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.menu_layout, container, false);
+        final User user = User.fromInternalStorage(getActivity());
         Button mapButton = v.findViewById(R.id.menuMapButton);
+        Button logOutButton = v.findViewById(R.id.logOutButton);
+        TextView usernameTextView = v.findViewById(R.id.usernameTextView);
+        usernameTextView.setText("User: " + user.getUsername());
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), MapActivity.class);
                 getActivity().startActivity(intent);
+            }
+        });
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user.removeFromInternalStorage(getActivity());
+                Intent intent = new Intent(getActivity(), SignInActivity.class);
+                getActivity().startActivity(intent);
+                getActivity().finish();
             }
         });
         return v;

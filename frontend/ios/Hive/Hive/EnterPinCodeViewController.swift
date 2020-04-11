@@ -54,7 +54,7 @@ class EnterPinCodeViewController : UIViewController, SignInPageFragment {
         let email = args!["email"] as! String
         signInDelegate!.saveLogInData(username: username, email: email, isSignUpVerified: true)
         DispatchQueue.main.async {
-            self.signInDelegate?.goToMainAppOrWelcomeIfLogIn(args: self.args!)
+            self.signInDelegate?.goToMainAppOrWelcomeIfSignUp(args: self.args!)
         }
     }
 }

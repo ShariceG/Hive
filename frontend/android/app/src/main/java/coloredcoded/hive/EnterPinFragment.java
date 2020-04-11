@@ -9,7 +9,6 @@ import android.widget.EditText;
 
 import androidx.fragment.app.Fragment;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,7 +59,8 @@ public class EnterPinFragment extends Fragment implements SignInActivity.SignInF
                         Map<String, Object> args = new HashMap<>();
                         args.put("username", username);
                         args.put("email", email);
-                        delegate.goToMainAppOrWelcomeIfLogIn(Collections.EMPTY_MAP);
+                        delegate.saveLogInData(username, email, true);
+                        delegate.goToMainAppOrWelcomeIfSignUp(args);
                     }
                 }, null);
             }
@@ -79,7 +79,7 @@ public class EnterPinFragment extends Fragment implements SignInActivity.SignInF
     }
 
     @Override
-    public void setNotes(Map<String, Object> args) {
+    public void setArgs(Map<String, Object> args) {
         this.args = args;
     }
 }

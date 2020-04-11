@@ -14,7 +14,7 @@ protocol SignInDelegate: class {
     func goEnterEmailAddressAndUsername(args: [String:Any])
     func goEnterPinCode(args: [String:Any])
     func goWelcome(args: [String:Any])
-    func goToMainAppOrWelcomeIfLogIn(args: [String:Any])
+    func goToMainAppOrWelcomeIfSignUp(args: [String:Any])
     func goToMainApp()
     func saveLogInData(username: String, email: String, isSignUpVerified: Bool)
 }
@@ -41,7 +41,10 @@ class SignInPageViewController : UIPageViewController, SignInDelegate  {
                 if user.isSignUpVerified {
                     goToMainApp()
                 } else {
-                    goEnterEmailAddress(args: [String:Any]())
+                    var args = [String:Any]()
+                    args["discoveredUnverifiedUser"] = true
+                    args["user"] = user
+                    goEnterEmailAddress(args: args)
                 }
             }
         } else {
@@ -116,7 +119,7 @@ class SignInPageViewController : UIPageViewController, SignInDelegate  {
         setCurrentController(storyboardId: "WelcomeViewController", args: args)
     }
     
-    func goToMainAppOrWelcomeIfLogIn(args: [String:Any]) {
+    func goToMainAppOrWelcomeIfSignUp(args: [String:Any]) {
         if isSignUp {
             goWelcome(args: args)
         } else {

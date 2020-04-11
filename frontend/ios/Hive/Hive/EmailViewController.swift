@@ -10,6 +10,7 @@ import UIKit
 
 class EmailViewController : UIViewController, SignInPageFragment {
     
+    @IBOutlet weak var unverifiedUserLabel: UILabel!
     @IBOutlet weak var emailTextField: UITextField!
     private var signInDelegate: SignInDelegate?
     private let client: ServerClient = ServerClient()
@@ -25,6 +26,13 @@ class EmailViewController : UIViewController, SignInPageFragment {
     
     func setArgs(args: [String:Any]) {
         self.args = args
+        let discovered = args["discoveredUnverifiedUser"]
+        if discovered == nil || !(discovered as! Bool) {
+            return
+        }
+        let user = args["user"] as! User
+        unverifiedUserLabel.text = "Hey " + user.username +
+            ", please verify your email. Not " + user.username + "? No biggie, tap Go Back!"
     }
     
     @IBAction func nextBnAction(_ sender: UIButton) {

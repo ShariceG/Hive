@@ -39,6 +39,6 @@ public class WelcomeFragment extends Fragment implements SignInActivity.SignInFr
     }
 
     @Override
-    public void setNotes(Map<String, Object> notes) {
+    public void setArgs(Map<String, Object> notes) {
     }
 }

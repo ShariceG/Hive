@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
@@ -17,11 +18,13 @@ import coloredcoded.hive.client.Callback;
 import coloredcoded.hive.client.Response;
 import coloredcoded.hive.client.ServerClient;
 import coloredcoded.hive.client.StatusOr;
+import coloredcoded.hive.client.User;
 
 public class EnterEmailFragment extends Fragment implements SignInActivity.SignInFragment {
 
     private SignInActivity.SignInDelegate delegate;
     private ServerClient client;
+    private View view;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,10 +35,10 @@ public class EnterEmailFragment extends Fragment implements SignInActivity.SignI
                              Bundle savedInstanceState) {
         client = AppHelper.serverClient();
         // Inflate the view for the fragment based on layout XML
-        View v = inflater.inflate(R.layout.enter_email_layout, container, false);
-        final EditText emailEditText = v.findViewById(R.id.enterEmailEditText);
-        Button nextButton = v.findViewById(R.id.enterEmailNextButton);
-        Button goBackButton = v.findViewById(R.id.enterEmailGoBackButton);
+        view = inflater.inflate(R.layout.enter_email_layout, container, false);
+        final EditText emailEditText = view.findViewById(R.id.enterEmailEditText);
+        Button nextButton = view.findViewById(R.id.enterEmailNextButton);
+        Button goBackButton = view.findViewById(R.id.enterEmailGoBackButton);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,7 +72,7 @@ public class EnterEmailFragment extends Fragment implements SignInActivity.SignI
                 delegate.goLogInOrSignUp();
             }
         });
-        return v;
+        return view;
     }
 
     @Override
@@ -78,6 +81,15 @@ public class EnterEmailFragment extends Fragment implements SignInActivity.SignI
     }
 
     @Override
-    public void setNotes(Map<String, Object> args) {
+    public void setArgs(Map<String, Object> args) {
+        if (!args.containsKey("discoveredUnverifiedUser") ||
+                !(boolean) args.get("discoveredUnverifiedUser")) {
+            return;
+        }
+        User user = (User) args.get("user");
+        TextView unverifiedUserEditText = view.findViewById(R.id.unverifiedUserEditText);
+        unverifiedUserEditText.setText(String.format(
+                "Hey %s, please verify your email. Not %s? No biggie, tap Go Back!",
+                user.getUsername(), user.getUsername()));
     }
 }

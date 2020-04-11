@@ -8,6 +8,7 @@ import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class LogInOrSignUpFragment extends Fragment implements SignInActivity.SignInFragment {
@@ -28,13 +29,13 @@ public class LogInOrSignUpFragment extends Fragment implements SignInActivity.Si
         logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                delegate.goEnterEmailAddress(null);
+                delegate.goEnterEmailAddress(Collections.EMPTY_MAP);
             }
         });
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                delegate.goEnterEmailAddressAndUsername(null);
+                delegate.goEnterEmailAddressAndUsername(Collections.EMPTY_MAP);
             }
         });
         return v;
@@ -46,6 +47,6 @@ public class LogInOrSignUpFragment extends Fragment implements SignInActivity.Si
     }
 
     @Override
-    public void setNotes(Map<String, Object> args) {
+    public void setArgs(Map<String, Object> args) {
     }
 }

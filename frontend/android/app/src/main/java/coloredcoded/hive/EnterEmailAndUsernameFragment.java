@@ -60,6 +60,7 @@ public class EnterEmailAndUsernameFragment extends Fragment
                         Map<String, Object> args = new HashMap<>();
                         args.put("username", username);
                         args.put("email", email);
+                        delegate.saveLogInData(username, email, false);
                         delegate.goEnterPinCode(args);
                     }
                 }, null);
@@ -80,7 +81,7 @@ public class EnterEmailAndUsernameFragment extends Fragment
     }
 
     @Override
-    public void setNotes(Map<String, Object> args) {
+    public void setArgs(Map<String, Object> args) {
     }
 }
 

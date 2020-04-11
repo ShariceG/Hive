@@ -4,18 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import coloredcoded.hive.client.User;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -25,14 +23,14 @@ public class SignInActivity extends AppCompatActivity {
         void goEnterEmailAddressAndUsername(Map<String, Object> args);
         void goEnterPinCode(Map<String, Object> args);
         void goWelcome(Map<String, Object> args);
-        void goToMainAppOrWelcomeIfLogIn(Map<String, Object> args);
+        void goToMainAppOrWelcomeIfSignUp(Map<String, Object> args);
         void goToMainApp();
         void saveLogInData(String username, String email, boolean isSignUpVerified);
     }
 
     public interface SignInFragment {
         void setSignInPageDelegate(SignInDelegate delegate);
-        void setNotes(Map<String, Object> notes);
+        void setArgs(Map<String, Object> notes);
     }
 
     private enum FragmentPosition {
@@ -65,6 +63,18 @@ public class SignInActivity extends AppCompatActivity {
         finish();
     }
 
+    private void saveUserToInternalStorage(User user) {
+        user.writeToInternalStorage(this);
+    }
+
+    private boolean isUserInInternalStorage() {
+        return User.isInInternalStorage(this);
+    }
+
+    private User getUserInInternalStorage() {
+        return User.fromInternalStorage(this);
+    }
+
     public class ViewPagerAdapter extends FragmentPagerAdapter implements
             SignInActivity.SignInDelegate {
 
@@ -78,6 +88,18 @@ public class SignInActivity extends AppCompatActivity {
             addFragment(new EnterEmailAndUsernameFragment());
             addFragment(new EnterPinFragment());
             addFragment(new WelcomeFragment());
+
+            if (isUserInInternalStorage()) {
+                User user = getUserInInternalStorage();
+                if (user.isSignUpVerified()) {
+                    goToMainApp();
+                } else {
+                    Map<String, Object> args = new HashMap<>();
+                    args.put("discoveredUnverifiedUser", true);
+                    args.put("user", user);
+                    goEnterEmailAddress(args);
+                }
+            }
         }
 
         public Fragment setupFragment(Fragment fragment) {
@@ -95,7 +117,7 @@ public class SignInActivity extends AppCompatActivity {
             viewPager.post(new Runnable() {
                 @Override
                 public void run() {
-                    ((SignInFragment)getItem(position.ordinal())).setNotes(notes);
+                    ((SignInFragment)getItem(position.ordinal())).setArgs(notes);
                     viewPager.setCurrentItem(position.ordinal(), false);
                 }
             });
@@ -140,7 +162,7 @@ public class SignInActivity extends AppCompatActivity {
         }
 
         @Override
-        public void goToMainAppOrWelcomeIfLogIn(Map<String, Object> args) {
+        public void goToMainAppOrWelcomeIfSignUp(Map<String, Object> args) {
             if (isSignUp) {
                 goWelcome(args);
             } else {
@@ -155,6 +177,7 @@ public class SignInActivity extends AppCompatActivity {
 
         @Override
         public void saveLogInData(String username, String email, boolean isSignUpVerified) {
+            saveUserToInternalStorage(new User(username, email, isSignUpVerified));
         }
     }
 }
