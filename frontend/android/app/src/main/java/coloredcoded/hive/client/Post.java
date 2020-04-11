@@ -21,8 +21,8 @@ public final class Post implements Serializable {
 	// Provided by the server. Never supply.
 	private String postId;
 	private String postText;
-	// Location of the user when post was made
-	private Location location;
+	// HiveLocation of the user when post was made
+	private HiveLocation hiveLocation;
 	// Type of action currently on this post made by the user of the phone. Can be mutated.
 	// Lets keep the amount of mutable things small.
 	private ActionType userActionType;
@@ -33,12 +33,12 @@ public final class Post implements Serializable {
 	private int numberOfComments;
 	
 	private Post(JSONObject jsonPost, String username, String postId, String postText,
-				 Location location, int likes, int dislikes, double creationTimestampSec,
+				 HiveLocation hiveLocation, int likes, int dislikes, double creationTimestampSec,
 				 ActionType userActionType, int numberOfComments) {
 		this.username = username;
 		this.postText = postText;
 		this.postId = postId;
-		this.location = location;
+		this.hiveLocation = hiveLocation;
 		this.likes = likes;
 		this.dislikes = dislikes;
 		this.creationTimestampSec = creationTimestampSec;
@@ -67,8 +67,8 @@ public final class Post implements Serializable {
 		return postText;
 	}
 
-	public Location getLocation() {
-		return location;
+	public HiveLocation getHiveLocation() {
+		return hiveLocation;
 	}
 
 	public int getLikes() {
@@ -126,7 +126,7 @@ public final class Post implements Serializable {
 				(String)jsonPost.get("username"),
 				(String)jsonPost.get("post_id"),
 				(String)jsonPost.get("post_text"),
-				Location.jsonToLocation((JSONObject) jsonPost.get("location")), 
+				HiveLocation.jsonToLocation((JSONObject) jsonPost.get("hiveLocation")),
 				likes, dislikes, timestamp,
 				actionType, numberOfComments);
 	}

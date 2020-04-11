@@ -2,8 +2,6 @@ package coloredcoded.hive;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,7 +14,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import coloredcoded.hive.client.Location;
+import coloredcoded.hive.client.HiveLocation;
 import coloredcoded.hive.client.ServerClient;
 import coloredcoded.hive.client.ServerClientImp;
 
@@ -80,9 +78,9 @@ public class AppHelper {
         return new ServerClientImp();
     }
 
-    static Location getTestUserLocation() {
-        return new Location("47.608013", "-122.335167",
-                new Location.Area("47.60", "-122.33",
+    static HiveLocation getTestUserLocation() {
+        return new HiveLocation("47.608013", "-122.335167",
+                new HiveLocation.Area("47.60", "-122.33",
                         "Seattle", "WA", "United States"));
     }
 

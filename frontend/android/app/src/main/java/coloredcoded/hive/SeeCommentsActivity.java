@@ -19,7 +19,6 @@ import java.util.Map;
 import coloredcoded.hive.client.ActionType;
 import coloredcoded.hive.client.Callback;
 import coloredcoded.hive.client.Comment;
-import coloredcoded.hive.client.Location;
 import coloredcoded.hive.client.Post;
 import coloredcoded.hive.client.QueryParams;
 import coloredcoded.hive.client.Response;

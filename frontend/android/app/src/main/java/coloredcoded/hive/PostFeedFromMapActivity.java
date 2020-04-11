@@ -10,12 +10,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.util.List;
 import java.util.Map;
 
 import coloredcoded.hive.client.ActionType;
 import coloredcoded.hive.client.Callback;
-import coloredcoded.hive.client.Location;
+import coloredcoded.hive.client.HiveLocation;
 import coloredcoded.hive.client.Post;
 import coloredcoded.hive.client.QueryMetadata;
 import coloredcoded.hive.client.QueryParams;
@@ -27,7 +26,7 @@ import coloredcoded.hive.client.StatusOr;
 public class PostFeedFromMapActivity extends AppCompatActivity implements PostFeedManager.Delegate {
 
     private PostFeedManager postFeedManager;
-    private Location location;
+    private HiveLocation hiveLocation;
     private ServerClient client;
 
     @Override
@@ -35,7 +34,7 @@ public class PostFeedFromMapActivity extends AppCompatActivity implements PostFe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.post_feed_from_map_layout);
         client = new ServerClientImp();
-        location = (Location) getIntent().getSerializableExtra("location");
+        hiveLocation = (HiveLocation) getIntent().getSerializableExtra("hiveLocation");
 
         Button backButton = findViewById(R.id.mapPostFeedBackButton);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -46,7 +45,7 @@ public class PostFeedFromMapActivity extends AppCompatActivity implements PostFe
         });
 
         TextView titleTextView = findViewById(R.id.locationTextView);
-        titleTextView.setText(location.getArea().toString());
+        titleTextView.setText(hiveLocation.getArea().toString());
 
         postFeedManager = new PostFeedManager(getApplicationContext());
         postFeedManager.configure(
@@ -67,7 +66,7 @@ public class PostFeedFromMapActivity extends AppCompatActivity implements PostFe
 
     @Override
     public void fetchMorePosts(QueryParams queryParams) {
-        client.getAllPopularPostsAtLocation(testUser(), location, queryParams,
+        client.getAllPopularPostsAtLocation(testUser(), hiveLocation, queryParams,
                 getAllPopularPostsAtLocationCallback(), null);
     }
 

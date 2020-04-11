@@ -65,11 +65,11 @@ public class ServerClientImp implements ServerClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void getAllPopularPostsAtLocation(String username, Location location, QueryParams params,
-			Callback callback, Map<String, Object> notes) {
+	public void getAllPopularPostsAtLocation(String username, HiveLocation hiveLocation, QueryParams params,
+                                             Callback callback, Map<String, Object> notes) {
 		JSONObject request = new JSONObject();
 		request.put("username", username);
-		request.put("location", location.toJSON());
+		request.put("hiveLocation", hiveLocation.toJSON());
 		request.put("query_params", params.toJson());
 
 		String path = constructIncompleteUrlPath() + GET_ALL_POPULAR_POSTS_AT_LOCATION_PATH;
@@ -99,11 +99,11 @@ public class ServerClientImp implements ServerClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void getAllPostsAtLocation(String username, Location location, QueryParams params, 
-			Callback callback, Map<String, Object> notes) {
+	public void getAllPostsAtLocation(String username, HiveLocation hiveLocation, QueryParams params,
+                                      Callback callback, Map<String, Object> notes) {
 		JSONObject request = new JSONObject();
 		request.put("username", username);
-		request.put("location", location.toJSON());
+		request.put("hiveLocation", hiveLocation.toJSON());
 		request.put("query_params", params.toJson());
 
 		String path = constructIncompleteUrlPath() + GET_ALL_POSTS_AT_LOCATION_PATH;
@@ -177,12 +177,12 @@ public class ServerClientImp implements ServerClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void insertPost(String username, String postText, Location location, 
+	public void insertPost(String username, String postText, HiveLocation hiveLocation,
 			Callback callback, Map<String, Object> notes) {
 		JSONObject request = new JSONObject();
 		request.put("username", username);
 		request.put("post_text", postText);
-		request.put("location", location.toJSON());
+		request.put("hiveLocation", hiveLocation.toJSON());
 
 		String path = constructIncompleteUrlPath() + INSERT_POST_PATH;
 		executeHttpRequestAsync("POST", path, request, callback, notes);

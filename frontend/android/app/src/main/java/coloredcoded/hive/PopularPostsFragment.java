@@ -18,7 +18,7 @@ import java.util.Map;
 
 import coloredcoded.hive.client.ActionType;
 import coloredcoded.hive.client.Callback;
-import coloredcoded.hive.client.Location;
+import coloredcoded.hive.client.HiveLocation;
 import coloredcoded.hive.client.Post;
 import coloredcoded.hive.client.QueryMetadata;
 import coloredcoded.hive.client.QueryParams;
@@ -35,18 +35,18 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
     }
 
     private ServerClient client;
-    private ArrayList<Location> popularLocations;
+    private ArrayList<HiveLocation> popularHiveLocations;
     private RecyclerView popularRecyclerView;
     private PopularRecyclerViewAdapter popularAdapter;
     private PostFeedManager postFeedManager;
     // Current location that was tapped by the user.
-    private Location currentLocation;
+    private HiveLocation currentHiveLocation;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         client = new ServerClientImp();
-        popularLocations = new ArrayList<>();
-        popularAdapter = new PopularRecyclerViewAdapter(getContext(), popularLocations, this);
+        popularHiveLocations = new ArrayList<>();
+        popularAdapter = new PopularRecyclerViewAdapter(getContext(), popularHiveLocations, this);
     }
 
     // Inflate the view for the fragment based on layout XML
@@ -83,17 +83,17 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
                 Response response = responseOr.get();
-                if (response.getLocations().isEmpty()) {
+                if (response.getHiveLocations().isEmpty()) {
                     return;
                 }
-                popularLocations.clear();
-                popularLocations.addAll(response.getLocations());
+                popularHiveLocations.clear();
+                popularHiveLocations.addAll(response.getHiveLocations());
                 popularRecyclerView.post(new Runnable() {
                     @Override
                     public void run() {
                         popularAdapter.notifyDataSetChanged();
-                        boolean firstTime = currentLocation == null;
-                        currentLocation = popularLocations.get(0);
+                        boolean firstTime = currentHiveLocation == null;
+                        currentHiveLocation = popularHiveLocations.get(0);
                         if (firstTime) {
                             // This is the first time we're doing this so lets have the posts load without
                             // having a user needing to click on it.
@@ -109,12 +109,12 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
     @Override
     public void onItemClick(View v) {
         int index = popularRecyclerView.getChildLayoutPosition(v);
-        Location location = popularLocations.get(index);
-        // No need to do any work if user is clicking on the same location.
-        if (location.equals(currentLocation)) {
+        HiveLocation hiveLocation = popularHiveLocations.get(index);
+        // No need to do any work if user is clicking on the same hiveLocation.
+        if (hiveLocation.equals(currentHiveLocation)) {
             return;
         }
-        currentLocation = location;
+        currentHiveLocation = hiveLocation;
         postFeedManager.resetDataAndPokeNew();
     }
 
@@ -129,11 +129,11 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
 
     @Override
     public void fetchMorePosts(QueryParams queryParams) {
-        if (currentLocation == null) {
-            Log.d("PopularPostsFragment", "No currentLocation set yet.");
+        if (currentHiveLocation == null) {
+            Log.d("PopularPostsFragment", "No currentHiveLocation set yet.");
             return;
         }
-        client.getAllPopularPostsAtLocation(AppHelper.getTestUser(), currentLocation, queryParams,
+        client.getAllPopularPostsAtLocation(AppHelper.getTestUser(), currentHiveLocation, queryParams,
                 getAllPopularPostsAtLocationCallback(), null);
     }
 

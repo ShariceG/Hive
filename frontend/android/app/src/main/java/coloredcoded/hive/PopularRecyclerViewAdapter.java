@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import coloredcoded.hive.client.Location;
+import coloredcoded.hive.client.HiveLocation;
 
 public class PopularRecyclerViewAdapter
         extends RecyclerView.Adapter<PopularRecyclerViewAdapter.ViewHolder> {
@@ -28,14 +28,14 @@ public class PopularRecyclerViewAdapter
         }
     }
 
-    private ArrayList<Location> popularLocations;
+    private ArrayList<HiveLocation> popularHiveLocations;
     private Context context;
     private Delegate delegate;
 
     // data is passed into the constructor
-    PopularRecyclerViewAdapter(Context c, ArrayList<Location> locations, Delegate d) {
+    PopularRecyclerViewAdapter(Context c, ArrayList<HiveLocation> hiveLocations, Delegate d) {
         context = c;
-        popularLocations = locations;
+        popularHiveLocations = hiveLocations;
         delegate = d;
     }
 
@@ -56,13 +56,13 @@ public class PopularRecyclerViewAdapter
     // binds the data to the TextView in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Location location = popularLocations.get(position);
-        holder.button.setText(location.getArea().toString());
+        HiveLocation hiveLocation = popularHiveLocations.get(position);
+        holder.button.setText(hiveLocation.getArea().toString());
     }
 
     // total number of rows
     @Override
     public int getItemCount() {
-        return popularLocations.size();
+        return popularHiveLocations.size();
     }
 }

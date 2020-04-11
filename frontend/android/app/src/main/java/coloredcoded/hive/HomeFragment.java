@@ -1,6 +1,7 @@
 package coloredcoded.hive;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -41,6 +42,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivity().getSystemService(Context.LOCATION_SERVICE);
         client = new ServerClientImp();
     }
 
