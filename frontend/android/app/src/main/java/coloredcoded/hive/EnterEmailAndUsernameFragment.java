@@ -44,6 +44,8 @@ public class EnterEmailAndUsernameFragment extends Fragment
                 final String email = emailEditText.getText().toString();
                 final String username = usernameEditText.getText().toString();
                 if (email.isEmpty() || username.isEmpty()) {
+                    AppHelper.showAlert(getActivity(),
+                            "Username and/or Email cannot be empty");
                     return;
                 }
                 client.createNewUser(username, email, new Callback() {
@@ -51,10 +53,13 @@ public class EnterEmailAndUsernameFragment extends Fragment
                     public void serverRequestCallback(StatusOr<Response> responseOr,
                                                       Map<String, Object> notes) {
                         if (responseOr.hasError()) {
+                            AppHelper.showInternalServerErrorAlert(getActivity());
                             return;
                         }
                         Response response = responseOr.get();
                         if (response.serverReturnedWithError()) {
+                            AppHelper.showAlert(getActivity(), "Oh...",
+                                    response.getServerMessage());
                             return;
                         }
                         Map<String, Object> args = new HashMap<>();

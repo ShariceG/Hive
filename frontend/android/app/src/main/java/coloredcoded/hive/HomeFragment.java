@@ -88,7 +88,6 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
                         makePostAlert.dismiss();
                     }
                 });
-
         writeSomethingButton =  v.findViewById(R.id.writeSomethingButton);
         writeSomethingButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +98,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
                         makePostAlert.getWindow().getAttributes().height);
             }
         });
+
         return v;
     }
 

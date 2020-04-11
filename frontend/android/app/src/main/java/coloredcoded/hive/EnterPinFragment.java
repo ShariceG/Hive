@@ -41,6 +41,7 @@ public class EnterPinFragment extends Fragment implements SignInActivity.SignInF
             public void onClick(View v) {
                 String pin = pinEditText.getText().toString();
                 if (pin.isEmpty()) {
+                    AppHelper.showAlert(getActivity(), "Code cannot be empty");
                     return;
                 }
                 final String email = (String) args.get("email");
@@ -50,10 +51,13 @@ public class EnterPinFragment extends Fragment implements SignInActivity.SignInF
                     public void serverRequestCallback(StatusOr<Response> responseOr,
                                                       Map<String, Object> notes) {
                         if (responseOr.hasError()) {
+                            AppHelper.showInternalServerErrorAlert(getActivity());
                             return;
                         }
                         Response response = responseOr.get();
                         if (response.serverReturnedWithError()) {
+                            AppHelper.showAlert(getActivity(), "Oh...",
+                                    response.getServerMessage());
                             return;
                         }
                         Map<String, Object> args = new HashMap<>();

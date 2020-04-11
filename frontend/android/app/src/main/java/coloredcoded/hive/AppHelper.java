@@ -1,6 +1,9 @@
 package coloredcoded.hive;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -85,6 +88,51 @@ public class AppHelper {
 
     static String getTestUser() {
         return "user1";
+    }
+
+    public static void showPermanentAlert(Activity activity, String message) {
+        showPermanentAlert(activity, "", message);
+    }
+
+    public static void showPermanentAlert(final Activity activity, final String title,
+                                          final String message) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(
+                        activity);
+                builder.setTitle(title);
+                builder.setMessage(message);
+                builder.setCancelable(false);
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
+    }
+
+    public static void showInternalServerErrorAlert(Activity activity) {
+        showAlert(activity, "Um... Yikes", "Some server error.");
+    }
+
+    public static void showAlert(Activity activity, String message) {
+        showAlert(activity, "", message);
+    }
+
+    public static void showAlert(final Activity activity, final String title,
+                                 final String message) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(
+                        activity);
+                builder.setTitle(title);
+                builder.setMessage(message);
+                builder.setCancelable(true);
+                builder.setPositiveButton("Ok", null);
+                final AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
     }
 
 }

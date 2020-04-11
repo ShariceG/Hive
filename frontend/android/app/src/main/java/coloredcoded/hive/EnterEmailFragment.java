@@ -44,6 +44,7 @@ public class EnterEmailFragment extends Fragment implements SignInActivity.SignI
             public void onClick(View v) {
                 final String email = emailEditText.getText().toString();
                 if (email.isEmpty()) {
+                    AppHelper.showAlert(getActivity(), "Email cannot be empty");
                     return;
                 }
                 client.verifyExistingUser(email, new Callback() {
@@ -51,10 +52,13 @@ public class EnterEmailFragment extends Fragment implements SignInActivity.SignI
                     public void serverRequestCallback(StatusOr<Response> responseOr,
                                                       Map<String, Object> notes) {
                         if (responseOr.hasError()) {
+                            AppHelper.showInternalServerErrorAlert(getActivity());
                             return;
                         }
                         Response response = responseOr.get();
                         if (response.serverReturnedWithError()) {
+                            AppHelper.showAlert(getActivity(), "Oh...",
+                                    response.getServerMessage());
                             return;
                         }
                         String username = response.getUsername();
