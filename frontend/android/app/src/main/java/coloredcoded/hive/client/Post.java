@@ -126,7 +126,7 @@ public final class Post implements Serializable {
 				(String)jsonPost.get("username"),
 				(String)jsonPost.get("post_id"),
 				(String)jsonPost.get("post_text"),
-				HiveLocation.jsonToLocation((JSONObject) jsonPost.get("hiveLocation")),
+				HiveLocation.jsonToLocation((JSONObject) jsonPost.get("location")),
 				likes, dislikes, timestamp,
 				actionType, numberOfComments);
 	}

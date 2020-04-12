@@ -34,7 +34,7 @@ public class PostFeedFromMapActivity extends AppCompatActivity implements PostFe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.post_feed_from_map_layout);
         client = new ServerClientImp();
-        hiveLocation = (HiveLocation) getIntent().getSerializableExtra("hiveLocation");
+        hiveLocation = (HiveLocation) getIntent().getSerializableExtra("location");
 
         Button backButton = findViewById(R.id.mapPostFeedBackButton);
         backButton.setOnClickListener(new View.OnClickListener() {
