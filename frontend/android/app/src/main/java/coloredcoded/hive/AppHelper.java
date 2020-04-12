@@ -2,6 +2,7 @@ package coloredcoded.hive;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -14,9 +15,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import coloredcoded.hive.client.HiveEnvironment;
 import coloredcoded.hive.client.HiveLocation;
 import coloredcoded.hive.client.ServerClient;
 import coloredcoded.hive.client.ServerClientImp;
+import coloredcoded.hive.client.User;
 
 public class AppHelper {
 
@@ -78,34 +81,22 @@ public class AppHelper {
         return new ServerClientImp();
     }
 
-    static HiveLocation getTestUserLocation() {
-        return new HiveLocation("47.608013", "-122.335167",
-                new HiveLocation.Area("47.60", "-122.33",
-                        "Seattle", "WA", "United States"));
+    static HiveLocation getCurrentUserLocation() {
+        return new HiveLocation(HiveGlobal.environment.getLocationHandler().getLatestLocation());
     }
 
-    static String getTestUser() {
-        return "user1";
+    static String getLoggedInUsername() {
+        return HiveGlobal.environment.getUser().getUsername();
     }
 
-    public static void showPermanentAlert(Activity activity, String message) {
-        showPermanentAlert(activity, "", message);
-    }
-
-    public static void showPermanentAlert(final Activity activity, final String title,
-                                          final String message) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(
-                        activity);
-                builder.setTitle(title);
-                builder.setMessage(message);
-                builder.setCancelable(false);
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
-        });
+    public static AlertDialog getPermanentAlert(final Activity activity, final String title,
+                                                final String message) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(
+                activity);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setCancelable(false);
+        return builder.create();
     }
 
     public static void showInternalServerErrorAlert(Activity activity) {
@@ -118,6 +109,12 @@ public class AppHelper {
 
     public static void showAlert(final Activity activity, final String title,
                                  final String message) {
+        showAlert(activity, title, message, null);
+    }
+
+    public static void showAlert(final Activity activity, final String title,
+                                 final String message,
+                                 final DialogInterface.OnClickListener onDismissListener) {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -126,11 +123,29 @@ public class AppHelper {
                 builder.setTitle(title);
                 builder.setMessage(message);
                 builder.setCancelable(true);
-                builder.setPositiveButton("Ok", null);
+                builder.setPositiveButton("Ok", onDismissListener);
                 final AlertDialog alert = builder.create();
                 alert.show();
             }
         });
     }
 
+    public static void presentAlert(final Activity activity, final AlertDialog alert) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                alert.show();
+            }
+        });
+    }
+
+    public static void setupUserInEnvironmentIfNeeded(Activity activity) {
+        if (HiveGlobal.environment != null) {
+            return;
+        }
+        System.out.println("Creating global environment with user only...");
+        HiveEnvironment.createGlobalEnvironment();
+        HiveGlobal.environment.setUser(User.fromInternalStorage(activity));
+        System.out.println("Done.");
+    }
 }

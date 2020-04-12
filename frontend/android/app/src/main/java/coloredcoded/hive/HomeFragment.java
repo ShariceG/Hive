@@ -43,7 +43,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().getSystemService(Context.LOCATION_SERVICE);
-        client = new ServerClientImp();
+        client = AppHelper.serverClient();
     }
 
     // Inflate the view for the fragment based on layout XML
@@ -105,8 +105,8 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
     }
 
     private void insertPost(String text) {
-        client.insertPost(AppHelper.getTestUser(), text,
-                AppHelper.getTestUserLocation(),
+        client.insertPost(AppHelper.getLoggedInUsername(), text,
+                AppHelper.getCurrentUserLocation(),
                 getInsertPostCallback(), null);
     }
 
@@ -131,8 +131,8 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
 
     @Override
     public void fetchMorePosts(QueryParams queryParams) {
-        client.getAllPostsAtLocation(AppHelper.getTestUser(),
-                AppHelper.getTestUserLocation(), queryParams,
+        client.getAllPostsAtLocation(AppHelper.getLoggedInUsername(),
+                AppHelper.getCurrentUserLocation(), queryParams,
                 getAllPostsAtLocationCallback(), null);
     }
 
@@ -160,7 +160,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
         Map<String, Object> notes = new HashMap<>();
         notes.put("postId", post.getPostId());
         notes.put("actionType", actionType);
-        client.updatePost(AppHelper.getTestUser(), post.getPostId(), actionType,
+        client.updatePost(AppHelper.getLoggedInUsername(), post.getPostId(), actionType,
                 updatePostCallback(), notes);
     }
 

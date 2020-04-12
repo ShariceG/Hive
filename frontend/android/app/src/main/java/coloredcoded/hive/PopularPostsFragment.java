@@ -133,7 +133,7 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
             Log.d("PopularPostsFragment", "No currentHiveLocation set yet.");
             return;
         }
-        client.getAllPopularPostsAtLocation(AppHelper.getTestUser(), currentHiveLocation, queryParams,
+        client.getAllPopularPostsAtLocation(AppHelper.getLoggedInUsername(), currentHiveLocation, queryParams,
                 getAllPopularPostsAtLocationCallback(), null);
     }
 

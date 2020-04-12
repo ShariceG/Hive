@@ -75,6 +75,10 @@ public class SignInActivity extends AppCompatActivity {
         return User.fromInternalStorage(this);
     }
 
+    public void setupUserInEnvironment() {
+        AppHelper.setupUserInEnvironmentIfNeeded(this);
+    }
+
     public class ViewPagerAdapter extends FragmentPagerAdapter implements
             SignInActivity.SignInDelegate {
 
@@ -172,6 +176,7 @@ public class SignInActivity extends AppCompatActivity {
 
         @Override
         public void goToMainApp() {
+            setupUserInEnvironment();
             goToMainActivity();
         }
 

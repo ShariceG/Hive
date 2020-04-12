@@ -90,7 +90,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
     }
 
     private void insertComment(String text) {
-        client.insertComment(AppHelper.getTestUser(), text, post.getPostId(),
+        client.insertComment(AppHelper.getLoggedInUsername(), text, post.getPostId(),
                 getInsertCommentCallback(), null);
     }
 
@@ -124,7 +124,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
 
     @Override
     public void fetchMoreComments(QueryParams queryParams) {
-        client.getAllPostComments(AppHelper.getTestUser(),
+        client.getAllPostComments(AppHelper.getLoggedInUsername(),
                 post.getPostId(), queryParams,
                 getAllPostCommentsCallback(), null);
     }
@@ -157,7 +157,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         Map<String, Object> notes = new HashMap<>();
         notes.put("commentId", comment.getCommentId());
         notes.put("actionType", actionType);
-        client.updateComment(AppHelper.getTestUser(), comment.getCommentId(), actionType,
+        client.updateComment(AppHelper.getLoggedInUsername(), comment.getCommentId(), actionType,
                 updateCommentCallback(), notes);
     }
 

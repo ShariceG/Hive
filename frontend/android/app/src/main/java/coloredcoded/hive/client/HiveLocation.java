@@ -1,5 +1,7 @@
 package coloredcoded.hive.client;
 
+import android.location.Location;
+
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
@@ -66,13 +68,15 @@ public class HiveLocation implements Serializable {
 	}
 	
 	/*
-	 * This class represents a geographical location.
+	 * This class represents a geographical location for the use of this app. latStr and lonStr
+	 * are guaranteed to exist. Area does not exist unless this was created via JSONObject since
+	 * that information comes from the server.
 	 */
 
 	private Area area;  // Always given to us by the server.
 	private String latStr;
 	private String lonStr;
-	
+
 	public HiveLocation(String lat, String lon) {
 		area = new Area();
 		latStr = lat;
@@ -83,6 +87,10 @@ public class HiveLocation implements Serializable {
 		this.area = area;
 		latStr = lat;
 		lonStr = lon;
+	}
+
+	public HiveLocation(Location location) {
+		this(location.getLatitude()+"", location.getLongitude()+"");
 	}
 	
 	public HiveLocation() {
