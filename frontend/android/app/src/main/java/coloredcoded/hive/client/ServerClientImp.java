@@ -69,7 +69,7 @@ public class ServerClientImp implements ServerClient {
                                              Callback callback, Map<String, Object> notes) {
 		JSONObject request = new JSONObject();
 		request.put("username", username);
-		request.put("hiveLocation", hiveLocation.toJSON());
+		request.put("location", hiveLocation.toJSON());
 		request.put("query_params", params.toJson());
 
 		String path = constructIncompleteUrlPath() + GET_ALL_POPULAR_POSTS_AT_LOCATION_PATH;
@@ -103,7 +103,7 @@ public class ServerClientImp implements ServerClient {
                                       Callback callback, Map<String, Object> notes) {
 		JSONObject request = new JSONObject();
 		request.put("username", username);
-		request.put("hiveLocation", hiveLocation.toJSON());
+		request.put("location", hiveLocation.toJSON());
 		request.put("query_params", params.toJson());
 
 		String path = constructIncompleteUrlPath() + GET_ALL_POSTS_AT_LOCATION_PATH;
@@ -182,7 +182,7 @@ public class ServerClientImp implements ServerClient {
 		JSONObject request = new JSONObject();
 		request.put("username", username);
 		request.put("post_text", postText);
-		request.put("hiveLocation", hiveLocation.toJSON());
+		request.put("location", hiveLocation.toJSON());
 
 		String path = constructIncompleteUrlPath() + INSERT_POST_PATH;
 		executeHttpRequestAsync("POST", path, request, callback, notes);

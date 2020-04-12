@@ -29,14 +29,8 @@ public class LocationHandler implements LocationListener {
     private LocationManager locationManager;
     private Activity activity;
     private Delegate delegate;
-    private Location lastLocation;
-
-    public LocationHandler(Activity activity) {
-        this(activity, null);
-    }
 
     public LocationHandler(Activity activity, Delegate delegate) {
-        lastLocation = null;
         locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
         this.activity = activity;
         setDelegate(delegate);
@@ -110,7 +104,6 @@ public class LocationHandler implements LocationListener {
         if (grantResult.length > 0 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
             delegate.userApprovedLocationPermission();
         }
-        System.out.println("LMAO");
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity,
                 Manifest.permission.ACCESS_FINE_LOCATION)) {
             delegate.providePermissionJustificationToUser();
@@ -121,7 +114,6 @@ public class LocationHandler implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        lastLocation = location;
         delegate.locationUpdate(location);
     }
 

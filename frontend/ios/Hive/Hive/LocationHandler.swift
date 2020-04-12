@@ -87,12 +87,10 @@ class LocationHandler : NSObject, CLLocationManagerDelegate {
             }
             break;
         case .denied, .restricted:
+            isAuthorized = false
             if handlerDelegate != nil {
                 handlerDelegate?.userDeniedLocationPermission()
             }
-            break;
-        case .notDetermined:
-            manager.requestWhenInUseAuthorization()
             break;
         default: break
         }
