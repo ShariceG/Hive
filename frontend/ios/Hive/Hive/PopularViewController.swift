@@ -23,6 +23,7 @@ class PopularViewController: UIViewController {
     private(set) var fetchPostsMetadata: QueryMetadata = QueryMetadata()
     private var postFeedManager = PostFeedManager()
     private var currLocation: Location?
+    private var currentIndexPath: IndexPath = IndexPath(row: 0, section: 0)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -115,6 +116,36 @@ class PopularViewController: UIViewController {
         }
     }
     
+    @IBAction func leftArrowBnAction(_ sender: UIButton) {
+        let item: Int = currentIndexPath.item
+        if item - 1 > -1 {
+            currentIndexPath.item = item - 1
+        }
+        DispatchQueue.main.async {
+            self.popularCollectionView.scrollToItem(at: self.currentIndexPath, at: .centeredHorizontally, animated: true)
+        }
+    }
+    
+    @IBAction func rightArrowBnAction(_ sender: UIButton) {
+        print(currentIndexPath)
+        let item: Int = currentIndexPath.item
+        if item + 1 < popularLocations.count {
+            currentIndexPath.item = item + 1
+        }
+        print(currentIndexPath)
+        DispatchQueue.main.async {
+            self.popularCollectionView.scrollToItem(at: self.currentIndexPath, at: .centeredHorizontally, animated: true)
+        }
+    }
+    
+    public func refreshPosts(cell: PopularCollectionViewCell) {
+        if (self.currLocation?.area == cell.location.area) {
+            return
+        }
+        self.currLocation = cell.location
+        postFeedManager.resetDataAndPokeNew()
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "seeCommentsSegue") {
             let postView: PostView = sender as! PostView
@@ -139,7 +170,7 @@ extension PopularViewController: PostFeedDelegate {
             print("No set location.")
             return
         }
-        client.getAllPopularPostsAtLocation(username: self.getTestUser(), queryParams: queryParams,
+        client.getAllPopularPostsAtLocation(username: self.getLoggedInUsername(), queryParams: queryParams,
                                             location: self.currLocation!,
                                             completion: getPopularPostsFromLocationCompletion,
                                             notes: nil)
@@ -148,7 +179,6 @@ extension PopularViewController: PostFeedDelegate {
     func performAction(post: Post, actionType: ActionType) {
     }
 }
-
 
 // UIControllerView Extensions
 extension PopularViewController: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -159,23 +189,14 @@ extension PopularViewController: UICollectionViewDataSource, UICollectionViewDel
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "popularCollectionViewCell", for: indexPath as IndexPath) as! PopularCollectionViewCell
         cell.configure(location: popularLocations[indexPath.item], viewPosition: indexPath.item)
-        cell.delegate = self
+        
+        // Since one cell is visible at a time, this is where we refresh the posts.
+        self.refreshPosts(cell: cell)
         return cell
     }
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfRowsInSection section: Int) -> Int {
         return 1
-    }
-}
-
-// PopularCollectionViewCell Extensions
-extension PopularViewController: PopularCollectionViewCellDelegate {
-    func popularButtonClicked(popularCollectionViewCell: PopularCollectionViewCell) {
-        if (self.currLocation?.area == popularCollectionViewCell.location.area) {
-            return
-        }
-        self.currLocation = popularCollectionViewCell.location
-        postFeedManager.resetDataAndPokeNew()
     }
 }

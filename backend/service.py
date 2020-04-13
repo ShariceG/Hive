@@ -19,6 +19,12 @@ class LocationBasedSocialMediaAPI(remote.Service):
     def __init__(self):
         self._handler = ServiceHandler()
 
+    @endpoints.method(server_proto.VerifyCodeRequest,
+        server_proto.VerifyCodeResponse, name='verify_code',
+        path='app.verify_code', http_method='POST')
+    def verify_code(self, request):
+        return self._handler.handle_verify_code(request)
+
     @endpoints.method(server_proto.CreateUserRequest,
         server_proto.CreateUserResponse, name='create_user',
         path='app.create_user', http_method='POST')

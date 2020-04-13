@@ -85,7 +85,7 @@ extension PostFeedModalViewController: PostFeedDelegate {
     }
     
     func fetchMorePosts(queryParams: QueryParams) {
-        client.getAllPopularPostsAtLocation(username: self.getTestUser(), queryParams: queryParams,
+        client.getAllPopularPostsAtLocation(username: self.getLoggedInUsername(), queryParams: queryParams,
                                             location: self.location!,
                                             completion: getPopularPostsFromLocationCompletion, notes: nil)
     }

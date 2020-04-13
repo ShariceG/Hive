@@ -2,19 +2,26 @@ package coloredcoded.hive.client;
 
 public class UtilityBelt {
 	
-	public void checkStringNotEmpty(String str) {
+	public static void checkStringNotEmpty(String str) {
 		checkNotNull(str);
 		trueOrFail(!str.isEmpty());
 	}
-	
-	public void checkNotNull(Object obj) {
+
+	public static void checkNotNull(Object obj) {
 		trueOrFail(obj != null);
 	}
-	
-	public void trueOrFail(boolean truth) {
+
+	public static void trueOrFail(boolean truth) {
 		if (!truth) {
 			throw new IllegalArgumentException();
 		}
+	}
+
+	public static String pluralOrSingular(int num, String word) {
+		if (num == 1) {
+			return word.substring(0, word.length()-1);
+		}
+		return word;
 	}
 
 }

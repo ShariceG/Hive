@@ -23,7 +23,6 @@ class PostView: UITableViewCell {
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var netLikesLabel: UILabel!
     
-    
     private var _delegate: PostViewDelegate?
     private var _post: Post? = nil
     
@@ -44,40 +43,36 @@ class PostView: UITableViewCell {
     public func configure(post: Post) {
         userLabel.text = post.username
         postTextView.text = post.postText
+        commentBn.titleLabel?.adjustsFontSizeToFitWidth = true
         let netLikes = post.likes - post.dislikes
         netLikesLabel.text = String(netLikes)
-//        dislikeBn.setTitle("Dislike: " + String(post.dislikes), for: UIControl.State.normal)
-//        likeBn.setTitle("Like: " + String(post.likes), for: UIControl.State.normal)
         dateLabel.text = post.timeDiffToString()
         self.post = post
         
         likeBn.isEnabled = true;
         dislikeBn.isEnabled = true;
-        // Handle like/dislike behavior.
+        // Handle like/dislike behavior and other things that need to happen on
+        // the dispatch queue.
         DispatchQueue.main.async {
             switch post.userActionType {
             case ActionType.LIKE:
                 self.likeBn.tintColor = self.likeColor
                 self.dislikeBn.tintColor = self.noActionColor
                 self.setNetLikesColor(netLikes: netLikes)
-//                self.likeBn.setTitleColor(UIColor.orange, for: UIControl.State.normal)
-//                self.dislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
                 break;
             case ActionType.DISLIKE:
                 self.likeBn.tintColor = self.noActionColor
                 self.dislikeBn.tintColor = self.dislikeColor
                 self.setNetLikesColor(netLikes: netLikes)
-//                self.dislikeBn.setTitleColor(UIColor.orange, for: UIControl.State.normal)
-//                self.likeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
                 break;
             case ActionType.NO_ACTION:
                 self.likeBn.tintColor = self.noActionColor
                 self.dislikeBn.tintColor = self.noActionColor
                 self.setNetLikesColor(netLikes: netLikes)
-//                self.likeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
-//                self.dislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
                 break;
             }
+            let word = UtilityBelt.pluralOrSingular(num: post.numberOfComments, word: " comments")
+            self.commentBn.setTitle(String(post.numberOfComments) + word, for:.normal)
         }
     }
     

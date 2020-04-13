@@ -3,6 +3,7 @@ from protorpc import messages
 class User(messages.Message):
     username = messages.StringField(1, required=False)
     phone_number = messages.StringField(2, required=False)
+    email = messages.StringField(3, required=False)
 
 class ActionType(messages.Enum):
     NO_ACTION = 0

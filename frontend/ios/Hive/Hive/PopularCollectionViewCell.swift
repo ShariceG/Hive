@@ -9,25 +9,18 @@
 import Foundation
 import UIKit
 
-protocol PopularCollectionViewCellDelegate: class {
-    func popularButtonClicked(popularCollectionViewCell: PopularCollectionViewCell)
-}
-
 class PopularCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var popularButton: UIButton!
     public private(set) var viewPosition: Int = 0
     public private(set) var location: Location = Location()
     private(set) var fetchPostsMetadata: QueryMetadata = QueryMetadata()
-    weak var delegate: PopularCollectionViewCellDelegate?
-    
-    @IBAction func popularButtonAction(_ sender: UIButton) {
-        delegate?.popularButtonClicked(popularCollectionViewCell: self)
-    }
     
     public func configure(location: Location, viewPosition: Int) {
         self.location = location
         self.viewPosition = viewPosition
         self.popularButton.setTitle(location.area.toString(), for: .normal)
+        popularButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        popularButton.titleLabel?.textAlignment = .center
     }
     
 }

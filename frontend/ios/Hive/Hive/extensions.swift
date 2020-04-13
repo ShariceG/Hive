@@ -49,6 +49,62 @@ extension Date {
 }
 
 extension UIViewController{
+        
+    func showPermanentAlert(message: String) {
+        showPermanentAlert(title: "", message: message)
+    }
+    
+    func showPermanentAlert(title: String, message: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            self.presentAlert(alert: alert)
+        }
+    }
+    
+    func dismissAlert() {
+        if presentedViewController == nil {
+            return
+        }
+        let controller = presentedViewController!
+        if controller .isKind(of: UIAlertController.self) {
+            controller.dismiss(animated: true, completion: nil)
+        }
+    }
+  
+    func showInternalServerErrorAlert() {
+        showAlert(title: "Um... Yikes", message: "Some server error.")
+    }
+    
+    func showAlert(message: String) {
+        showAlert(title: "", message: message)
+    }
+    
+    func showAlert(title: String, message: String) {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(.init(title: "Ok", style: .cancel, handler: { action in
+                self.enableUserActivity()
+            }))
+            self.presentAlert(alert: alert)
+        }
+    }
+    
+    func presentAlert(alert: UIAlertController) {
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func disableUserActivity() {
+        self.view.isUserInteractionEnabled = false
+    }
+    
+    func enableUserActivity() {
+        self.view.isUserInteractionEnabled = true
+    }
+    
+    func newViewController(storyboardName: String, storyboardId: String) -> UIViewController {
+        return UIStoryboard(name: storyboardName, bundle: nil) .
+            instantiateViewController(withIdentifier: storyboardId)
+    }
     
     func hideKeyboardWhenTapped() {
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
@@ -60,19 +116,27 @@ extension UIViewController{
         view.endEditing(true)
     }
     
-    func getTestLocation() -> Location {
-//        return "47.608013:-122.335167"  // Seattle
-//        return "33.844847:-116.549069"
-        let location = Location()
-        location.latStr = "47.608013"
-        location.lonStr = "-122.335167"
-        location.area = Location.Area()
-        location.area.city = "Seattle"
-        location.area.country = "United States"
-        return location
+    func getCurrentUserLocation() -> Location {
+        return Location(loc: Global.environment!.locationHandler!.getCurrentLocation())
     }
     
-    func getTestUser() -> String {
-        return "user1"
+    func getLoggedInUsername() -> String {
+        return Global.environment!.user!.username
     }
+    
+//    func getTestLocation() -> Location {
+////        return "47.608013:-122.335167"  // Seattle
+////        return "33.844847:-116.549069"
+//        let location = Location()
+//        location.latStr = "47.608013"
+//        location.lonStr = "-122.335167"
+//        location.area = Location.Area()
+//        location.area.city = "Seattle"
+//        location.area.country = "United States"
+//        return location
+//    }
+//
+//    func getTestUser() -> String {
+//        return "user1"
+//    }
 }

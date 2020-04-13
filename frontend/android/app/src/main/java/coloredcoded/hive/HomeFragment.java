@@ -1,9 +1,9 @@
 package coloredcoded.hive;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +20,6 @@ import java.util.Map;
 
 import coloredcoded.hive.client.ActionType;
 import coloredcoded.hive.client.Callback;
-import coloredcoded.hive.client.Location;
 import coloredcoded.hive.client.Post;
 import coloredcoded.hive.client.QueryMetadata;
 import coloredcoded.hive.client.QueryParams;
@@ -29,7 +28,7 @@ import coloredcoded.hive.client.ServerClient;
 import coloredcoded.hive.client.ServerClientImp;
 import coloredcoded.hive.client.StatusOr;
 
-public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
+public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
 
     private ServerClient client;
     private PostFeedManager postFeedManager;
@@ -43,7 +42,8 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        client = new ServerClientImp();
+        getActivity().getSystemService(Context.LOCATION_SERVICE);
+        client = AppHelper.serverClient();
     }
 
     // Inflate the view for the fragment based on layout XML
@@ -90,7 +90,6 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
                         makePostAlert.dismiss();
                     }
                 });
-
         writeSomethingButton =  v.findViewById(R.id.writeSomethingButton);
         writeSomethingButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,11 +100,13 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
                         makePostAlert.getWindow().getAttributes().height);
             }
         });
+
         return v;
     }
 
     private void insertPost(String text) {
-        client.insertPost(testUser(), text, testLocation(),
+        client.insertPost(AppHelper.getLoggedInUsername(), text,
+                AppHelper.getCurrentUserLocation(),
                 getInsertPostCallback(), null);
     }
 
@@ -130,7 +131,8 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
 
     @Override
     public void fetchMorePosts(QueryParams queryParams) {
-        client.getAllPostsAtLocation(testUser(), testLocation(), queryParams,
+        client.getAllPostsAtLocation(AppHelper.getLoggedInUsername(),
+                AppHelper.getCurrentUserLocation(), queryParams,
                 getAllPostsAtLocationCallback(), null);
     }
 
@@ -158,7 +160,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
         Map<String, Object> notes = new HashMap<>();
         notes.put("postId", post.getPostId());
         notes.put("actionType", actionType);
-        client.updatePost(testUser(), post.getPostId(), actionType,
+        client.updatePost(AppHelper.getLoggedInUsername(), post.getPostId(), actionType,
                 updatePostCallback(), notes);
     }
 
@@ -172,15 +174,5 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate{
                         (String)notes.get("postId"), (ActionType)notes.get("actionType"));
             }
         };
-    }
-
-    private Location testLocation() {
-        return new Location("47.608013", "-122.335167",
-                new Location.Area("47.60", "-122.33",
-                        "Seattle", "WA", "United States"));
-    }
-
-    private String testUser() {
-        return "user1";
     }
 }

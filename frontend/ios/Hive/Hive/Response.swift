@@ -55,16 +55,22 @@ class Response {
     private(set) var posts: Array<Post>
     private(set) var comments: Array<Comment>
     private(set) var serverStatusCode: ServerStatusCode
+    private(set) var serverMessage: String
     private(set) var locations: Array<Location>
     private(set) var queryMetadata: QueryMetadata
+    private(set) var verificationCode: String
+    private(set) var username: String
     
     init(jsonObject: [String: Any]) {
         // Must initialize all member variables before calling class helper functions
         self.posts = []
         self.comments = []
         self.serverStatusCode = ServerStatusCode.UNKNOWN_ERROR
+        self.serverMessage = ""
         self.locations = []
         self.queryMetadata = QueryMetadata()
+        self.verificationCode = ""
+        self.username = ""
 
         if (jsonObject["posts"] != nil) {
             self.posts = getPostList(jsonPosts: jsonObject["posts"] as! [[String:Any]])
@@ -72,15 +78,26 @@ class Response {
         if (jsonObject["comments"] != nil) {
             self.comments = getCommentList(jsonComments: jsonObject["comments"] as! [[String:Any]])
         }
-        if (jsonObject["status"] != nil &&
-            (jsonObject["status"] as! [String:Any])["status_code"] != nil) {
-            self.serverStatusCode = getServerStatusCodeFromJson(jsonObject: jsonObject)
+        if jsonObject["status"] != nil {
+            let statusJson = jsonObject["status"] as! [String:Any]
+            if statusJson["status_code"] != nil {
+                self.serverStatusCode = getServerStatusCodeFromJson(jsonObject: jsonObject)
+            }
+            if statusJson["status_message"] != nil {
+                self.serverMessage = statusJson["status_message"] as! String
+            }
         }
         if (jsonObject["locations"] != nil) {
             self.locations = getLocationList(jsonLocations: jsonObject["locations"] as! [[String : Any]])
         }
         if (jsonObject["query_metadata"] != nil) {
             self.queryMetadata = QueryMetadata(jsonMetadata: jsonObject["query_metadata"] as! [String : Any])
+        }
+        if (jsonObject["verification_code"] != nil) {
+            self.verificationCode = jsonObject["verification_code"] as! String
+        }
+        if (jsonObject["username"] != nil) {
+            self.username = jsonObject["username"] as! String
         }
     }
     

@@ -98,20 +98,20 @@ public class ServerClientMain {
 	}
 	
 	public static void createUsers(int amount) {
-		System.out.println("Creating " + amount + " users.");
-		for (int i = 0; i < amount; i++) {
-			client.createUser("user"+i, i+""+i+""+i, new Callback() {
-				public void serverRequestCallback(StatusOr<Response> responseOr, 
-						Map<String, Object> notes) {
-					if (responseOr.hasError()) {
-						System.err.println(responseOr.getErrorMessage());
-					}
-					if (responseOr.get().serverReturnedWithError()) {
-						System.out.println(responseOr.get().getServerStatusCode().name());
-					}
-				}
-			}, /*notes=*/null);
-		}
+		System.out.println("THIS CLIENT IS NOT BEING USED. USE HiveSimulator Instead. Creating " + amount + " users.");
+//		for (int i = 0; i < amount; i++) {
+//			client.createUser("user"+i, i+""+i+""+i, new Callback() {
+//				public void serverRequestCallback(StatusOr<Response> responseOr, 
+//						Map<String, Object> notes) {
+//					if (responseOr.hasError()) {
+//						System.err.println(responseOr.getErrorMessage());
+//					}
+//					if (responseOr.get().serverReturnedWithError()) {
+//						System.out.println(responseOr.get().getServerStatusCode().name());
+//					}
+//				}
+//			}, /*notes=*/null);
+//		}
 	}
 	
 	@SuppressWarnings("rawtypes")

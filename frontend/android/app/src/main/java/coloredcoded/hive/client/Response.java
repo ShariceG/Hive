@@ -10,15 +10,29 @@ public class Response {
 	private final ArrayList<Post> posts;
 	private final ArrayList<Comment> comments;
 	private final ServerStatusCode serverStatusCode;
-	private final ArrayList<Location> locations;
+	private final ArrayList<HiveLocation> hiveLocations;
 	private final QueryMetadata queryMetadata;
+	private String serverMessage = "";
+	private String verificationCode = "";
+	private String username = "";
 	
 	public Response(JSONObject jsonResponse) {	
 		this.posts = getPostList(jsonResponse);
 		this.comments = getCommentList(jsonResponse);
 		this.serverStatusCode = getServerStatusCodeFromJson(jsonResponse);
-		this.locations = getLocationList(jsonResponse);
+		this.hiveLocations = getLocationList(jsonResponse);
 		this.queryMetadata = getQueryMetadata(jsonResponse);
+
+		if (jsonResponse.get("verification_code") != null) {
+			this.verificationCode = (String) jsonResponse.get("verification_code");
+		}
+		if (jsonResponse.get("username") != null) {
+			this.username = (String) jsonResponse.get("username");
+		}
+		JSONObject status = (JSONObject) jsonResponse.get("status");
+		if (status.get("status_message") != null) {
+			this.serverMessage = (String) status.get("status_message");
+		}
 	}
 	
 	public QueryMetadata getQueryMetadata() {
@@ -35,7 +49,19 @@ public class Response {
 		}
 		return new StatusOr<Post>(posts.get(0));
 	}
-	
+
+	public String getUsername() {
+		return username;
+	}
+
+	public String getVerificationCode() {
+		return verificationCode;
+	}
+
+	public String getServerMessage() {
+		return serverMessage;
+	}
+
 	public ArrayList<Post> getPosts() {
 		return posts;
 	}
@@ -44,8 +70,8 @@ public class Response {
 		return comments;
 	}
 	
-	public ArrayList<Location> getLocations() {
-		return locations;
+	public ArrayList<HiveLocation> getHiveLocations() {
+		return hiveLocations;
 	}
 	
 	public boolean serverReturnedWithError() {
@@ -68,16 +94,16 @@ public class Response {
 		return ServerStatusCode.valueOf((String) status.get("status_code"));
 	}
 	
-	private ArrayList<Location> getLocationList(JSONObject jsonResponse) {
-		if (!jsonResponse.containsKey("locations")) {
-			return new ArrayList<Location>();
+	private ArrayList<HiveLocation> getLocationList(JSONObject jsonResponse) {
+		if (!jsonResponse.containsKey("hiveLocations")) {
+			return new ArrayList<HiveLocation>();
 		}
-		JSONArray jsonLocations = (JSONArray) jsonResponse.get("locations");
-		ArrayList<Location> locations = new ArrayList<Location>();
+		JSONArray jsonLocations = (JSONArray) jsonResponse.get("hiveLocations");
+		ArrayList<HiveLocation> hiveLocations = new ArrayList<HiveLocation>();
 		for (Object locationJson : jsonLocations) {
-			locations.add(Location.jsonToLocation((JSONObject)locationJson));
+			hiveLocations.add(HiveLocation.jsonToLocation((JSONObject)locationJson));
 		}
-		return locations;
+		return hiveLocations;
 	}
 	
 	private ArrayList<Post> getPostList(JSONObject jsonResponse) {

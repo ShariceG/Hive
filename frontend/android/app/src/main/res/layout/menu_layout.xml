@@ -27,4 +27,23 @@
         android:layout_marginLeft="132dp"
         android:layout_marginTop="301dp"
         android:text="Help And FAQ" />
+
+    <Button
+        android:id="@+id/logOutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/menuHelpButton"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="24dp"
+        android:text="Log Out" />
+
+    <TextView
+        android:id="@+id/usernameTextView"
+        android:layout_width="210dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="161dp"
+        android:gravity="center"
+        android:textStyle="bold" />
 </RelativeLayout>

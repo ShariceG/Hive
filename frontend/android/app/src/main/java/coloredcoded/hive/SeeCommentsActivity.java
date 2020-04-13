@@ -19,7 +19,6 @@ import java.util.Map;
 import coloredcoded.hive.client.ActionType;
 import coloredcoded.hive.client.Callback;
 import coloredcoded.hive.client.Comment;
-import coloredcoded.hive.client.Location;
 import coloredcoded.hive.client.Post;
 import coloredcoded.hive.client.QueryParams;
 import coloredcoded.hive.client.Response;
@@ -91,7 +90,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
     }
 
     private void insertComment(String text) {
-        client.insertComment(testUser(), text, post.getPostId(),
+        client.insertComment(AppHelper.getLoggedInUsername(), text, post.getPostId(),
                 getInsertCommentCallback(), null);
     }
 
@@ -125,7 +124,8 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
 
     @Override
     public void fetchMoreComments(QueryParams queryParams) {
-        client.getAllPostComments(post.getPostId(), queryParams,
+        client.getAllPostComments(AppHelper.getLoggedInUsername(),
+                post.getPostId(), queryParams,
                 getAllPostCommentsCallback(), null);
     }
 
@@ -157,7 +157,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
         Map<String, Object> notes = new HashMap<>();
         notes.put("commentId", comment.getCommentId());
         notes.put("actionType", actionType);
-        client.updateComment(testUser(), comment.getPostId(), actionType,
+        client.updateComment(AppHelper.getLoggedInUsername(), comment.getCommentId(), actionType,
                 updateCommentCallback(), notes);
     }
 
@@ -171,15 +171,5 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
                         (String)notes.get("commentId"), (ActionType)notes.get("actionType"));
             }
         };
-    }
-
-    private Location testLocation() {
-        return new Location("47.608013", "-122.335167",
-                new Location.Area("47.60", "-122.33",
-                        "Seattle", "WA", "United States"));
-    }
-
-    private String testUser() {
-        return "user1";
     }
 }

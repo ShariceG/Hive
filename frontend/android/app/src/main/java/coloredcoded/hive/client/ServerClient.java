@@ -14,25 +14,28 @@ public interface ServerClient {
 	 *
 	 */
 
-	void createUser(String username, String phoneNumber,
-                    Callback callback, Map<String, Object> notes);
+	void checkVerificationCode(String username, String email, String code,
+							   Callback callback, Map<String, Object> notes);
+	void verifyExistingUser(String email, Callback callback, Map<String, Object> notes);
+	void createNewUser(String username, String email,
+					   Callback callback, Map<String, Object> notes);
 	void insertComment(String username, String commentText, String postId,
                        Callback callback, Map<String, Object> notes);
-	void insertPost(String username, String postText, Location location,
+	void insertPost(String username, String postText, HiveLocation hiveLocation,
                     Callback callback, Map<String, Object> notes);
 	void updatePost(String username, String postId, ActionType actionType,
                     Callback callback, Map<String, Object> notes);
 	void updateComment(String username, String commentId, ActionType actionType,
 					Callback callback, Map<String, Object> notes);
-	void getAllPostsAtLocation(String username, Location location, QueryParams queryParams,
+	void getAllPostsAtLocation(String username, HiveLocation hiveLocation, QueryParams queryParams,
                                Callback callback, Map<String, Object> notes);
 	void getAllPostsByUser(String username, QueryParams params,
                            Callback callback, Map<String, Object> notes);
 	void getAllPostsCommentedOnByUser(String username, QueryParams params,
                                       Callback callback, Map<String, Object> notes);
-	void getAllPostComments(String postId, QueryParams params,
+	void getAllPostComments(String username, String postId, QueryParams params,
                             Callback callback, Map<String, Object> notes);
-	void getAllPopularPostsAtLocation(String username, Location location, QueryParams params,
+	void getAllPopularPostsAtLocation(String username, HiveLocation hiveLocation, QueryParams params,
                                       Callback callback, Map<String, Object> notes);
 	void getPopularLocations(Callback callback, Map<String, Object> notes);
 	void getAllPostLocations(Callback callback, Map<String, Object> notes);

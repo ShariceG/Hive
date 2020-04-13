@@ -11,6 +11,11 @@ class StatusCode(messages.Enum):
     INTERNAL_ERROR = 7
     NO_LOCATION_PROVIDED = 8
     INVALID_LOCATION = 9
+    EMAIL_ALREADY_EXISTS = 10
+    FAILED_PRECONDITION = 11
+    NOT_FOUND = 12
+    USER_MISMATCH_WTH_EMAIL = 13
+    USER_MISMATCH_WTH_VERIFICATION_CODE = 14
 
 class Status(messages.Message):
     is_ok = messages.BooleanField(1, required=False)

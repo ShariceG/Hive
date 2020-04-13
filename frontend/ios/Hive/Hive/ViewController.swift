@@ -130,14 +130,14 @@ extension ViewController: PostFeedDelegate {
     }
     
     func fetchMorePosts(queryParams: QueryParams) {
-        client.getAllPostsAtLocation(username: getTestUser(),
-                                     location: self.getTestLocation(),
+        client.getAllPostsAtLocation(username: getLoggedInUsername(),
+                                     location: self.getCurrentUserLocation(),
                                      queryParams: queryParams,
                                      completion:fetchPostsAroundUserCompletion, notes: nil)
     }
 
     func performAction(post: Post, actionType: ActionType) {
-        client.updatePost(postId: post.postId, username: getTestUser(),
+        client.updatePost(postId: post.postId, username: getLoggedInUsername(),
             actionType: actionType, completion: updatePostCompletion,
             notes: ["actionType": actionType, "postId": post.postId])
     }
@@ -149,8 +149,8 @@ extension ViewController: MakePostViewDelegate {
         DispatchQueue.main.async {
             self.view.isUserInteractionEnabled = true
         }
-        client.insertPost(username: self.getTestUser(),
-                          postText: text, location: self.getTestLocation(),
+        client.insertPost(username: self.getLoggedInUsername(),
+                          postText: text, location: self.getCurrentUserLocation(),
                           completion: insertPostCompletion, notes: nil)
     }
 }

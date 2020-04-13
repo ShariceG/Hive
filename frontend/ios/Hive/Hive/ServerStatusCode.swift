@@ -19,6 +19,11 @@ enum ServerStatusCode: Int {
     case INTERNAL_ERROR
     case NO_LOCATION_PROVIDED
     case INVALID_LOCATION
+    case EMAIL_ALREADY_EXISTS
+    case FAILED_PRECONDITION
+    case NOT_FOUND
+    case USER_MISMATCH_WTH_EMAIL
+    case USER_MISMATCH_WTH_VERIFICATION_CODE
     
     static func enumFromString(string:String) -> ServerStatusCode? {
         var i = 0

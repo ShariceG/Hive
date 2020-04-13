@@ -21,8 +21,8 @@ public final class Post implements Serializable {
 	// Provided by the server. Never supply.
 	private String postId;
 	private String postText;
-	// Location of the user when post was made
-	private Location location;
+	// HiveLocation of the user when post was made
+	private HiveLocation hiveLocation;
 	// Type of action currently on this post made by the user of the phone. Can be mutated.
 	// Lets keep the amount of mutable things small.
 	private ActionType userActionType;
@@ -30,19 +30,21 @@ public final class Post implements Serializable {
 	private int dislikes;
 	private double creationTimestampSec;
 	private JSONObject jsonPost;
+	private int numberOfComments;
 	
-	private Post(String username, String postId, String postText, Location location, int likes, int dislikes,
-			double creationTimestampSec, JSONObject jsonPost,
-				 ActionType userActionType) {
+	private Post(JSONObject jsonPost, String username, String postId, String postText,
+				 HiveLocation hiveLocation, int likes, int dislikes, double creationTimestampSec,
+				 ActionType userActionType, int numberOfComments) {
 		this.username = username;
 		this.postText = postText;
 		this.postId = postId;
-		this.location = location;
+		this.hiveLocation = hiveLocation;
 		this.likes = likes;
 		this.dislikes = dislikes;
 		this.creationTimestampSec = creationTimestampSec;
 		this.jsonPost = jsonPost;
 		this.userActionType = userActionType;
+		this.numberOfComments = numberOfComments;
 	}
 	
 	public double getCreationTimestampSec() {
@@ -65,8 +67,8 @@ public final class Post implements Serializable {
 		return postText;
 	}
 
-	public Location getLocation() {
-		return location;
+	public HiveLocation getHiveLocation() {
+		return hiveLocation;
 	}
 
 	public int getLikes() {
@@ -81,6 +83,13 @@ public final class Post implements Serializable {
 
 	public ActionType getUserActionType() { return userActionType; }
 	public void setUserActionType(ActionType actionType) { userActionType = actionType; }
+
+	public int getNumberOfComments() {
+		return numberOfComments;
+	}
+	public void incrementNumberOfComments() {
+		numberOfComments++;
+	}
 	
 	public boolean isExpired() {
 		double currentTimeSec = System.currentTimeMillis() / 1000;
@@ -111,13 +120,15 @@ public final class Post implements Serializable {
 		double timestamp = Double.parseDouble(jsonPost.get("creation_timestamp_sec")+"");
 		ActionType actionType = jsonPost.get("user_action_type") == null ? ActionType.NO_ACTION
 				: ActionType.valueOf((String)jsonPost.get("user_action_type"));
-		return new Post(
+		int numberOfComments = jsonPost.get("number_of_comments") == null ? 0 :
+				Integer.parseInt((String) jsonPost.get("number_of_comments"));
+		return new Post(jsonPost,
 				(String)jsonPost.get("username"),
 				(String)jsonPost.get("post_id"),
 				(String)jsonPost.get("post_text"),
-				Location.jsonToLocation((JSONObject) jsonPost.get("location")), 
-				likes, dislikes, timestamp, jsonPost,
-				actionType);
+				HiveLocation.jsonToLocation((JSONObject) jsonPost.get("location")),
+				likes, dislikes, timestamp,
+				actionType, numberOfComments);
 	}
 
 }

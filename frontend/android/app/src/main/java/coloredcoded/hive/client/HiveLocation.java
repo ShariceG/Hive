@@ -1,10 +1,13 @@
 package coloredcoded.hive.client;
 
+import android.location.Location;
+
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 
-public class Location implements Serializable {
+// Had to name HiveLocation because android already has an object called Location.
+public class HiveLocation implements Serializable {
 	
 	public static class Area implements Serializable {
 		private String latStr;
@@ -65,36 +68,42 @@ public class Location implements Serializable {
 	}
 	
 	/*
-	 * This class represents a geographical location.
+	 * This class represents a geographical location for the use of this app. latStr and lonStr
+	 * are guaranteed to exist. Area does not exist unless this was created via JSONObject since
+	 * that information comes from the server.
 	 */
 
 	private Area area;  // Always given to us by the server.
 	private String latStr;
 	private String lonStr;
-	
-	public Location(String lat, String lon) {
+
+	public HiveLocation(String lat, String lon) {
 		area = new Area();
 		latStr = lat;
 		lonStr = lon;
 	}
 
-	public Location(String lat, String lon, Area area) {
+	public HiveLocation(String lat, String lon, Area area) {
 		this.area = area;
 		latStr = lat;
 		lonStr = lon;
 	}
+
+	public HiveLocation(Location location) {
+		this(location.getLatitude()+"", location.getLongitude()+"");
+	}
 	
-	public Location() {
+	public HiveLocation() {
 		area = new Area();
 		latStr = "";
 		lonStr = "";
 	}
 	
-	public static Location jsonToLocation(JSONObject locationJson) {
-		return new Location(locationJson);
+	public static HiveLocation jsonToLocation(JSONObject locationJson) {
+		return new HiveLocation(locationJson);
 	}
 	
-	private Location(JSONObject locationJson) {
+	private HiveLocation(JSONObject locationJson) {
 		latStr = (String) locationJson.get("latitude");
 		lonStr = (String) locationJson.get("longitude");
 		if (locationJson.containsKey("area")) {

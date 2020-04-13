@@ -76,7 +76,8 @@ class CommentsViewController: UIViewController {
     }
     
     public func getAllPostComments(queryParams: QueryParams) {
-        client.getAllCommentsForPost(postId: (post?.postId)!, queryParams: queryParams,
+        client.getAllCommentsForPost(username: self.getLoggedInUsername(),
+                                     postId: (post?.postId)!, queryParams: queryParams,
                                      completion: getAllPostCommentsCompletion, notes: nil)
     }
     
@@ -112,7 +113,8 @@ class CommentsViewController: UIViewController {
             self.commentTextView.isSelectable = false
             sender.isEnabled = false
         }
-        client.insertComment(username: self.getTestUser(), commentText: commentTextView.text, postId: (post?.postId)!, completion: insertCommentCompletion, notes: nil)
+        client.insertComment(username: self.getLoggedInUsername(), commentText: commentTextView.text,
+                             postId: (post?.postId)!, completion: insertCommentCompletion, notes: nil)
     }
     
     private func insertCommentCompletion(response: StatusOr<Response>, notes: [String:Any]?) {
@@ -139,7 +141,7 @@ class CommentsViewController: UIViewController {
     }
     
     private func updateComment(comment: Comment, actionType: ActionType) {
-        client.updateComment(commentId: comment.commentId, username: getTestUser(),
+        client.updateComment(commentId: comment.commentId, username: getLoggedInUsername(),
             actionType: actionType, completion: updateCommentCompletion,
             notes: ["actionType": actionType, "commentId": comment.commentId])
     }
