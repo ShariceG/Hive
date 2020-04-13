@@ -30,10 +30,11 @@ class EmailAndUsernameViewController : UIViewController, SignInPageFragment {
     }
     
     @IBAction func nextBnAction(_ sender: UIButton) {
-        let username = usernameTextField.text!
-        let email = emailTextField.text!
-        if (username.isEmpty || email.isEmpty) {
-            showAlert(message: "Username and/or Email cannot be empty")
+        let username = usernameTextField.text!.trimmingCharacters(in: .whitespaces)
+        let email = emailTextField.text!.trimmingCharacters(in: .whitespaces)
+        if (!UtilityBelt.isValidUsername(username: username) ||
+            !UtilityBelt.isValidEmail(email: email)) {
+            showAlert(message: "Invalid username or email")
             return
         }
         disableUserActivity()

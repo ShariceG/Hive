@@ -16,6 +16,7 @@ import coloredcoded.hive.client.Callback;
 import coloredcoded.hive.client.Response;
 import coloredcoded.hive.client.ServerClient;
 import coloredcoded.hive.client.StatusOr;
+import coloredcoded.hive.client.UtilityBelt;
 
 public class EnterEmailAndUsernameFragment extends Fragment
         implements SignInActivity.SignInFragment {
@@ -43,9 +44,10 @@ public class EnterEmailAndUsernameFragment extends Fragment
             public void onClick(View v) {
                 final String email = emailEditText.getText().toString();
                 final String username = usernameEditText.getText().toString();
-                if (email.isEmpty() || username.isEmpty()) {
+                if (!UtilityBelt.isValidEmail(email) ||
+                        !UtilityBelt.isValidUsername(username)) {
                     AppHelper.showAlert(getActivity(),
-                            "Username and/or Email cannot be empty");
+                            "Invalid username or email");
                     return;
                 }
                 client.createNewUser(username, email, new Callback() {

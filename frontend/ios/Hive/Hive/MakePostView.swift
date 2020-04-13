@@ -53,10 +53,11 @@ class MakePostView: UIView {
     }
     
     @IBAction func postButtonAction(_ sender: UIButton) {
-        if postTextView.text.isEmpty {
+        let text = postTextView.text.trimmingCharacters(in: .whitespaces)
+        if text.isEmpty {
             return
         }
-        delegate!.makePost(text: postTextView.text)
+        delegate!.makePost(text: text)
     }
     
 }

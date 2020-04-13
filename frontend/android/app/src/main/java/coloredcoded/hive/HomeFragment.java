@@ -25,7 +25,6 @@ import coloredcoded.hive.client.QueryMetadata;
 import coloredcoded.hive.client.QueryParams;
 import coloredcoded.hive.client.Response;
 import coloredcoded.hive.client.ServerClient;
-import coloredcoded.hive.client.ServerClientImp;
 import coloredcoded.hive.client.StatusOr;
 
 public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
@@ -68,7 +67,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
             @Override
             public void onClick(View v) {
                 EditText et = makePostView.findViewById(R.id.postEditText);
-                String text = et.getText().toString();
+                String text = et.getText().toString().trim();
                 if (text.isEmpty()) {
                     return;
                 }
@@ -100,7 +99,6 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
                         makePostAlert.getWindow().getAttributes().height);
             }
         });
-
         return v;
     }
 
