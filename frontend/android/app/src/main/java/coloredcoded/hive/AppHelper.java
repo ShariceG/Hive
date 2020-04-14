@@ -82,11 +82,12 @@ public class AppHelper {
     }
 
     static HiveLocation getCurrentUserLocation() {
-        return new HiveLocation(HiveGlobal.environment.getLocationHandler().getLatestLocation());
+        return new HiveLocation(HiveGlobal.getEnvironment()
+                .getLocationHandler().getLatestLocation());
     }
 
     static String getLoggedInUsername() {
-        return HiveGlobal.environment.getUser().getUsername();
+        return HiveGlobal.getEnvironment().getUser().getUsername();
     }
 
     public static AlertDialog getPermanentAlert(final Activity activity, final String title,
@@ -139,13 +140,13 @@ public class AppHelper {
         });
     }
 
-    public static void setupUserInEnvironmentIfNeeded(Activity activity) {
-        if (HiveGlobal.environment != null) {
+    public static void createEnvironmentWithUserIfNeeded(Activity activity) {
+        if (HiveGlobal.getEnvironment() != null) {
             return;
         }
         System.out.println("Creating global environment with user only...");
-        HiveEnvironment.createGlobalEnvironment();
-        HiveGlobal.environment.setUser(User.fromInternalStorage(activity));
+        HiveGlobal.instantiateNewEnvironment();
+        HiveGlobal.getEnvironment().setUser(User.fromInternalStorage(activity));
         System.out.println("Done.");
     }
 }

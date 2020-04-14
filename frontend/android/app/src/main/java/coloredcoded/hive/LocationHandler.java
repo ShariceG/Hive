@@ -55,7 +55,14 @@ public class LocationHandler implements LocationListener {
         }
     }
 
+    public void stopLocationUpdates() {
+        locationManager.removeUpdates(this);
+    }
+
     public Location getLatestLocation() {
+        if (delegate == null) {
+            throw new RuntimeException("Delegate must not be null.");
+        }
         try {
             return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         } catch (SecurityException e) {
@@ -72,6 +79,9 @@ public class LocationHandler implements LocationListener {
     }
 
     public void checkLocationPermission() {
+        if (delegate == null) {
+            throw new RuntimeException("Delegate must not be null.");
+        }
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             delegate.userTentativelyDeniedPermission();
             return;
@@ -91,6 +101,9 @@ public class LocationHandler implements LocationListener {
     public void checkLocationPermissionRequest(int requestCode, @NonNull String[] permissions,
                                                @NonNull int[] grantResult) {
         if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+            return;
+        }
+        if (delegate == null) {
             return;
         }
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -114,6 +127,9 @@ public class LocationHandler implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
+        if (delegate == null) {
+            return;
+        }
         delegate.locationUpdate(location);
     }
 
@@ -132,6 +148,9 @@ public class LocationHandler implements LocationListener {
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         System.out.println(provider + " status changed.");
+        if (delegate == null) {
+            return;
+        }
         if (status == PackageManager.PERMISSION_GRANTED) {
             delegate.userApprovedLocationPermission();
         } else {

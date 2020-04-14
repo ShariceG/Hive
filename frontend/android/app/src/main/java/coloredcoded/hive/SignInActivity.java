@@ -76,7 +76,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     public void setupUserInEnvironment() {
-        AppHelper.setupUserInEnvironmentIfNeeded(this);
+        AppHelper.createEnvironmentWithUserIfNeeded(this);
     }
 
     public class ViewPagerAdapter extends FragmentPagerAdapter implements
