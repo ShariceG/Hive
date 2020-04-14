@@ -545,7 +545,6 @@ class ServiceHandler(object):
                 new_bottom_cursor, cursor):
                 qm.new_bottom_cursor_str = new_bottom_cursor.urlsafe()
             qm.has_more_older_data = more
-        print(("MORE_OLDER: ", qm.has_more_older_data))
         return results, qm
 
     def _cursors_are_eq(self, c1, c2):

@@ -91,6 +91,12 @@ public class CommentFeedManager implements CommentView.Delegate {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
                                  int totalItemCount) {
+                if (swipeRefreshLayout.isRefreshing()) {
+                    return;
+                }
+                if (comments.isEmpty()) {
+                    return;
+                }
                 // If we are displaying the last set of items in the list view.
                 if (firstVisibleItem + visibleItemCount >= totalItemCount -1) {
                     fetchMoreComments(false);
@@ -99,11 +105,25 @@ public class CommentFeedManager implements CommentView.Delegate {
         });
     }
 
+    private void setRefreshAnimation(final boolean set) {
+        if (set) {
+            System.out.println("Set refreshing animation true..");
+        }
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(set);
+            }
+        });
+    }
+
     private void fetchMoreComments(boolean getNewer) {
         if (!getNewer && !prevQueryMetadata.hasMoreOlderData()) {
-            Log.d("CommentFeedManager",
-                    "Server already told us there are no more old comments. Returning.");
+            System.out.println("Server already told us there are no more old comments. Returning.");
             return;
+        }
+        if (getNewer) {
+            setRefreshAnimation(true);
         }
         QueryParams params = new QueryParams(getNewer,
                 prevQueryMetadata.getNewTopCursorStr(),
@@ -112,7 +132,7 @@ public class CommentFeedManager implements CommentView.Delegate {
     }
 
     // Updates the list view. Must be called on the UI thread.
-    public void reload() {
+    public void reloadUI() {
         commentFeedListView.post(
                 new Runnable() {
                     @Override
@@ -153,7 +173,7 @@ public class CommentFeedManager implements CommentView.Delegate {
             }
         });
 
-        reload();
+        reloadUI();
     }
 
     public void updateActionType(String commentId, ActionType actionType) {
@@ -198,7 +218,7 @@ public class CommentFeedManager implements CommentView.Delegate {
             }
         }
         comment.setUserActionType(newActionType);
-        reload();
+        reloadUI();
     }
 
     @Override

@@ -109,6 +109,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
     }
 
     private Callback getInsertPostCallback() {
+        final Fragment that = this;
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
@@ -119,7 +120,9 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
                                 responseOr.get().getServerErrorStr());
                     }
                     postFeedManager.reloadUI();
-                    AppHelper.showInternalServerErrorAlert(getActivity());
+                    if (AppHelper.isFragmentVisibleToUser(that)) {
+                        AppHelper.showInternalServerErrorAlert(getActivity());
+                    }
                     return;
                 }
                 postFeedManager.pokeNew();
@@ -143,6 +146,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
     }
 
     public Callback getAllPostsAtLocationCallback() {
+        final Fragment that = this;
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
@@ -153,7 +157,9 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
                                 responseOr.get().getServerErrorStr());
                     }
                     postFeedManager.reloadUI();
-                    AppHelper.showInternalServerErrorAlert(getActivity());
+                    if (AppHelper.isFragmentVisibleToUser(that)) {
+                        AppHelper.showInternalServerErrorAlert(getActivity());
+                    }
                     return;
                 }
                 Response response = responseOr.get();
@@ -180,6 +186,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
     }
 
     public Callback updatePostCallback() {
+        final Fragment that = this;
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
@@ -190,7 +197,9 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
                                 responseOr.get().getServerErrorStr());
                     }
                     postFeedManager.reloadUI();
-                    AppHelper.showInternalServerErrorAlert(getActivity());
+                    if (AppHelper.isFragmentVisibleToUser(that)) {
+                        AppHelper.showInternalServerErrorAlert(getActivity());
+                    }
                     return;
                 }
                 postFeedManager.updateActionType(

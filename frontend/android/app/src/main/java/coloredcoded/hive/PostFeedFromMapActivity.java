@@ -1,5 +1,6 @@
 package coloredcoded.hive;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -71,10 +72,20 @@ public class PostFeedFromMapActivity extends AppCompatActivity implements PostFe
     }
 
     public Callback getAllPopularPostsAtLocationCallback() {
+        final Activity that = this;
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
+                if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                    if (!responseOr.hasError()) {
+                        System.out.println("ERROR_FROM_SERVER: " +
+                                responseOr.get().getServerErrorStr());
+                    }
+                    postFeedManager.reloadUI();
+                    AppHelper.showInternalServerErrorAlert(that);
+                    return;
+                }
                 Response response = responseOr.get();
                 QueryMetadata newMetadata = response.getQueryMetadata();
                 postFeedManager.addMorePosts(response.getPosts(), newMetadata);

@@ -1,5 +1,6 @@
 package coloredcoded.hive;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -95,10 +96,20 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
     }
 
     private Callback getInsertCommentCallback() {
+        final Activity that = this;
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
+                if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                    if (!responseOr.hasError()) {
+                        System.out.println("ERROR_FROM_SERVER: " +
+                                responseOr.get().getServerErrorStr());
+                    }
+                     commentFeedManager.reloadUI();
+                    AppHelper.showInternalServerErrorAlert(that);
+                    return;
+                }
                 Response response = responseOr.get();
                 commentFeedManager.pokeNew();
                 commentEditText.post(new Runnable() {
@@ -130,10 +141,20 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
     }
 
     public Callback getAllPostCommentsCallback() {
+        final Activity that = this;
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
+                if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                    if (!responseOr.hasError()) {
+                        System.out.println("ERROR_FROM_SERVER: " +
+                                responseOr.get().getServerErrorStr());
+                    }
+                    commentFeedManager.reloadUI();
+                    AppHelper.showInternalServerErrorAlert(that);
+                    return;
+                }
                 Response response = responseOr.get();
                 commentFeedManager.addMoreComments(response.getComments(),
                         response.getQueryMetadata());
@@ -162,10 +183,20 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
     }
 
     public Callback updateCommentCallback() {
+        final Activity that = this;
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
+                if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                    if (!responseOr.hasError()) {
+                        System.out.println("ERROR_FROM_SERVER: " +
+                                responseOr.get().getServerErrorStr());
+                    }
+                    commentFeedManager.reloadUI();
+                    AppHelper.showInternalServerErrorAlert(that);
+                    return;
+                }
                 Response response = responseOr.get();
                 commentFeedManager.updateActionType(
                         (String)notes.get("commentId"), (ActionType)notes.get("actionType"));

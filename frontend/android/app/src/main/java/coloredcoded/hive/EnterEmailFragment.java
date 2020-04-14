@@ -35,6 +35,7 @@ public class EnterEmailFragment extends Fragment implements SignInActivity.SignI
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         client = AppHelper.serverClient();
+        final Fragment that = this;
         // Inflate the view for the fragment based on layout XML
         view = inflater.inflate(R.layout.enter_email_layout, container, false);
         final EditText emailEditText = view.findViewById(R.id.enterEmailEditText);
@@ -53,8 +54,14 @@ public class EnterEmailFragment extends Fragment implements SignInActivity.SignI
                     @Override
                     public void serverRequestCallback(StatusOr<Response> responseOr,
                                                       Map<String, Object> notes) {
-                        if (responseOr.hasError()) {
-                            AppHelper.showInternalServerErrorAlert(getActivity());
+                        if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                            if (!responseOr.hasError()) {
+                                System.out.println("ERROR_FROM_SERVER: " +
+                                        responseOr.get().getServerErrorStr());
+                            }
+                            if (AppHelper.isFragmentVisibleToUser(that)) {
+                                AppHelper.showInternalServerErrorAlert(getActivity());
+                            }
                             return;
                         }
                         Response response = responseOr.get();

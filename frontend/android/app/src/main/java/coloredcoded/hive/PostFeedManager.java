@@ -64,15 +64,12 @@ public class PostFeedManager implements PostView.Delegate {
     private SwipeRefreshLayout swipeRefreshLayout;
     private Delegate delegate;
     private boolean disableLikeAndDislikeButtons;
-    // Safety mechanism incase the server-client interaction has  bug.
-    private boolean stopAskingForOlderPosts;
 
     public PostFeedManager(Context context) {
         posts = new ArrayList<>();
         prevQueryMetadata = new QueryMetadata();
         postFeedAdapter = new PostFeedAdapter(context, this, posts);
         disableLikeAndDislikeButtons = false;
-        stopAskingForOlderPosts = false;
     }
 
     public void configure(ListView listView, SwipeRefreshLayout refreshLayout, Delegate delegate) {
@@ -138,7 +135,7 @@ public class PostFeedManager implements PostView.Delegate {
 
     private void fetchMorePosts(boolean getNewer) {
         System.out.println("Fetching " + (getNewer ? "newer" : "older") + " posts");
-        if (!getNewer && stopAskingForOlderPosts) {
+        if (!getNewer && !prevQueryMetadata.hasMoreOlderData()) {
             System.out.println("Server already told us there are no more old posts. Returning.");
             return;
         }
@@ -166,9 +163,6 @@ public class PostFeedManager implements PostView.Delegate {
 
     public void addMorePosts(ArrayList<Post> morePosts, QueryMetadata newMetadata) {
         prevQueryMetadata.updateMetadata(newMetadata);
-        if (!stopAskingForOlderPosts) {
-            stopAskingForOlderPosts = !prevQueryMetadata.hasMoreOlderData();
-        }
 
         HashSet<Post> set = new HashSet<>(morePosts);
 

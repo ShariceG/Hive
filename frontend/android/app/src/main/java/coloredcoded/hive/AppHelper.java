@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 
+import androidx.fragment.app.Fragment;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -21,6 +23,10 @@ import coloredcoded.hive.client.ServerClientImp;
 import coloredcoded.hive.client.User;
 
 public class AppHelper {
+
+    public static boolean isFragmentVisibleToUser(Fragment fragment) {
+        return fragment.isAdded() && fragment.isVisible() && fragment.getUserVisibleHint();
+    }
 
     public static void deleteFromInternalStorage(Activity activity, String key) {
         if (!activity.deleteFile(key + ".txt")) {

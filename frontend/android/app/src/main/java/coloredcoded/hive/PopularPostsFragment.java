@@ -77,10 +77,22 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
     }
 
     public Callback getPopularLocationsCallback() {
+        final Fragment that = this;
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
+                if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                    if (!responseOr.hasError()) {
+                        System.out.println("ERROR_FROM_SERVER: " +
+                                responseOr.get().getServerErrorStr());
+                    }
+                    postFeedManager.reloadUI();
+                    if (AppHelper.isFragmentVisibleToUser(that)) {
+                        AppHelper.showInternalServerErrorAlert(getActivity());
+                    }
+                    return;
+                }
                 final Response response = responseOr.get();
                 if (response.getHiveLocations().isEmpty()) {
                     System.out.println("No popular locations!");
@@ -134,6 +146,7 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
     public void fetchMorePosts(QueryParams queryParams) {
         if (currentHiveLocation == null) {
             System.out.println("No currentHiveLocation set yet.");
+            postFeedManager.reloadUI();
             return;
         }
         client.getAllPopularPostsAtLocation(AppHelper.getLoggedInUsername(), currentHiveLocation,
@@ -141,10 +154,22 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
     }
 
     public Callback getAllPopularPostsAtLocationCallback() {
+        final Fragment that = this;
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
+                if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                    if (!responseOr.hasError()) {
+                        System.out.println("ERROR_FROM_SERVER: " +
+                                responseOr.get().getServerErrorStr());
+                    }
+                    postFeedManager.reloadUI();
+                    if (AppHelper.isFragmentVisibleToUser(that)) {
+                        AppHelper.showInternalServerErrorAlert(getActivity());
+                    }
+                    return;
+                }
                 Response response = responseOr.get();
                 QueryMetadata newMetadata = response.getQueryMetadata();
                 postFeedManager.addMorePosts(response.getPosts(), newMetadata);
