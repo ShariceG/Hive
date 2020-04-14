@@ -25,7 +25,7 @@ public class MenuFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.menu_layout, container, false);
-        final User user = User.fromInternalStorage(getActivity());
+        final User user = HiveGlobal.getEnvironment().getUser();
         Button mapButton = v.findViewById(R.id.menuMapButton);
         Button logOutButton = v.findViewById(R.id.logOutButton);
         TextView usernameTextView = v.findViewById(R.id.usernameTextView);

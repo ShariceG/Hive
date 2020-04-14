@@ -15,7 +15,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import coloredcoded.hive.client.HiveEnvironment;
 import coloredcoded.hive.client.HiveLocation;
 import coloredcoded.hive.client.ServerClient;
 import coloredcoded.hive.client.ServerClientImp;
@@ -101,7 +100,7 @@ public class AppHelper {
     }
 
     public static void showInternalServerErrorAlert(Activity activity) {
-        showAlert(activity, "Um... Yikes", "Some server error.");
+        showAlert(activity, "Um... Yikes", "Some server error. Try Again?");
     }
 
     public static void showAlert(Activity activity, String message) {

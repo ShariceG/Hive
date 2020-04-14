@@ -2,7 +2,6 @@ package coloredcoded.hive;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,9 +81,9 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
-                Response response = responseOr.get();
+                final Response response = responseOr.get();
                 if (response.getHiveLocations().isEmpty()) {
-                    return;
+                    System.out.println("No popular locations!");
                 }
                 popularHiveLocations.clear();
                 popularHiveLocations.addAll(response.getHiveLocations());
@@ -93,11 +92,15 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
                     public void run() {
                         popularAdapter.notifyDataSetChanged();
                         boolean firstTime = currentHiveLocation == null;
-                        currentHiveLocation = popularHiveLocations.get(0);
-                        if (firstTime) {
-                            // This is the first time we're doing this so lets have the posts load without
-                            // having a user needing to click on it.
-                            postFeedManager.resetDataAndPokeNew();
+                        if (!response.getHiveLocations().isEmpty()) {
+                            currentHiveLocation = popularHiveLocations.get(0);
+                            if (firstTime) {
+                                // This is the first time we're doing this so lets have the posts load
+                                // without having a user needing to click on it.
+                                postFeedManager.resetDataAndPokeNew();
+                            }
+                        } else {
+                            postFeedManager.reloadUI();
                         }
                     }
                 });
@@ -130,11 +133,11 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
     @Override
     public void fetchMorePosts(QueryParams queryParams) {
         if (currentHiveLocation == null) {
-            Log.d("PopularPostsFragment", "No currentHiveLocation set yet.");
+            System.out.println("No currentHiveLocation set yet.");
             return;
         }
-        client.getAllPopularPostsAtLocation(AppHelper.getLoggedInUsername(), currentHiveLocation, queryParams,
-                getAllPopularPostsAtLocationCallback(), null);
+        client.getAllPopularPostsAtLocation(AppHelper.getLoggedInUsername(), currentHiveLocation,
+                queryParams, getAllPopularPostsAtLocationCallback(), null);
     }
 
     public Callback getAllPopularPostsAtLocationCallback() {

@@ -113,7 +113,15 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
-                Response response = responseOr.get();
+                if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                    if (!responseOr.hasError()) {
+                        System.out.println("ERROR_FROM_SERVER: " +
+                                responseOr.get().getServerErrorStr());
+                    }
+                    postFeedManager.reloadUI();
+                    AppHelper.showInternalServerErrorAlert(getActivity());
+                    return;
+                }
                 postFeedManager.pokeNew();
                 EditText et = makePostView.findViewById(R.id.postEditText);
                 et.getText().clear();
@@ -139,6 +147,15 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
+                if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                    if (!responseOr.hasError()) {
+                        System.out.println("ERROR_FROM_SERVER: " +
+                                responseOr.get().getServerErrorStr());
+                    }
+                    postFeedManager.reloadUI();
+                    AppHelper.showInternalServerErrorAlert(getActivity());
+                    return;
+                }
                 Response response = responseOr.get();
                 QueryMetadata newMetadata = response.getQueryMetadata();
                 postFeedManager.addMorePosts(response.getPosts(), newMetadata);
@@ -167,7 +184,15 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
-                Response response = responseOr.get();
+                if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                    if (!responseOr.hasError()) {
+                        System.out.println("ERROR_FROM_SERVER: " +
+                                responseOr.get().getServerErrorStr());
+                    }
+                    postFeedManager.reloadUI();
+                    AppHelper.showInternalServerErrorAlert(getActivity());
+                    return;
+                }
                 postFeedManager.updateActionType(
                         (String)notes.get("postId"), (ActionType)notes.get("actionType"));
             }

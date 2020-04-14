@@ -64,12 +64,15 @@ public class PostFeedManager implements PostView.Delegate {
     private SwipeRefreshLayout swipeRefreshLayout;
     private Delegate delegate;
     private boolean disableLikeAndDislikeButtons;
+    // Safety mechanism incase the server-client interaction has  bug.
+    private boolean stopAskingForOlderPosts;
 
     public PostFeedManager(Context context) {
         posts = new ArrayList<>();
         prevQueryMetadata = new QueryMetadata();
         postFeedAdapter = new PostFeedAdapter(context, this, posts);
         disableLikeAndDislikeButtons = false;
+        stopAskingForOlderPosts = false;
     }
 
     public void configure(ListView listView, SwipeRefreshLayout refreshLayout, Delegate delegate) {
@@ -79,8 +82,6 @@ public class PostFeedManager implements PostView.Delegate {
         swipeRefreshLayout = refreshLayout;
 
         setupListeners();
-
-        // Fetch an initial set of posts.
         fetchMorePosts(true);
     }
 
@@ -100,6 +101,7 @@ public class PostFeedManager implements PostView.Delegate {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                System.out.println("Refreshing..");
                 fetchMorePosts(true);
             }
         });
@@ -111,6 +113,12 @@ public class PostFeedManager implements PostView.Delegate {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
                                  int totalItemCount) {
+                if (swipeRefreshLayout.isRefreshing()) {
+                    return;
+                }
+                if (posts.isEmpty()) {
+                    return;
+                }
                 // If we are displaying the last set of items in the list view.
                 if (firstVisibleItem + visibleItemCount >= totalItemCount -1) {
                     fetchMorePosts(false);
@@ -119,11 +127,23 @@ public class PostFeedManager implements PostView.Delegate {
         });
     }
 
+    private void setRefreshAnimation(final boolean set) {
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(set);
+            }
+        });
+    }
+
     private void fetchMorePosts(boolean getNewer) {
-        if (!getNewer && !prevQueryMetadata.hasMoreOlderData()) {
-            Log.d("PostFeedManager",
-                    "Server already told us there are no more old posts. Returning.");
+        System.out.println("Fetching " + (getNewer ? "newer" : "older") + " posts");
+        if (!getNewer && stopAskingForOlderPosts) {
+            System.out.println("Server already told us there are no more old posts. Returning.");
             return;
+        }
+        if (getNewer) {
+            setRefreshAnimation(true);
         }
         QueryParams params = new QueryParams(getNewer,
                 prevQueryMetadata.getNewTopCursorStr(),
@@ -132,13 +152,13 @@ public class PostFeedManager implements PostView.Delegate {
     }
 
     // Updates the list view. Must be called on the UI thread.
-    public void reload() {
+    public void reloadUI() {
         postFeedListView.post(
                 new Runnable() {
                     @Override
                     public void run() {
                         postFeedAdapter.notifyDataSetChanged();
-                        swipeRefreshLayout.setRefreshing(false);
+                        setRefreshAnimation(false);
                     }
                 }
         );
@@ -146,10 +166,21 @@ public class PostFeedManager implements PostView.Delegate {
 
     public void addMorePosts(ArrayList<Post> morePosts, QueryMetadata newMetadata) {
         prevQueryMetadata.updateMetadata(newMetadata);
+        if (!stopAskingForOlderPosts) {
+            stopAskingForOlderPosts = !prevQueryMetadata.hasMoreOlderData();
+        }
 
         HashSet<Post> set = new HashSet<>(morePosts);
 
-        // Don't include expired hosts while transferring from set to post.
+        // Merge old posts and new (morePosts) posts. If a post exists in old and in new, take the
+        // new post.
+        for (Post p : posts) {
+            if (!set.contains(p)) {
+                set.add(p);
+            }
+        }
+
+        // Don't include expired hosts while transferring from set back to posts.
         Iterator<Post> itr = set.iterator();
         posts.clear();
         while (itr.hasNext()) {
@@ -168,7 +199,7 @@ public class PostFeedManager implements PostView.Delegate {
             }
         });
 
-        reload();
+        reloadUI();
     }
 
     public void incrementNumberOfComments(String postId) {
@@ -211,7 +242,7 @@ public class PostFeedManager implements PostView.Delegate {
             }
         }
         post.setUserActionType(newActionType);
-        reload();
+        reloadUI();
     }
 
     public void resetData() {
@@ -224,6 +255,7 @@ public class PostFeedManager implements PostView.Delegate {
     }
 
     public void resetDataAndPokeNew() {
+        System.out.println("Attempting to reset data");
         resetData();
         pokeNew();
     }
