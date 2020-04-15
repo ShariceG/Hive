@@ -112,5 +112,129 @@
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "92D7BF42-509A-46FA-8FD2-31109463A6AD"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hive/CommentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "30"
+            endingLineNumber = "30"
+            landmarkName = "CommentView"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  uuid = "92D7BF42-509A-46FA-8FD2-31109463A6AD - b3bee349d6e59bfb"
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Hive.CommentView.(_delegate in _E076A28E28AEC89D6B8E84EEAC06928B).getter : Swift.Optional&lt;Hive.CommentViewDelegate&gt;"
+                  moduleName = "Hive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sharice/Hive/frontend/ios/Hive/Hive/CommentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "31"
+                  endingLineNumber = "31"
+                  offsetFromSymbolStart = "131">
+               </Location>
+               <Location
+                  uuid = "92D7BF42-509A-46FA-8FD2-31109463A6AD - db7a27ab845bc38f"
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Hive.CommentView.(_delegate in _E076A28E28AEC89D6B8E84EEAC06928B).setter : Swift.Optional&lt;Hive.CommentViewDelegate&gt;"
+                  moduleName = "Hive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sharice/Hive/frontend/ios/Hive/Hive/CommentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "31"
+                  endingLineNumber = "31"
+                  offsetFromSymbolStart = "153">
+               </Location>
+               <Location
+                  uuid = "92D7BF42-509A-46FA-8FD2-31109463A6AD - 5f21a355121bf5f8"
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Hive.CommentView.(_delegate in _E076A28E28AEC89D6B8E84EEAC06928B).modify : Swift.Optional&lt;Hive.CommentViewDelegate&gt;"
+                  moduleName = "Hive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sharice/Hive/frontend/ios/Hive/Hive/CommentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "18">
+               </Location>
+               <Location
+                  uuid = "92D7BF42-509A-46FA-8FD2-31109463A6AD - 2c18d63fc1527796"
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Hive.CommentView.(_delegate in _E076A28E28AEC89D6B8E84EEAC06928B).modify : Swift.Optional&lt;Hive.CommentViewDelegate&gt; with unmangled suffix &quot;.resume.0&quot;"
+                  moduleName = "Hive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sharice/Hive/frontend/ios/Hive/Hive/CommentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "31"
+                  endingLineNumber = "31"
+                  offsetFromSymbolStart = "4">
+               </Location>
+               <Location
+                  uuid = "92D7BF42-509A-46FA-8FD2-31109463A6AD - 72704fbbb0aa1e1c"
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Hive.CommentView.init(style: __C.UITableViewCellStyle, reuseIdentifier: Swift.Optional&lt;Swift.String&gt;) -&gt; Hive.CommentView"
+                  moduleName = "Hive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sharice/Hive/frontend/ios/Hive/Hive/CommentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "31"
+                  endingLineNumber = "31"
+                  offsetFromSymbolStart = "1293">
+               </Location>
+               <Location
+                  uuid = "92D7BF42-509A-46FA-8FD2-31109463A6AD - d1b8468c0493b2d6"
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Hive.CommentView.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;Hive.CommentView&gt;"
+                  moduleName = "Hive"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/sharice/Hive/frontend/ios/Hive/Hive/CommentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "31"
+                  endingLineNumber = "31"
+                  offsetFromSymbolStart = "1225">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3BA88DE2-E4D8-4E63-BE2C-3F8DAD70C20D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Hive/CommentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "76"
+            endingLineNumber = "76"
+            landmarkName = "configure(comment:delegate:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

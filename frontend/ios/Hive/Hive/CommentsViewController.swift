@@ -30,6 +30,7 @@ class CommentsViewController: UIViewController {
         setupPostViewTable()
         setupExitGesture()
         setupCommentTv()
+        self.postTableView.separatorColor = UIColor(red:0.97, green:0.82, blue:0.33, alpha:1.0)
         commentFeedView.configure(delegate: self)
         DispatchQueue.main.async {
             if self.disallowInteractingWithComments {
