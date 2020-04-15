@@ -23,7 +23,7 @@ protocol CommentFeedViewDelegate: class {
 
 class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, CommentViewDelegate {
     
-    let COMMENT_VIEW_CELL_REUSE_IDENTIFIER = "commentView"
+    let COMMENT_VIEW_CELL_REUSE_IDENTIFIER = "commentView2"
     let COMMENT_VIEW_CELL_NIB_NAME = "CommentView"
  
     @IBOutlet weak var commentTableView: UITableView!
@@ -159,15 +159,25 @@ class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, Comm
         let cell = tableView.dequeueReusableCell(withIdentifier: COMMENT_VIEW_CELL_REUSE_IDENTIFIER) as! CommentView
         cell.configure(comment: comments[indexPath.section], delegate: self)
         cell.layer.borderWidth = 2
-        cell.layer.cornerRadius = 5
-        cell.layer.borderColor = UIColor.blue.cgColor
+        cell.layer.shadowColor = UIColor.black.cgColor
+        cell.layer.shadowOpacity = 0.5
+        cell.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
+        cell.layer.borderColor = UIColor.white.cgColor
         return cell
     }
     
     // UITableViewDelegate overrides
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 10
+        return 15
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
+    {
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: 5))
+        headerView.backgroundColor = UIColor.clear
+        
+        return headerView
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

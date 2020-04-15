@@ -19,7 +19,15 @@ class CommentView: UITableViewCell {
     @IBOutlet weak var userLabel: UILabel!
     @IBOutlet weak var commentTextView: UITextView!
     private(set) var comment: Comment? = nil
+    
 
+    @IBOutlet weak var userLbl: UILabel!
+    @IBOutlet weak var commentText: UITextView!
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var likeButton: UIButton!
+    @IBOutlet weak var dislikeButton: UIButton!
+    @IBOutlet weak var netLikesLabel: UILabel!
+    
     private var _delegate: CommentViewDelegate?
     
     var delegate: CommentViewDelegate {
@@ -28,33 +36,42 @@ class CommentView: UITableViewCell {
     }
     
     public func configure(comment: Comment) {
-        userLabel.text = comment.username
-        commentTextView.text = comment.commentText
-        self.comment = comment
-        commentDislikeBn.setTitle("Dislike: " + String(comment.dislikes), for: UIControl.State.normal)
-        commentLikeBn.setTitle("Like: " + String(comment.likes), for: UIControl.State.normal)
+        userLbl.text = comment.username
+        commentText.text = comment.commentText
         
-        commentLikeBn.isEnabled = true;
-        commentDislikeBn.isEnabled = true;
-
+        self.comment = comment
+        
+        likeButton.isEnabled = true;
+        dislikeButton.isEnabled = true;
+        let netLikes = comment.likes - comment.dislikes
+        netLikesLabel.text = String(netLikes)
+        dateLabel.text = comment.timeDiffToString()
+        
         // Handle like/dislike behavior.
         DispatchQueue.main.async {
             switch comment.userActionType {
             case ActionType.LIKE:
-                self.commentLikeBn.setTitleColor(UIColor.orange, for: UIControl.State.normal)
-                self.commentDislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
+                self.likeButton.tintColor = self.likeColor
+                self.dislikeButton.tintColor = self.noActionColor
+                self.setNetLikesColor(netLikes: netLikes)
                 break;
             case ActionType.DISLIKE:
-                self.commentDislikeBn.setTitleColor(UIColor.orange, for: UIControl.State.normal)
-                self.commentLikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
+               self.likeButton.tintColor = self.noActionColor
+                self.dislikeButton.tintColor = self.dislikeColor
+                self.setNetLikesColor(netLikes: netLikes)
                 break;
             case ActionType.NO_ACTION:
-                self.commentLikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
-                self.commentDislikeBn.setTitleColor(UIColor.blue, for: UIControl.State.normal)
+               self.likeButton.tintColor = self.noActionColor
+                self.dislikeButton.tintColor = self.noActionColor
+                self.setNetLikesColor(netLikes: netLikes)
                 break;
             }
         }
     }
+    
+    private let likeColor = UIColor(red:0.00, green:0.51, blue:0.28, alpha:1.0)
+    private let dislikeColor = UIColor(red:0.89, green:0.09, blue:0.04, alpha:1.0)
+    private let noActionColor = UIColor(red:0.75, green:0.74, blue:0.76, alpha:1.0)
     
     public func configure(comment: Comment, delegate: CommentViewDelegate) {
         configure(comment: comment)
@@ -67,12 +84,25 @@ class CommentView: UITableViewCell {
     }
     
     public func disableLikeAndDislikeButtons() {
-        commentDislikeBn.isEnabled = false
-        commentLikeBn.isEnabled = false
+        dislikeButton.isEnabled = false
+        likeButton.isEnabled = false
     }
     
-    @IBAction func commentDislikeBnAction(_ sender: UIButton) {
+    
+    @IBAction func dislikeButtonAction(_ sender: Any) {
         disableLikeAndDislikeButtons()
+        switch comment!.userActionType {
+        case ActionType.NO_ACTION, ActionType.DISLIKE:
+            delegate.performAction(commentView: self, actionType: ActionType.LIKE)
+            break;
+        case ActionType.LIKE:
+            delegate.performAction(commentView: self, actionType: ActionType.NO_ACTION)
+            break;
+        }
+    }
+    
+    @IBAction func likeButtonAction(_ sender: Any) {
+       disableLikeAndDislikeButtons()
         switch comment!.userActionType {
         case ActionType.NO_ACTION, ActionType.LIKE:
             delegate.performAction(commentView: self, actionType: ActionType.DISLIKE)
@@ -83,15 +113,14 @@ class CommentView: UITableViewCell {
         }
     }
     
-    @IBAction func commentLikeBnAction(_ sender: UIButton) {
-        disableLikeAndDislikeButtons()
-        switch comment!.userActionType {
-        case ActionType.NO_ACTION, ActionType.DISLIKE:
-            delegate.performAction(commentView: self, actionType: ActionType.LIKE)
-            break;
-        case ActionType.LIKE:
-            delegate.performAction(commentView: self, actionType: ActionType.NO_ACTION)
-            break;
+    
+    private func setNetLikesColor(netLikes: Int) {
+        if netLikes >  0 {
+            self.netLikesLabel.textColor = likeColor
+        } else if netLikes < 0{
+            self.netLikesLabel.textColor = dislikeColor
+        } else {
+            self.netLikesLabel.textColor = noActionColor
         }
     }
     

@@ -73,4 +73,43 @@ class Comment: Hashable, Equatable {
         creationTimestampSec: (jsonComment["creation_timestamp_sec"] as! NSNumber).decimalValue,
         jsonComment: jsonComment, likes: likes!, dislikes: dislikes!, userActionType: userActionType)
     }
+    
+    private func getTimeDifferenceSec() -> Int{
+           let postDateSec = Int(truncating: self.creationTimestampSec as NSNumber)
+           let currDate = Int(Date().getCurrentTimeSec())
+           let diff = currDate - postDateSec
+           print(diff)
+           return diff
+       }
+       
+       public func timeDiffToString() -> String {
+           let diffInSec = self.getTimeDifferenceSec()
+           let days =  diffInSec/86400
+           let hours = diffInSec/3600
+           let minutes = diffInSec/60
+           
+           var time = 0
+           var numString = ""
+           var timePercisionString = ""
+
+           if days >= 1 {
+               time = days
+               numString = String(days)
+               timePercisionString = " days"
+           } else if hours >= 1{
+               time =  hours
+               numString = String(hours)
+               timePercisionString = " hours"
+           } else if minutes >= 1{
+               time =  minutes
+               numString = String(minutes)
+               timePercisionString = " minutes"
+           } else {
+               time =  diffInSec
+               numString = String(diffInSec)
+               timePercisionString = " seconds"
+           }
+           
+           return numString + UtilityBelt.pluralOrSingular(num: time, word: timePercisionString) + " ago"
+       }
 }
