@@ -84,7 +84,7 @@ class PopularViewController: UIViewController {
         postFeedManager.addMorePosts(morePosts: responseOr.get().posts,
                                      newMetadata: responseOr.get().queryMetadata)
         DispatchQueue.main.async {
-            self.postFeedManager.reload()
+            self.postFeedManager.reloadUI()
         }
     }
     

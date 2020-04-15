@@ -34,6 +34,7 @@ class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, Comm
     func configure(delegate: CommentFeedViewDelegate) {
         self.delegate = delegate
         // Register nib as cell.
+        // Overrides whatever identifier is used in storyboard... I think.
         commentTableView.register(UINib(nibName: COMMENT_VIEW_CELL_NIB_NAME, bundle: nil),
                                forCellReuseIdentifier: COMMENT_VIEW_CELL_REUSE_IDENTIFIER)
         commentTableView.delegate = self

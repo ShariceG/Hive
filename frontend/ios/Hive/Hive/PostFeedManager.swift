@@ -33,6 +33,7 @@ class PostFeedManager: NSObject, PostViewDelegate {
         self._postTableView = tableView
         self.delegate = delegate
         // Register nib as cell.
+        // Overrides whatever identifier is used in storyboard... I think.
         postTableView.register(UINib(nibName: POST_VIEW_CELL_NIB_NAME, bundle: nil),
                                forCellReuseIdentifier: POST_VIEW_CELL_REUSE_IDENTIFIER)
         postTableView.delegate = self
@@ -49,23 +50,39 @@ class PostFeedManager: NSObject, PostViewDelegate {
     @objc func refreshPostTableView(_ refreshControl: UIRefreshControl) {
         print("fetch newer posts")
         fetchMorePosts(getNewer: true)
-        endPostTableViewRefresh()
     }
     
-    func reload() {
+    func reloadUI() {
         postTableView.reloadData()
+        setRefreshing(set: false)
     }
     
-    func endPostTableViewRefresh() {
-        if (self.postTableView.refreshControl != nil) {
-            self.postTableView.refreshControl?.endRefreshing()
+    func setRefreshing(set: Bool) {
+        DispatchQueue.main.async {
+            if (self.postTableView.refreshControl != nil) {
+                if (set) {
+                    print("Start Refreshing...")
+                    self.postTableView.refreshControl?.beginRefreshing()
+                } else {
+                    print("Stop Refreshing...")
+                    self.postTableView.refreshControl?.endRefreshing()
+                }
+            }
         }
     }
     
     // Called by Controller to give us more hosts.
     func addMorePosts(morePosts: Array<Post>, newMetadata: QueryMetadata) {
         self.prevFetchQueryMetadata.updateMetadata(newMetadata: newMetadata)
-        let set: Set = Set(morePosts)
+        var set: Set = Set(morePosts)
+        
+        // Merge old posts and new (morePosts) posts. If a post exists in old and in new, take the
+        // new post.
+        for post in posts {
+            if !set.contains(post) {
+                set.insert(post)
+            }
+        }
         posts = Array(set)
             .filter {!$0.isExpired()}
             .sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
@@ -148,13 +165,16 @@ class PostFeedManager: NSObject, PostViewDelegate {
             }
         }
         posts[i].userActionType = newActionType
-        reload()
+        reloadUI()
     }
     
     private func fetchMorePosts(getNewer: Bool) {
         if (!getNewer && !(prevFetchQueryMetadata.hasMoreOlderData ?? true)) {
             print("Server already told us there are no more old posts. Returning.")
             return
+        }
+        if (getNewer) {
+            setRefreshing(set: true)
         }
         let params: QueryParams = QueryParams(getNewer: getNewer,
                                               currTopCursorStr: self.prevFetchQueryMetadata.newTopCursorStr,

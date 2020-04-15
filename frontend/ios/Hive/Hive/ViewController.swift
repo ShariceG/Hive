@@ -62,7 +62,7 @@ class ViewController: UIViewController {
         makePostView.clearPostText()
         DispatchQueue.main.async {
             self.view.isUserInteractionEnabled = true
-            self.postFeedManager.reload()
+            self.postFeedManager.reloadUI()
         }
     }
     
@@ -109,7 +109,7 @@ class ViewController: UIViewController {
     
         self.postFeedManager.addMorePosts(morePosts: newPosts, newMetadata: newMetdata)
         DispatchQueue.main.async {
-            self.postFeedManager.reload()
+            self.postFeedManager.reloadUI()
         }
     }
     
