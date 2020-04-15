@@ -53,7 +53,9 @@ class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, Comm
     }
     
     func reloadUI() {
-        commentTableView.reloadData()
+        DispatchQueue.main.async {
+            self.commentTableView.reloadData()
+        }
         setRefreshing(set: false)
     }
     
@@ -62,8 +64,8 @@ class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, Comm
         self.prevFetchQueryMetadata.updateMetadata(newMetadata: newMetadata)
         var set: Set = Set(moreComments)
         
-        // Merge old posts and new (morePosts) posts. If a post exists in old and in new, take the
-        // new post.
+        // Merge old comments and new (moreComments) posts. If a post exists in old and in new, take the
+        // new comment.
         for comment in comments {
             if !set.contains(comment) {
                 set.insert(comment)
@@ -71,6 +73,7 @@ class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, Comm
         }
         comments = Array(set)
             .sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
+        reloadUI()
     }
     
     func setRefreshing(set: Bool) {

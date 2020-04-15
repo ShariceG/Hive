@@ -42,6 +42,7 @@ class PostFeedManager: NSObject, PostViewDelegate {
         postTableView.isScrollEnabled = true
         postTableView.refreshControl = UIRefreshControl()
         refreshControl = postTableView.refreshControl
+        refreshControl!.addTarget(self, action: #selector(refreshPostTableView(_:)), for: .valueChanged)
         refreshControl!.attributedTitle = NSAttributedString(string: "ugh, hold on...")
         
         // Fetch an initial set of hosts.
@@ -55,7 +56,9 @@ class PostFeedManager: NSObject, PostViewDelegate {
     }
     
     func reloadUI() {
-        postTableView.reloadData()
+        DispatchQueue.main.async {
+            self.postTableView.reloadData()
+        }
         setRefreshing(set: false)
     }
     

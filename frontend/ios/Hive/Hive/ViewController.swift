@@ -51,7 +51,8 @@ class ViewController: UIViewController {
             showInternalServerErrorAlert();
             return;
         }
-        self.postFeedManager.pokeNew()
+        self.postFeedManager.addMorePosts(morePosts: responseOr.get().posts,
+                                             newMetadata: QueryMetadata())
         makePostView.clearPostText()
         DispatchQueue.main.async {
             self.view.isUserInteractionEnabled = true
@@ -135,6 +136,7 @@ extension ViewController: MakePostViewDelegate {
         DispatchQueue.main.async {
             self.view.isUserInteractionEnabled = true
         }
+        postFeedManager.setRefreshing(set: true)
         client.insertPost(username: self.getLoggedInUsername(),
                           postText: text, location: self.getCurrentUserLocation(),
                           completion: insertPostCompletion, notes: nil)

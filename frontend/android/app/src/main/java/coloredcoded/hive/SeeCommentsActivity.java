@@ -21,6 +21,7 @@ import coloredcoded.hive.client.ActionType;
 import coloredcoded.hive.client.Callback;
 import coloredcoded.hive.client.Comment;
 import coloredcoded.hive.client.Post;
+import coloredcoded.hive.client.QueryMetadata;
 import coloredcoded.hive.client.QueryParams;
 import coloredcoded.hive.client.Response;
 import coloredcoded.hive.client.ServerClient;
@@ -91,6 +92,7 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
     }
 
     private void insertComment(String text) {
+        commentFeedManager.setRefreshAnimation(true);
         client.insertComment(AppHelper.getLoggedInUsername(), text, post.getPostId(),
                 getInsertCommentCallback(), null);
     }
@@ -111,7 +113,8 @@ public class SeeCommentsActivity extends AppCompatActivity implements CommentFee
                     return;
                 }
                 Response response = responseOr.get();
-                commentFeedManager.pokeNew();
+                commentFeedManager.addMoreComments(response.getComments(),
+                        new QueryMetadata());
                 commentEditText.post(new Runnable() {
                     @Override
                     public void run() {

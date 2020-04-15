@@ -77,11 +77,9 @@ class CommentsViewController: UIViewController {
     }
     
     public func getAllPostComments(queryParams: QueryParams) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            self.client.getAllCommentsForPost(username: self.getLoggedInUsername(),
-                                              postId: (self.post?.postId)!, queryParams: queryParams,
-                                              completion: self.getAllPostCommentsCompletion, notes: nil)
-        }
+        self.client.getAllCommentsForPost(username: self.getLoggedInUsername(),
+                                          postId: (self.post?.postId)!, queryParams: queryParams,
+                                          completion: self.getAllPostCommentsCompletion, notes: nil)
     }
     
     private func getAllPostCommentsCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
@@ -114,6 +112,7 @@ class CommentsViewController: UIViewController {
             self.commentTextView.isSelectable = false
             sender.isEnabled = false
         }
+        commentFeedView.setRefreshing(set: true)
         client.insertComment(username: self.getLoggedInUsername(), commentText: commentTextView.text,
                              postId: (post?.postId)!, completion: insertCommentCompletion, notes: nil)
     }
@@ -127,16 +126,15 @@ class CommentsViewController: UIViewController {
             }
             commentFeedView.reloadUI();
             showInternalServerErrorAlert();
-            DispatchQueue.main.async {
-                self.commentTextView.text = ""
-            }
             return;
         }
-        self.commentFeedView.pokeNew()
+        self.commentFeedView.addMoreComments(moreComments: responseOr.get().comments,
+                                             newMetadata: QueryMetadata())
         DispatchQueue.main.async {
             self.commentTextView.isEditable = true
             self.commentTextView.isSelectable = true
             self.commentBn.isEnabled = true
+            self.commentTextView.text = ""
         }
     }
     
@@ -163,8 +161,6 @@ class CommentsViewController: UIViewController {
             self.commentFeedView.reconfigureWithAction(commentId: commentId, actionType: actionType)
         }
     }
-    
-    
 }
 
 // --------------- Extensions ----------------
