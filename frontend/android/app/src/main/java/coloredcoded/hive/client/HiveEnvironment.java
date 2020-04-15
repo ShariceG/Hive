@@ -2,7 +2,6 @@ package coloredcoded.hive.client;
 
 import android.app.Activity;
 
-import coloredcoded.hive.HiveGlobal;
 import coloredcoded.hive.LocationHandler;
 
 public class HiveEnvironment {
@@ -15,11 +14,8 @@ public class HiveEnvironment {
         locationHandler = null;
     }
 
-    public static void createGlobalEnvironment() {
-        if (HiveGlobal.environment != null) {
-            return;
-        }
-        HiveGlobal.environment = new HiveEnvironment();
+    public static HiveEnvironment newEnvironment() {
+        return new HiveEnvironment();
     }
 
     public void setUser(User user) {
@@ -43,5 +39,10 @@ public class HiveEnvironment {
 
     public void setLocationHandlerDelegate(LocationHandler.Delegate delegate) {
         locationHandler.setDelegate(delegate);
+    }
+
+    public void cleanUp() {
+        getLocationHandler().stopLocationUpdates();
+        setLocationHandlerDelegate(null);
     }
 }

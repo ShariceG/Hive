@@ -503,49 +503,48 @@ class ServiceHandler(object):
         # By default, set new cursors to old cursors, to begin
         qm.new_top_cursor_str = params.curr_top_cursor_str
         qm.new_bottom_cursor_str = params.curr_bottom_cursor_str
-        if params.get_newer:
-            if not params.curr_top_cursor_str:
-                # If we do not get a top cursor from the client, we assume
-                # that they want the first fetch_limit results.
-                results, bottom_cursor, more = reverse_query.fetch_page(
-                    fetch_limit)
-                if bottom_cursor:
-                    _, top_cursor, _ = forward_query.fetch_page(fetch_limit,
-                        start_cursor=bottom_cursor)
-                    qm.new_top_cursor_str = top_cursor.urlsafe()
-                    qm.new_bottom_cursor_str = bottom_cursor.urlsafe()
-                    qm.has_more_older_data = more  # does this make sense??
-            else:
-                cursor = Cursor(urlsafe=params.curr_top_cursor_str)
-                # With a forward_query, the bottom_cursor eventually becomes the
-                # new top. So we get the new posts so we can figure out what
-                # the new top cursor should be, ignoring the results.
-                _, bottom_cursor, _ = forward_query.fetch_page(
-                    fetch_limit, start_cursor=cursor)
-                if (bottom_cursor and
-                    not self._cursors_are_eq(cursor, bottom_cursor)):
-                    qm.new_top_cursor_str = bottom_cursor.urlsafe()
+        if ((params.get_newer and not params.curr_top_cursor_str) or
+            (not params.get_newer and not params.curr_bottom_cursor_str)):
+            # If we do not get a top/bottom cursor from the client, we assume
+            # that they want the first fetch_limit results.
+            results, bottom_cursor, more = reverse_query.fetch_page(
+                fetch_limit)
+            if bottom_cursor:
+                _, top_cursor, _ = forward_query.fetch_page(fetch_limit,
+                    start_cursor=bottom_cursor)
+                qm.new_top_cursor_str = top_cursor.urlsafe()
+                qm.new_bottom_cursor_str = bottom_cursor.urlsafe()
+                qm.has_more_older_data = len(results) >= fetch_limit
+        elif params.get_newer:
+            cursor = Cursor(urlsafe=params.curr_top_cursor_str)
+            # With a forward_query, the bottom_cursor eventually becomes the
+            # new top. So we get the new posts so we can figure out what
+            # the new top cursor should be, ignoring the results.
+            _, bottom_cursor, _ = forward_query.fetch_page(
+                fetch_limit, start_cursor=cursor)
+            if (bottom_cursor and
+                not self._cursors_are_eq(cursor, bottom_cursor)):
+                qm.new_top_cursor_str = bottom_cursor.urlsafe()
 
-                # Then we fetch again, this time from the new top cursor, to the
-                # original bottom cursor so we can grab all the posts that we
-                # have served the client thus far. This is so that if there are
-                # any updates to any posts, the client can get them.
-                results, _, _ = reverse_query.fetch_page(
-                    page_size=sys.getsizeof(int()),
-                    start_cursor=Cursor(urlsafe=qm.new_top_cursor_str),
-                    end_cursor=Cursor(urlsafe=params.curr_bottom_cursor_str))
+            # Then we fetch again, this time from the new top cursor, to the
+            # original bottom cursor so we can grab all the posts that we
+            # have served the client thus far. This is so that if there are
+            # any updates to any posts, the client can get them.
+            results, _, _ = reverse_query.fetch_page(
+                page_size=sys.getsizeof(int()),
+                start_cursor=Cursor(urlsafe=qm.new_top_cursor_str),
+                end_cursor=Cursor(urlsafe=params.curr_bottom_cursor_str))
         else:
             # By default, assume we have no older data to serve.
             qm.has_more_older_data = False
-            if params.curr_bottom_cursor_str:
-                cursor = Cursor(urlsafe=params.curr_bottom_cursor_str)
-                results, new_bottom_cursor, more = reverse_query.fetch_page(
-                    fetch_limit, start_cursor=cursor)
-                # If there are actual results
-                if new_bottom_cursor and not self._cursors_are_eq(
-                    new_bottom_cursor, cursor):
-                    qm.new_bottom_cursor_str = new_bottom_cursor.urlsafe()
-                qm.has_more_older_data = more
+            cursor = Cursor(urlsafe=params.curr_bottom_cursor_str)
+            results, new_bottom_cursor, more = reverse_query.fetch_page(
+                fetch_limit, start_cursor=cursor)
+            # If there are actual results
+            if new_bottom_cursor and not self._cursors_are_eq(
+                new_bottom_cursor, cursor):
+                qm.new_bottom_cursor_str = new_bottom_cursor.urlsafe()
+            qm.has_more_older_data = more
         return results, qm
 
     def _cursors_are_eq(self, c1, c2):

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 
+import androidx.fragment.app.Fragment;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -15,13 +17,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import coloredcoded.hive.client.HiveEnvironment;
 import coloredcoded.hive.client.HiveLocation;
 import coloredcoded.hive.client.ServerClient;
 import coloredcoded.hive.client.ServerClientImp;
 import coloredcoded.hive.client.User;
 
 public class AppHelper {
+
+    public static boolean isFragmentVisibleToUser(Fragment fragment) {
+        return fragment.isAdded() && fragment.isVisible() && fragment.getUserVisibleHint();
+    }
 
     public static void deleteFromInternalStorage(Activity activity, String key) {
         if (!activity.deleteFile(key + ".txt")) {
@@ -82,11 +87,12 @@ public class AppHelper {
     }
 
     static HiveLocation getCurrentUserLocation() {
-        return new HiveLocation(HiveGlobal.environment.getLocationHandler().getLatestLocation());
+        return new HiveLocation(HiveGlobal.getEnvironment()
+                .getLocationHandler().getLatestLocation());
     }
 
     static String getLoggedInUsername() {
-        return HiveGlobal.environment.getUser().getUsername();
+        return HiveGlobal.getEnvironment().getUser().getUsername();
     }
 
     public static AlertDialog getPermanentAlert(final Activity activity, final String title,
@@ -100,7 +106,7 @@ public class AppHelper {
     }
 
     public static void showInternalServerErrorAlert(Activity activity) {
-        showAlert(activity, "Um... Yikes", "Some server error.");
+        showAlert(activity, "Um... Yikes", "Some server error. Try Again?");
     }
 
     public static void showAlert(Activity activity, String message) {
@@ -139,13 +145,13 @@ public class AppHelper {
         });
     }
 
-    public static void setupUserInEnvironmentIfNeeded(Activity activity) {
-        if (HiveGlobal.environment != null) {
+    public static void createEnvironmentWithUserIfNeeded(Activity activity) {
+        if (HiveGlobal.getEnvironment() != null) {
             return;
         }
         System.out.println("Creating global environment with user only...");
-        HiveEnvironment.createGlobalEnvironment();
-        HiveGlobal.environment.setUser(User.fromInternalStorage(activity));
+        HiveGlobal.instantiateNewEnvironment();
+        HiveGlobal.getEnvironment().setUser(User.fromInternalStorage(activity));
         System.out.println("Done.");
     }
 }

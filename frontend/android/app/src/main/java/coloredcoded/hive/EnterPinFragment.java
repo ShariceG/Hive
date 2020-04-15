@@ -31,6 +31,7 @@ public class EnterPinFragment extends Fragment implements SignInActivity.SignInF
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         client = AppHelper.serverClient();
+        final Fragment that = this;
         // Inflate the view for the fragment based on layout XML
         View v = inflater.inflate(R.layout.enter_pin_code_layout, container, false);
         final EditText pinEditText = v.findViewById(R.id.enterPinCodeEditText);
@@ -50,8 +51,14 @@ public class EnterPinFragment extends Fragment implements SignInActivity.SignInF
                     @Override
                     public void serverRequestCallback(StatusOr<Response> responseOr,
                                                       Map<String, Object> notes) {
-                        if (responseOr.hasError()) {
-                            AppHelper.showInternalServerErrorAlert(getActivity());
+                        if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                            if (!responseOr.hasError()) {
+                                System.out.println("ERROR_FROM_SERVER: " +
+                                        responseOr.get().getServerErrorStr());
+                            }
+                            if (AppHelper.isFragmentVisibleToUser(that)) {
+                                AppHelper.showInternalServerErrorAlert(getActivity());
+                            }
                             return;
                         }
                         Response response = responseOr.get();

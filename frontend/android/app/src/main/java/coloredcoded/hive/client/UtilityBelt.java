@@ -24,4 +24,12 @@ public class UtilityBelt {
 		return word;
 	}
 
+	public static boolean isValidEmail(String email) {
+		return !email.contains(" ") && email.contains("@") && email.contains(".");
+	}
+
+	public static boolean isValidUsername(String username) {
+		return !username.isEmpty() && username.matches("^[a-zA-Z0-9]*$");
+	}
+
 }

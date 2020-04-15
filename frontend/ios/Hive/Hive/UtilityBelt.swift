@@ -31,4 +31,13 @@ class UtilityBelt {
         return word
     }
     
+    public static func isValidEmail(email: String) -> Bool {
+        return !email.contains(" ") && email.contains("@") && email.contains(".")
+    }
+    
+    public static func isValidUsername(username: String) -> Bool {
+        return !username.isEmpty && !username.contains(where: {
+            return !$0.isLetter && !$0.isNumber
+        })
+    }
 }

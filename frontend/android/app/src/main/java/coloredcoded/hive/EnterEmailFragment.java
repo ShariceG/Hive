@@ -19,6 +19,7 @@ import coloredcoded.hive.client.Response;
 import coloredcoded.hive.client.ServerClient;
 import coloredcoded.hive.client.StatusOr;
 import coloredcoded.hive.client.User;
+import coloredcoded.hive.client.UtilityBelt;
 
 public class EnterEmailFragment extends Fragment implements SignInActivity.SignInFragment {
 
@@ -34,6 +35,7 @@ public class EnterEmailFragment extends Fragment implements SignInActivity.SignI
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         client = AppHelper.serverClient();
+        final Fragment that = this;
         // Inflate the view for the fragment based on layout XML
         view = inflater.inflate(R.layout.enter_email_layout, container, false);
         final EditText emailEditText = view.findViewById(R.id.enterEmailEditText);
@@ -42,17 +44,24 @@ public class EnterEmailFragment extends Fragment implements SignInActivity.SignI
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String email = emailEditText.getText().toString();
-                if (email.isEmpty()) {
-                    AppHelper.showAlert(getActivity(), "Email cannot be empty");
+                final String email = emailEditText.getText().toString().trim();
+                if (!UtilityBelt.isValidEmail(email)) {
+                    AppHelper.showAlert(getActivity(),
+                            "Please enter a valid email address");
                     return;
                 }
                 client.verifyExistingUser(email, new Callback() {
                     @Override
                     public void serverRequestCallback(StatusOr<Response> responseOr,
                                                       Map<String, Object> notes) {
-                        if (responseOr.hasError()) {
-                            AppHelper.showInternalServerErrorAlert(getActivity());
+                        if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                            if (!responseOr.hasError()) {
+                                System.out.println("ERROR_FROM_SERVER: " +
+                                        responseOr.get().getServerErrorStr());
+                            }
+                            if (AppHelper.isFragmentVisibleToUser(that)) {
+                                AppHelper.showInternalServerErrorAlert(getActivity());
+                            }
                             return;
                         }
                         Response response = responseOr.get();

@@ -25,7 +25,6 @@ import coloredcoded.hive.client.QueryMetadata;
 import coloredcoded.hive.client.QueryParams;
 import coloredcoded.hive.client.Response;
 import coloredcoded.hive.client.ServerClient;
-import coloredcoded.hive.client.ServerClientImp;
 import coloredcoded.hive.client.StatusOr;
 
 public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
@@ -68,7 +67,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
             @Override
             public void onClick(View v) {
                 EditText et = makePostView.findViewById(R.id.postEditText);
-                String text = et.getText().toString();
+                String text = et.getText().toString().trim();
                 if (text.isEmpty()) {
                     return;
                 }
@@ -100,7 +99,6 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
                         makePostAlert.getWindow().getAttributes().height);
             }
         });
-
         return v;
     }
 
@@ -111,11 +109,22 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
     }
 
     private Callback getInsertPostCallback() {
+        final Fragment that = this;
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
-                Response response = responseOr.get();
+                if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                    if (!responseOr.hasError()) {
+                        System.out.println("ERROR_FROM_SERVER: " +
+                                responseOr.get().getServerErrorStr());
+                    }
+                    postFeedManager.reloadUI();
+                    if (AppHelper.isFragmentVisibleToUser(that)) {
+                        AppHelper.showInternalServerErrorAlert(getActivity());
+                    }
+                    return;
+                }
                 postFeedManager.pokeNew();
                 EditText et = makePostView.findViewById(R.id.postEditText);
                 et.getText().clear();
@@ -137,10 +146,22 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
     }
 
     public Callback getAllPostsAtLocationCallback() {
+        final Fragment that = this;
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
+                if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                    if (!responseOr.hasError()) {
+                        System.out.println("ERROR_FROM_SERVER: " +
+                                responseOr.get().getServerErrorStr());
+                    }
+                    postFeedManager.reloadUI();
+                    if (AppHelper.isFragmentVisibleToUser(that)) {
+                        AppHelper.showInternalServerErrorAlert(getActivity());
+                    }
+                    return;
+                }
                 Response response = responseOr.get();
                 QueryMetadata newMetadata = response.getQueryMetadata();
                 postFeedManager.addMorePosts(response.getPosts(), newMetadata);
@@ -165,11 +186,22 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
     }
 
     public Callback updatePostCallback() {
+        final Fragment that = this;
         return new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
-                Response response = responseOr.get();
+                if (responseOr.hasError() || responseOr.get().serverReturnedWithError()) {
+                    if (!responseOr.hasError()) {
+                        System.out.println("ERROR_FROM_SERVER: " +
+                                responseOr.get().getServerErrorStr());
+                    }
+                    postFeedManager.reloadUI();
+                    if (AppHelper.isFragmentVisibleToUser(that)) {
+                        AppHelper.showInternalServerErrorAlert(getActivity());
+                    }
+                    return;
+                }
                 postFeedManager.updateActionType(
                         (String)notes.get("postId"), (ActionType)notes.get("actionType"));
             }

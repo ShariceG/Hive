@@ -81,6 +81,10 @@ public class Response {
 	public ServerStatusCode getServerStatusCode() {
 		return serverStatusCode;
 	}
+
+	public String getServerErrorStr() {
+		return getServerStatusCode() + " -> " + getServerMessage();
+	}
 	
 	private QueryMetadata getQueryMetadata(JSONObject jsonResponse) {
 		if (!jsonResponse.containsKey("query_metadata")) {
