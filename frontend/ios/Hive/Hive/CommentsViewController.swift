@@ -77,31 +77,31 @@ class CommentsViewController: UIViewController {
     }
     
     public func getAllPostComments(queryParams: QueryParams) {
-        client.getAllCommentsForPost(username: self.getLoggedInUsername(),
-                                     postId: (post?.postId)!, queryParams: queryParams,
-                                     completion: getAllPostCommentsCompletion, notes: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            self.client.getAllCommentsForPost(username: self.getLoggedInUsername(),
+                                              postId: (self.post?.postId)!, queryParams: queryParams,
+                                              completion: self.getAllPostCommentsCompletion, notes: nil)
+        }
     }
     
     private func getAllPostCommentsCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
-        if (responseOr.hasError()) {
-            // Handle likley connection error
-            print("Connection Failure: " + responseOr.getErrorMessage())
-            return
+        if responseOr.hasError() || !responseOr.get().ok() {
+            if (!responseOr.hasError()) {
+                print("ERROR_FROM_SERVER: " + responseOr.get().getServerErrorStr());
+            } else {
+                print("ERROR CONNECTION: " + responseOr.getErrorMessage());
+            }
+            commentFeedView.reloadUI();
+            showInternalServerErrorAlert();
+            return;
         }
         let response = responseOr.get()
-        if (!response.ok()) {
-            // Handle server error
-            print("ServerStatusCode: " + String(describing: responseOr.get().serverStatusCode))
-            return
-        }
-        
         let comments = response.comments
         let newMetadata = response.queryMetadata
         commentFeedView.addMoreComments(moreComments: comments, newMetadata: newMetadata)
         DispatchQueue.main.async {
-            self.commentFeedView.reload()
+            self.commentFeedView.reloadUI()
         }
-        print("Got post comments: ", responseOr.get().comments)
     }
     
     @IBAction func commentBnAction(_ sender: UIButton) {
@@ -118,25 +118,24 @@ class CommentsViewController: UIViewController {
                              postId: (post?.postId)!, completion: insertCommentCompletion, notes: nil)
     }
     
-    private func insertCommentCompletion(response: StatusOr<Response>, notes: [String:Any]?) {
-        var error: Bool = false
-        if (response.hasError()) {
-            // Handle likley connection error
-            print("Connection Failure: " + response.getErrorMessage())
-            error = true
+    private func insertCommentCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
+        if responseOr.hasError() || !responseOr.get().ok() {
+            if (!responseOr.hasError()) {
+                print("ERROR_FROM_SERVER: " + responseOr.get().getServerErrorStr());
+            } else {
+                print("ERROR CONNECTION: " + responseOr.getErrorMessage());
+            }
+            commentFeedView.reloadUI();
+            showInternalServerErrorAlert();
+            DispatchQueue.main.async {
+                self.commentTextView.text = ""
+            }
+            return;
         }
-        if (response.get().serverStatusCode != ServerStatusCode.OK) {
-            // Handle server error
-            print("ServerStatusCode: " + String(describing: response.get().serverStatusCode))
-            error = true
-        }
-        commentFeedView.fetchMoreComments(getNewer: true)
+        self.commentFeedView.pokeNew()
         DispatchQueue.main.async {
             self.commentTextView.isEditable = true
             self.commentTextView.isSelectable = true
-            if (!error) {
-                self.commentTextView.text = ""
-            }
             self.commentBn.isEnabled = true
         }
     }
@@ -148,21 +147,15 @@ class CommentsViewController: UIViewController {
     }
     
     private func updateCommentCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
-        let baseStr: String = "updateCommentCompletion => "
-        if (responseOr.hasError()) {
-            // Handle likley connection error
-            print(baseStr + "Connection Failure: " + responseOr.getErrorMessage())
-            return
-        }
-        let response = responseOr.get()
-        if (!response.ok()) {
-            // Handle server error
-            print(baseStr + "ServerStatusCode: " + String(describing: response.serverStatusCode))
-            return
-        }
-        if notes == nil {
-            print(baseStr + "Expected notes!")
-            return
+        if responseOr.hasError() || !responseOr.get().ok() {
+            if (!responseOr.hasError()) {
+                print("ERROR_FROM_SERVER: " + responseOr.get().getServerErrorStr());
+            } else {
+                print("ERROR CONNECTION: " + responseOr.getErrorMessage());
+            }
+            commentFeedView.reloadUI();
+            showInternalServerErrorAlert();
+            return;
         }
         let actionType = notes!["actionType"] as! ActionType
         let commentId = notes!["commentId"] as! String

@@ -24,6 +24,7 @@ class PostFeedManager: NSObject, PostViewDelegate {
     public private(set) var posts: Array<Post> = []
     public private(set) var delegate: PostFeedDelegate?
     private var prevFetchQueryMetadata: QueryMetadata = QueryMetadata()
+    private var refreshControl: UIRefreshControl?
     
     var postTableView: UITableView {
         get { return _postTableView! }
@@ -40,7 +41,8 @@ class PostFeedManager: NSObject, PostViewDelegate {
         postTableView.dataSource = self
         postTableView.isScrollEnabled = true
         postTableView.refreshControl = UIRefreshControl()
-        postTableView.refreshControl!.addTarget(self, action: #selector(refreshPostTableView(_:)), for: .valueChanged)
+        refreshControl = postTableView.refreshControl
+        refreshControl!.attributedTitle = NSAttributedString(string: "ugh, hold on...")
         
         // Fetch an initial set of hosts.
         fetchMorePosts(getNewer: true)
@@ -59,13 +61,13 @@ class PostFeedManager: NSObject, PostViewDelegate {
     
     func setRefreshing(set: Bool) {
         DispatchQueue.main.async {
-            if (self.postTableView.refreshControl != nil) {
-                if (set) {
-                    print("Start Refreshing...")
-                    self.postTableView.refreshControl?.beginRefreshing()
+            if (self.refreshControl != nil) {
+                if (set && !self.refreshControl!.isRefreshing) {
+                    print("Start PostFeed Refreshing...")
+                    self.refreshControl?.beginRefreshing()
                 } else {
-                    print("Stop Refreshing...")
-                    self.postTableView.refreshControl?.endRefreshing()
+                    print("Stop PostFeed Refreshing...")
+                    self.refreshControl?.endRefreshing()
                 }
             }
         }

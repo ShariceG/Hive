@@ -78,7 +78,6 @@ class Comment: Hashable, Equatable {
            let postDateSec = Int(truncating: self.creationTimestampSec as NSNumber)
            let currDate = Int(Date().getCurrentTimeSec())
            let diff = currDate - postDateSec
-           print(diff)
            return diff
        }
        

@@ -30,6 +30,7 @@ class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, Comm
     public private(set) var comments: Array<Comment> = []
     public private(set) var delegate: CommentFeedViewDelegate?
     private(set) var prevFetchQueryMetadata: QueryMetadata = QueryMetadata()
+    private var refreshControl: UIRefreshControl?
     
     func configure(delegate: CommentFeedViewDelegate) {
         self.delegate = delegate
@@ -41,36 +42,49 @@ class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, Comm
         commentTableView.dataSource = self
         commentTableView.isScrollEnabled = true
         commentTableView.refreshControl = UIRefreshControl()
-        commentTableView.refreshControl!.addTarget(self, action: #selector(refreshPostTableView(_:)), for: .valueChanged)
+        refreshControl = commentTableView.refreshControl
+        refreshControl!.addTarget(self, action: #selector(refreshPostTableView(_:)), for: .valueChanged)
         fetchMoreComments(getNewer: true)
     }
     
     // What to do when user forces a refresh on the table
     @objc func refreshPostTableView(_ refreshControl: UIRefreshControl) {
-        print("fetch newer comments")
         fetchMoreComments(getNewer: true)
-        endPostTableViewRefresh()
     }
     
-    func reload() {
+    func reloadUI() {
         commentTableView.reloadData()
-    }
-    
-    func endPostTableViewRefresh() {
-        if (self.commentTableView.refreshControl != nil) {
-            self.commentTableView.refreshControl?.endRefreshing()
-        }
+        setRefreshing(set: false)
     }
     
     // Called by Controller to give us more hosts.
     func addMoreComments(moreComments: Array<Comment>, newMetadata: QueryMetadata) {
         self.prevFetchQueryMetadata.updateMetadata(newMetadata: newMetadata)
-        comments.append(contentsOf: moreComments)
-        comments = comments.sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
-        var set: Set = Set(comments)
-        moreComments.forEach({set.insert($0)})
+        var set: Set = Set(moreComments)
+        
+        // Merge old posts and new (morePosts) posts. If a post exists in old and in new, take the
+        // new post.
+        for comment in comments {
+            if !set.contains(comment) {
+                set.insert(comment)
+            }
+        }
         comments = Array(set)
             .sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
+    }
+    
+    func setRefreshing(set: Bool) {
+        DispatchQueue.main.async {
+            if (self.refreshControl != nil) {
+                if (set && !self.refreshControl!.isRefreshing) {
+                    print("Start CommentFeed Refreshing...")
+                    self.refreshControl?.beginRefreshing()
+                } else {
+                    print("Stop CommentFeed Refreshing...")
+                    self.refreshControl?.endRefreshing()
+                }
+            }
+        }
     }
     
     func reconfigureWithAction(commentId: String, actionType: ActionType) {
@@ -129,18 +143,27 @@ class CommentFeedView : UIView, UITableViewDataSource, UITableViewDelegate, Comm
             }
         }
         comments[i].userActionType = newActionType
-        reload()
+        reloadUI()
     }
     
     func fetchMoreComments(getNewer: Bool) {
+        print("fetching " + (getNewer ? "newer" : "older") + " newer comments")
         if (!getNewer && !(prevFetchQueryMetadata.hasMoreOlderData ?? true)) {
             print("Server already told us there are no more new comments. Returning.")
             return
+        }
+        if (getNewer) {
+            setRefreshing(set: true)
         }
         let params: QueryParams = QueryParams(getNewer: getNewer,
                                               currTopCursorStr: self.prevFetchQueryMetadata.newTopCursorStr,
                                               currBottomCursorStr: self.prevFetchQueryMetadata.newBottomCursorStr)
         delegate?.fetchComments(queryParams: params)
+    }
+    
+    // A poke to the manager to ask for more new posts
+    func pokeNew() {
+        fetchMoreComments(getNewer: true)
     }
     
     // CommentViewDelegate overrides

@@ -48,17 +48,16 @@ class PostFeedModalViewController: UIViewController {
     }
     
     private func getPopularPostsFromLocationCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
-        if (responseOr.hasError()) {
-            // Handle likley connection error
-            print("Connection Failure: " + responseOr.getErrorMessage())
-            return
+        if responseOr.hasError() || !responseOr.get().ok() {
+            if (!responseOr.hasError()) {
+                print("ERROR_FROM_SERVER: " + responseOr.get().getServerErrorStr());
+            } else {
+                print("ERROR CONNECTION: " + responseOr.getErrorMessage());
+            }
+            postFeedManager.reloadUI();
+            showInternalServerErrorAlert();
+            return;
         }
-        if (!responseOr.get().ok()) {
-            // Handle server error
-            print("ServerStatusCode: " + String(describing: responseOr.get().serverStatusCode))
-            return
-        }
-        
         postFeedManager.addMorePosts(morePosts: responseOr.get().posts, newMetadata: responseOr.get().queryMetadata)
         DispatchQueue.main.async {
             self.postFeedManager.reloadUI()

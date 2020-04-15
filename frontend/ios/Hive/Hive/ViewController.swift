@@ -40,24 +40,17 @@ class ViewController: UIViewController {
         makePostView.configure(parent: self.view, delegate: self)
     }
     
-    private func insertPostCompletion(response: StatusOr<Response>, notes: [String:Any]?) {
-        var error: Bool = false
-        let baseStr: String = "insertPostCompletion => "
-        if (response.hasError()) {
-            // Handle likley connection error
-            print(baseStr + "Connection Failure: " + response.getErrorMessage())
-            error = true
+    private func insertPostCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
+        if responseOr.hasError() || !responseOr.get().ok() {
+            if (!responseOr.hasError()) {
+                print("ERROR_FROM_SERVER: " + responseOr.get().getServerErrorStr());
+            } else {
+                print("ERROR CONNECTION: " + responseOr.getErrorMessage());
+            }
+            postFeedManager.reloadUI();
+            showInternalServerErrorAlert();
+            return;
         }
-        if (!error && response.get().serverStatusCode != ServerStatusCode.OK) {
-            // Handle server error
-            print(baseStr + "ServerStatusCode: " + String(describing: response.get().serverStatusCode))
-            error = true
-        }
-        
-        if (!error) {
-            print(baseStr + "Inserted post successfully!")
-        }
-        
         self.postFeedManager.pokeNew()
         makePostView.clearPostText()
         DispatchQueue.main.async {
@@ -67,21 +60,15 @@ class ViewController: UIViewController {
     }
     
     private func updatePostCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
-        let baseStr: String = "updatePostCompletion => "
-        if (responseOr.hasError()) {
-            // Handle likley connection error
-            print(baseStr + "Connection Failure: " + responseOr.getErrorMessage())
-            return
-        }
-        let response = responseOr.get()
-        if (!response.ok()) {
-            // Handle server error
-            print(baseStr + "ServerStatusCode: " + String(describing: response.serverStatusCode))
-            return
-        }
-        if notes == nil {
-            print(baseStr + "Expected notes!")
-            return
+        if responseOr.hasError() || !responseOr.get().ok() {
+            if (!responseOr.hasError()) {
+                print("ERROR_FROM_SERVER: " + responseOr.get().getServerErrorStr());
+            } else {
+                print("ERROR CONNECTION: " + responseOr.getErrorMessage());
+            }
+            postFeedManager.reloadUI();
+            showInternalServerErrorAlert();
+            return;
         }
         let actionType = notes!["actionType"] as! ActionType
         let postId = notes!["postId"] as! String
@@ -91,19 +78,18 @@ class ViewController: UIViewController {
     }
     
     private func fetchPostsAroundUserCompletion(responseOr: StatusOr<Response>, notes: [String:Any]?) {
-        let baseStr: String = "fetchPostsAroundUserCompletion => "
-        if (responseOr.hasError()) {
-            // Handle likley connection error
-            print(baseStr + "Connection Failure: " + responseOr.getErrorMessage())
-            return
-        }
-        let response = responseOr.get()
-        if (!response.ok()) {
-            // Handle server error
-            print(baseStr + "ServerStatusCode: " + String(describing: response.serverStatusCode))
-            return
+        if responseOr.hasError() || !responseOr.get().ok() {
+            if (!responseOr.hasError()) {
+                print("ERROR_FROM_SERVER: " + responseOr.get().getServerErrorStr());
+            } else {
+                print("ERROR CONNECTION: " + responseOr.getErrorMessage());
+            }
+            postFeedManager.reloadUI();
+            showInternalServerErrorAlert();
+            return;
         }
         
+        let response = responseOr.get()
         let newPosts = response.posts
         let newMetdata = response.queryMetadata
     
@@ -154,6 +140,3 @@ extension ViewController: MakePostViewDelegate {
                           completion: insertPostCompletion, notes: nil)
     }
 }
-
-//
-
