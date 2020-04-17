@@ -11,7 +11,6 @@ import UIKit
 
 class MenuViewController: UIViewController {
     
-    let MAP_VIEW_SEGUE_IDENTIFIER = "seeMapViewSegue"
     let SIGN_IN_PAGE_VIEW_SEGUE_IDENTIFIER =
         "GoToSignInSeugue"
     
@@ -48,10 +47,6 @@ class MenuViewController: UIViewController {
     
     @IBAction func logoutBnAction(_ sender: UIButton) {
         self.performSegue(withIdentifier: SIGN_IN_PAGE_VIEW_SEGUE_IDENTIFIER, sender: sender)
-    }
-    
-    @IBAction func mapButtonAction(_ sender: UIButton) {
-        self.performSegue(withIdentifier: MAP_VIEW_SEGUE_IDENTIFIER, sender: sender)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
