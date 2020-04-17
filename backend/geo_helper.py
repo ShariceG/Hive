@@ -12,7 +12,7 @@ UNITS_PER_MILE = 0.0140
 # Distance between post regions in some fraction of a mile.
 MIN_UNITS_BETWEEN_POST_REGIONS = UNITS_PER_MILE / 4
 
-MIN_ILES_BETWEEN_POST_REGIONS = MIN_UNITS_BETWEEN_POST_REGIONS / UNITS_PER_MILE
+MIN_MILES_BETWEEN_POST_REGIONS = MIN_UNITS_BETWEEN_POST_REGIONS / UNITS_PER_MILE
 
 _RAPID_HOST = 'geocodeapi.p.rapidapi.com'
 _RAPID_API_KEY = 'a54e0796e8msh2a21bd76558c31ap1c3e17jsn109dd24cb81f'
@@ -36,25 +36,36 @@ def get_rounded_lat_lon(lat, lon):
 def get_regions_n_miles_from_rounded_lat_lon(lat, lon, n):
     lat = float(lat)
     lon = float(lon)
-    miles_covered = MIN_ILES_BETWEEN_POST_REGIONS
-    regions = []
-    offset = MIN_UNITS_BETWEEN_POST_REGIONS
-    directions = [
-        (1, 0), (-1, 0),
-        (0, 1), (0, -1),
-        (1, 1), (-1, 1),
-        (1, -1), (1, 1)]
-    distance_multipler = 1
+    miles_covered = 0
+    regions = [(lat, lon)]
+    centers = [(lat, lon)]
     while miles_covered < n:
-        for d in directions:
-            offset = MIN_UNITS_BETWEEN_POST_REGIONS * distance_multipler
-            new_lat = lat + d[0] * offset
-            new_lon = lon + d[1] * offset
-            regions.append((new_lat, new_lon))
-        miles_covered += MIN_ILES_BETWEEN_POST_REGIONS
-        distance_multipler = miles_covered / MIN_UNITS_BETWEEN_POST_REGIONS
-    regions.append((lat, lon))
+        new_centers = []
+        for center in centers:
+            all_regions, new_regions = _generate_neighbors(center, regions)
+            new_centers += new_regions
+            regions = all_regions
+        centers = new_centers
+        miles_covered += MIN_MILES_BETWEEN_POST_REGIONS
     return regions
+
+def _generate_neighbors(center, current_regions):
+    directions = [
+        (0, -1), (0, 1),
+        (1, 0), (-1, 0),
+        (-1, -1), (1, -1),
+        (1, 1), (-1, 1)]
+    offset = MIN_UNITS_BETWEEN_POST_REGIONS
+    new_regions = []
+    all_regions = [] + current_regions
+    for d in directions:
+        new_lat = center[0] + d[0] * offset
+        new_lon = center[1] + d[1] * offset
+        new_point = (new_lat, new_lon)
+        if  not new_point in current_regions:
+            new_regions.append(new_point)
+            all_regions.append(new_point)
+    return all_regions, new_regions
 
 def geo_to_area(lat, lon):
     lat = str(lat)

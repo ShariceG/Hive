@@ -24,6 +24,7 @@ class PostFeedManager: NSObject, PostViewDelegate {
     public private(set) var posts: Array<Post> = []
     public private(set) var delegate: PostFeedDelegate?
     private var prevFetchQueryMetadata: QueryMetadata = QueryMetadata()
+    private var refreshControl: UIRefreshControl?
     
     var postTableView: UITableView {
         get { return _postTableView! }
@@ -33,13 +34,16 @@ class PostFeedManager: NSObject, PostViewDelegate {
         self._postTableView = tableView
         self.delegate = delegate
         // Register nib as cell.
+        // Overrides whatever identifier is used in storyboard... I think.
         postTableView.register(UINib(nibName: POST_VIEW_CELL_NIB_NAME, bundle: nil),
                                forCellReuseIdentifier: POST_VIEW_CELL_REUSE_IDENTIFIER)
         postTableView.delegate = self
         postTableView.dataSource = self
         postTableView.isScrollEnabled = true
         postTableView.refreshControl = UIRefreshControl()
-        postTableView.refreshControl!.addTarget(self, action: #selector(refreshPostTableView(_:)), for: .valueChanged)
+        refreshControl = postTableView.refreshControl
+        refreshControl!.addTarget(self, action: #selector(refreshPostTableView(_:)), for: .valueChanged)
+        refreshControl!.attributedTitle = NSAttributedString(string: "ugh, hold on...")
         
         // Fetch an initial set of hosts.
         fetchMorePosts(getNewer: true)
@@ -49,23 +53,41 @@ class PostFeedManager: NSObject, PostViewDelegate {
     @objc func refreshPostTableView(_ refreshControl: UIRefreshControl) {
         print("fetch newer posts")
         fetchMorePosts(getNewer: true)
-        endPostTableViewRefresh()
     }
     
-    func reload() {
-        postTableView.reloadData()
+    func reloadUI() {
+        DispatchQueue.main.async {
+            self.postTableView.reloadData()
+        }
+        setRefreshing(set: false)
     }
     
-    func endPostTableViewRefresh() {
-        if (self.postTableView.refreshControl != nil) {
-            self.postTableView.refreshControl?.endRefreshing()
+    func setRefreshing(set: Bool) {
+        DispatchQueue.main.async {
+            if (self.refreshControl != nil) {
+                if (set && !self.refreshControl!.isRefreshing) {
+                    print("Start PostFeed Refreshing...")
+                    self.refreshControl?.beginRefreshing()
+                } else {
+                    print("Stop PostFeed Refreshing...")
+                    self.refreshControl?.endRefreshing()
+                }
+            }
         }
     }
     
     // Called by Controller to give us more hosts.
     func addMorePosts(morePosts: Array<Post>, newMetadata: QueryMetadata) {
         self.prevFetchQueryMetadata.updateMetadata(newMetadata: newMetadata)
-        let set: Set = Set(morePosts)
+        var set: Set = Set(morePosts)
+        
+        // Merge old posts and new (morePosts) posts. If a post exists in old and in new, take the
+        // new post.
+        for post in posts {
+            if !set.contains(post) {
+                set.insert(post)
+            }
+        }
         posts = Array(set)
             .filter {!$0.isExpired()}
             .sorted(by: {$0.creationTimestampSec > $1.creationTimestampSec})
@@ -148,13 +170,16 @@ class PostFeedManager: NSObject, PostViewDelegate {
             }
         }
         posts[i].userActionType = newActionType
-        reload()
+        reloadUI()
     }
     
     private func fetchMorePosts(getNewer: Bool) {
         if (!getNewer && !(prevFetchQueryMetadata.hasMoreOlderData ?? true)) {
             print("Server already told us there are no more old posts. Returning.")
             return
+        }
+        if (getNewer) {
+            setRefreshing(set: true)
         }
         let params: QueryParams = QueryParams(getNewer: getNewer,
                                               currTopCursorStr: self.prevFetchQueryMetadata.newTopCursorStr,

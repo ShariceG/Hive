@@ -123,20 +123,4 @@ extension UIViewController{
     func getLoggedInUsername() -> String {
         return Global.environment!.user!.username
     }
-    
-//    func getTestLocation() -> Location {
-////        return "47.608013:-122.335167"  // Seattle
-////        return "33.844847:-116.549069"
-//        let location = Location()
-//        location.latStr = "47.608013"
-//        location.lonStr = "-122.335167"
-//        location.area = Location.Area()
-//        location.area.city = "Seattle"
-//        location.area.country = "United States"
-//        return location
-//    }
-//
-//    func getTestUser() -> String {
-//        return "user1"
-//    }
 }

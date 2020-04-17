@@ -124,7 +124,7 @@ public class PostFeedManager implements PostView.Delegate {
         });
     }
 
-    private void setRefreshAnimation(final boolean set) {
+    public void setRefreshAnimation(final boolean set) {
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {

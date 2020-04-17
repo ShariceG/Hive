@@ -45,8 +45,8 @@ class ServerClient {
     private static let CONNECTION_TIMEOUT_MS: Int = 5000
     private static let READ_TIMEOUT_MS: Int = 55000
 
-//    private static let SERVER_DOMAIN: String = "http://192.168.0.42:8080"
-    private static let SERVER_DOMAIN: String = "http://192.168.0.43:8080"
+    private static let SERVER_DOMAIN: String = "http://192.168.0.42:8080"
+//    private static let SERVER_DOMAIN: String = "http://192.168.0.43:8080"
     private static let COMMON_PATH: String = "/_ah/api/media_api/v1/"
     private static let CREATE_USER_PATH: String = "app.create_user?"
     private static let VERIFY_CODE_PATH: String = "app.verify_code?"
