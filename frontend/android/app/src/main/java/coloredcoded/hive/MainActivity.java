@@ -17,7 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements LocationHandler.Delegate,
-        BottomNavigationView.OnNavigationItemSelectedListener{
+        BottomNavigationView.OnNavigationItemSelectedListener {
 
     private CustomViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
@@ -184,7 +184,5 @@ public class MainActivity extends AppCompatActivity implements LocationHandler.D
 }
 
 /*
-No indication that you can swipe left and right
-Write Something -> change to icon with pencil and circle
 Dynamic counter for character limit in post view
  */
