@@ -2,10 +2,11 @@ package coloredcoded.hive;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -21,43 +22,43 @@ import coloredcoded.hive.client.Callback;
 import coloredcoded.hive.client.HiveLocation;
 import coloredcoded.hive.client.Response;
 import coloredcoded.hive.client.ServerClient;
-import coloredcoded.hive.client.ServerClientImp;
 import coloredcoded.hive.client.StatusOr;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap map;
     private ServerClient client;
     private ArrayList<HiveLocation> hiveLocations;
 
+    public static MapFragment newInstance() {
+        return new MapFragment();
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        client = new ServerClientImp();
-        setContentView(R.layout.map_layout);
+        client = AppHelper.serverClient();
+    }
 
-        Button backButton = findViewById(R.id.mapBackButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.map_layout, container, false);
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getChildFragmentManager()
+                        .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        return v;
     }
 
     private void fetchAllPostLocations() {
-        final MapActivity that = this;
         client.getAllPostLocations(new Callback() {
             @Override
             public void serverRequestCallback(StatusOr<Response> responseOr,
                                               Map<String, Object> notes) {
                 Response response = responseOr.get();
                 hiveLocations = response.getHiveLocations();
-                that.runOnUiThread(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         for (HiveLocation hiveLocation : hiveLocations) {
@@ -94,7 +95,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Intent intent = new Intent(MapActivity.this,
+                Intent intent = new Intent(getActivity(),
                         PostFeedFromMapActivity.class);
                 intent.putExtra("location", (HiveLocation) marker.getTag());
                 startActivity(intent);

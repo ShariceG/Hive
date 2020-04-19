@@ -13,7 +13,6 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import java.util.HashMap;
 import java.util.Map;
 
