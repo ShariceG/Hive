@@ -113,6 +113,10 @@ class Response {
         return serverStatusCode == ServerStatusCode.OK
     }
     
+    public func getServerErrorStr() -> String {
+        return String(describing: serverStatusCode) + " -> " + serverMessage;
+    }
+    
     private func getServerStatusCodeFromJson(jsonObject: [String: Any]) -> ServerStatusCode {
         let serverStatusCodeStr = (jsonObject["status"] as! [String:Any])["status_code"] as! String
         return ServerStatusCode.enumFromString(string: serverStatusCodeStr)!

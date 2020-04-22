@@ -103,6 +103,7 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
     }
 
     private void insertPost(String text) {
+        postFeedManager.setRefreshAnimation(true);
         client.insertPost(AppHelper.getLoggedInUsername(), text,
                 AppHelper.getCurrentUserLocation(),
                 getInsertPostCallback(), null);
@@ -125,7 +126,8 @@ public class HomeFragment extends Fragment implements PostFeedManager.Delegate {
                     }
                     return;
                 }
-                postFeedManager.pokeNew();
+                postFeedManager.addMorePosts(responseOr.get().getPosts(),
+                        new QueryMetadata());
                 EditText et = makePostView.findViewById(R.id.postEditText);
                 et.getText().clear();
                 writeSomethingButton.post(new Runnable() {

@@ -20,6 +20,7 @@ import java.util.Iterator;
 
 import coloredcoded.hive.client.ActionType;
 import coloredcoded.hive.client.Comment;
+import coloredcoded.hive.client.Post;
 import coloredcoded.hive.client.QueryMetadata;
 import coloredcoded.hive.client.QueryParams;
 
@@ -105,7 +106,7 @@ public class CommentFeedManager implements CommentView.Delegate {
         });
     }
 
-    private void setRefreshAnimation(final boolean set) {
+    public void setRefreshAnimation(final boolean set) {
         if (set) {
             System.out.println("Set refreshing animation true..");
         }
@@ -151,9 +152,14 @@ public class CommentFeedManager implements CommentView.Delegate {
     public void addMoreComments(ArrayList<Comment> moreComments, QueryMetadata newMetadata) {
         prevQueryMetadata.updateMetadata(newMetadata);
 
-        HashSet<Comment> set = new HashSet<>(comments);
-        for (Comment comment : moreComments) {
-            set.add(comment);
+        HashSet<Comment> set = new HashSet<>(moreComments);
+
+        // Merge old comments and new (moreComments) posts. If a post exists in old and in new,
+        // take the new comment.
+        for (Comment c : comments) {
+            if (!set.contains(c)) {
+                set.add(c);
+            }
         }
 
         // Don't include expired hosts while transferring from set to post.
