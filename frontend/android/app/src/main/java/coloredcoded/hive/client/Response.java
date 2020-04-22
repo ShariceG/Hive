@@ -99,10 +99,10 @@ public class Response {
 	}
 	
 	private ArrayList<HiveLocation> getLocationList(JSONObject jsonResponse) {
-		if (!jsonResponse.containsKey("hiveLocations")) {
+		if (!jsonResponse.containsKey("locations")) {
 			return new ArrayList<HiveLocation>();
 		}
-		JSONArray jsonLocations = (JSONArray) jsonResponse.get("hiveLocations");
+		JSONArray jsonLocations = (JSONArray) jsonResponse.get("locations");
 		ArrayList<HiveLocation> hiveLocations = new ArrayList<HiveLocation>();
 		for (Object locationJson : jsonLocations) {
 			hiveLocations.add(HiveLocation.jsonToLocation((JSONObject)locationJson));

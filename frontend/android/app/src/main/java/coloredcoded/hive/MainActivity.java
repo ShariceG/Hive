@@ -5,18 +5,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.MenuItem;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements LocationHandler.Delegate {
+public class MainActivity extends AppCompatActivity implements LocationHandler.Delegate,
+        BottomNavigationView.OnNavigationItemSelectedListener {
 
-    private ViewPager viewPager;
+    private CustomViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
     private LocationHandler locationHandler;
 
@@ -54,7 +57,10 @@ public class MainActivity extends AppCompatActivity implements LocationHandler.D
     }
 
     public void initActivity() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
         viewPager = findViewById(R.id.viewPager);
+        viewPager.setPagingEnabled(false);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.setCurrentItem(viewPagerAdapter.getDefaultFragmentIndex());
@@ -124,6 +130,25 @@ public class MainActivity extends AppCompatActivity implements LocationHandler.D
                 });
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.mapMenuItem:
+                viewPager.setCurrentItem(0, false);
+                break;
+            case R.id.feedMenuItem:
+                viewPager.setCurrentItem(1, false);
+                break;
+            case R.id.popularMenuItem:
+                viewPager.setCurrentItem(2, false);
+                break;
+            case R.id.settingsMenuItem:
+                viewPager.setCurrentItem(3, false);
+                break;
+        }
+        return true;
+    }
+
     // ================= View Pager Adapter Inner Class ================= //
 
     public class ViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -134,9 +159,10 @@ public class MainActivity extends AppCompatActivity implements LocationHandler.D
         public ViewPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
             fragments = new ArrayList<>();
-            fragments.add(MenuFragment.newInstance());
+            fragments.add(MapFragment.newInstance());
             fragments.add(HomeFragment.newInstance());
             fragments.add(PopularPostsFragment.newInstance());
+            fragments.add(MenuFragment.newInstance());
         }
 
         public int getDefaultFragmentIndex() {
@@ -158,7 +184,5 @@ public class MainActivity extends AppCompatActivity implements LocationHandler.D
 }
 
 /*
-No indication that you can swipe left and right
-Write Something -> change to icon with pencil and circle
 Dynamic counter for character limit in post view
  */

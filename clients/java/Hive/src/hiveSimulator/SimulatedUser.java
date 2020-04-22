@@ -30,6 +30,10 @@ public class SimulatedUser {
 		createNewUser();
 	}
 	
+	public String toString() {
+		return username;
+	}
+	
 	public void createNewUser() {
 		client.createNewUser(username, email, new Callback() {
 			public void serverRequestCallback(StatusOr<Response> responseOr, 

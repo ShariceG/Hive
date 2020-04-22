@@ -95,10 +95,10 @@
             </objects>
             <point key="canvasLocation" x="1647.826086956522" y="1050"/>
         </scene>
-        <!--MainPageViewController-->
+        <!--MainTabBarController-->
         <scene sceneID="TCz-s6-yLe">
             <objects>
-                <viewControllerPlaceholder storyboardIdentifier="Main" storyboardName="Main" referencedIdentifier="MainPageViewController" id="jls-V8-yTY" sceneMemberID="viewController">
+                <viewControllerPlaceholder storyboardIdentifier="Main" storyboardName="Main" referencedIdentifier="MainTabBarController" id="jls-V8-yTY" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="gXz-cc-H76"/>
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4d5-9H-fwq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

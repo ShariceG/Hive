@@ -26,17 +26,9 @@ public class MenuFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.menu_layout, container, false);
         final User user = HiveGlobal.getEnvironment().getUser();
-        Button mapButton = v.findViewById(R.id.menuMapButton);
         Button logOutButton = v.findViewById(R.id.logOutButton);
         TextView usernameTextView = v.findViewById(R.id.usernameTextView);
         usernameTextView.setText("User: " + user.getUsername());
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), MapActivity.class);
-                getActivity().startActivity(intent);
-            }
-        });
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -67,11 +67,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.performSegue(withIdentifier: POST_FEED_MODAL_VIEW_SEGUE_IDENTIFIER, sender: view)
     }
     
-    @IBAction func backToMenuAction(_ sender: UIButton) {
-        _ = self.navigationController?.popViewController(animated: true)
-        self.dismiss(animated: true, completion: nil)
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == POST_FEED_MODAL_VIEW_SEGUE_IDENTIFIER) {
             let annotationView = sender as! MKAnnotationView

@@ -5,6 +5,11 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import hive.Location;
 
@@ -27,32 +32,43 @@ public class HiveSimulator {
 	public void startSimulation() {
 		long deadline = System.currentTimeMillis() + runtimeMs;
 		System.out.println("Starting simulation...");
-		while (true) {
-			
-			for (SimulatedUser user : users) {
-				int randomNum = new Random().nextInt(1000);
-				if (randomNum < 250) {
-					user.writePost();
-				} else if (randomNum < 500) {
-					user.writeComment();
-				} else if (randomNum < 750) {
-					user.changeLocation(randomLocation());
-					user.performActionOnAPost();
-				} else {
-					user.performActionOnAPost();
-					user.changeLocation(randomLocation());
+		ExecutorService threadPool = Executors.newCachedThreadPool();
+		Future future = null;
+		for (final SimulatedUser user : users) {
+			future = threadPool.submit(new Runnable() {
+				
+				@Override
+				public void run() {
+					while (true) {
+						int randomNum = new Random().nextInt(1000);
+						if (randomNum < 250) {
+							user.writePost();
+						} else if (randomNum < 500) {
+							user.writeComment();
+						} else if (randomNum < 750) {
+							user.changeLocation(randomLocation());
+							user.performActionOnAPost();
+						} else {
+							user.performActionOnAPost();
+							user.changeLocation(randomLocation());
+						}
+						pauseSimulation(5);
+						if (System.currentTimeMillis() > deadline) {
+							System.out.println(user + " Stopping simulation...");
+							break;
+						}
+						
+						long timeLeft = (deadline - System.currentTimeMillis()) / 1000;
+						System.out.println(user + " " + timeLeft + " seconds left.");
+					}
 				}
-			}
-			
+			});
 			pauseSimulation(2);
-			
-			if (System.currentTimeMillis() > deadline) {
-				System.out.println("Stopping simulation...");
-				break;
-			}
-			
-			long timeLeft = (deadline - System.currentTimeMillis()) / 1000;
-			System.out.println(timeLeft + " seconds left.");
+		}
+		try {
+			future.get();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		System.exit(0);
 	}
@@ -80,7 +96,7 @@ public class HiveSimulator {
 			}
 		}
 	}
-	
+
 	public static Location makeLocation(String geo) {
 		String[] split = geo.split(":");
 		return new Location(split[0], split[1]);

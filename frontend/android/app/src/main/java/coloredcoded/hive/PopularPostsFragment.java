@@ -45,7 +45,8 @@ public class PopularPostsFragment extends Fragment implements PostFeedManager.De
         super.onCreate(savedInstanceState);
         client = new ServerClientImp();
         popularHiveLocations = new ArrayList<>();
-        popularAdapter = new PopularRecyclerViewAdapter(getContext(), popularHiveLocations, this);
+        popularAdapter = new PopularRecyclerViewAdapter(getContext(),
+                popularHiveLocations, this);
     }
 
     // Inflate the view for the fragment based on layout XML
