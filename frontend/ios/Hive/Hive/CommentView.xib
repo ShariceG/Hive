@@ -17,7 +17,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VnD-tA-7TH">
-                        <rect key="frame" x="16" y="130" width="23" height="12"/>
+                        <rect key="frame" x="16" y="96.5" width="23" height="12"/>
                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
                         <color key="textColor" red="0.74901960779999999" green="0.74117647060000003" blue="0.75686274509999996" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
@@ -54,14 +54,14 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <textView multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="The Post" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1OA-Fi-sdY">
-                        <rect key="frame" x="16" y="47" width="41.5" height="58"/>
+                        <rect key="frame" x="16" y="47" width="41.5" height="24.5"/>
                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <fontDescription key="fontDescription" type="system" pointSize="7"/>
                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                     </textView>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="0Ht-tr-Zd4" firstAttribute="bottom" secondItem="VnD-tA-7TH" secondAttribute="bottom" id="0JX-GM-OIV"/>
+                    <constraint firstItem="0Ht-tr-Zd4" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="VnD-tA-7TH" secondAttribute="bottom" id="0JX-GM-OIV"/>
                     <constraint firstItem="oS8-bb-Eby" firstAttribute="centerY" secondItem="N4a-pd-0lB" secondAttribute="centerY" id="1Ew-ff-Dst"/>
                     <constraint firstItem="0Ht-tr-Zd4" firstAttribute="centerX" secondItem="oS8-bb-Eby" secondAttribute="centerX" id="6io-ly-foQ"/>
                     <constraint firstItem="0Ht-tr-Zd4" firstAttribute="bottom" secondItem="N4a-pd-0lB" secondAttribute="bottomMargin" id="9ee-Xv-0wR"/>
@@ -70,7 +70,7 @@
                     <constraint firstItem="1OA-Fi-sdY" firstAttribute="top" secondItem="zLC-cZ-1fG" secondAttribute="bottom" constant="9" id="V0W-m4-NbV"/>
                     <constraint firstItem="VnD-tA-7TH" firstAttribute="leading" secondItem="zLC-cZ-1fG" secondAttribute="leading" id="WIl-Py-kof"/>
                     <constraint firstAttribute="trailingMargin" secondItem="0Ht-tr-Zd4" secondAttribute="trailing" constant="16.5" id="ZpI-5r-HQ9"/>
-                    <constraint firstItem="CGL-CJ-sJV" firstAttribute="leading" secondItem="N4a-pd-0lB" secondAttribute="leading" constant="250" id="atE-ZH-u7a"/>
+                    <constraint firstItem="CGL-CJ-sJV" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="N4a-pd-0lB" secondAttribute="leading" constant="250" id="atE-ZH-u7a"/>
                     <constraint firstItem="VnD-tA-7TH" firstAttribute="top" secondItem="1OA-Fi-sdY" secondAttribute="bottom" constant="25" id="egv-Ts-mOT"/>
                     <constraint firstItem="0Ht-tr-Zd4" firstAttribute="top" secondItem="oS8-bb-Eby" secondAttribute="bottom" constant="23" id="gnq-SY-ZKH"/>
                     <constraint firstItem="CGL-CJ-sJV" firstAttribute="top" secondItem="N4a-pd-0lB" secondAttribute="top" constant="16" id="kga-kb-fFR"/>

@@ -13,6 +13,7 @@ class CommentsViewController: UIViewController {
     
     let POST_VIEW_CELL_REUSE_IDENTIFIER = "postView"
     let POST_VIEW_CELL_NIB_NAME = "PostView"
+    var COMMENT_PLACEHOLDER = "Write a comment"
     
     @IBOutlet weak var commentFeedView: CommentFeedView!
     @IBOutlet weak var postTableView: UITableView!
@@ -26,6 +27,18 @@ class CommentsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        commentTextView.delegate = self
+        commentTextView.textContainer.heightTracksTextView = true
+        commentTextView.isScrollEnabled = false
+        commentTextView.text = COMMENT_PLACEHOLDER
+        commentTextView.textColor = .lightGray
+        
+       
+//
+//        NotificationCenter.default.addObserver(self, selector: Selector(CommentsViewController.keyboardWillShowNotification.rawValue), name: UIResponder.keyboardWillShowNotification, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: Selector(ViewController.keyboardWillHideNotification.rawValue), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
         self.hideKeyboardWhenTapped()
         setupPostViewTable()
         setupExitGesture()
@@ -170,8 +183,6 @@ class CommentsViewController: UIViewController {
             self.commentFeedView.reconfigureWithAction(commentId: commentId, actionType: actionType)
         }
     }
-    
-    
 }
 
 // --------------- Extensions ----------------
@@ -215,3 +226,29 @@ extension CommentsViewController: CommentFeedViewDelegate {
         self.updateComment(comment: comment, actionType: actionType)
     }
 }
+
+extension CommentsViewController: UITextViewDelegate {
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+
+    if textView.textColor == .lightGray {
+        textView.text = ""
+        textView.textColor = .black
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            textView.text = "Write a comment..."
+            textView.textColor = UIColor.lightGray
+            self.COMMENT_PLACEHOLDER = ""
+        } else {
+            self.COMMENT_PLACEHOLDER = textView.text
+        }
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        self.COMMENT_PLACEHOLDER = textView.text
+    }
+}
+
