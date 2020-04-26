@@ -3,7 +3,7 @@
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -70,41 +70,52 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="758"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tFm-hL-kDD" customClass="CommentFeedView" customModule="Hive" customModuleProvider="target">
-                                <rect key="frame" x="16" y="285" width="343" height="457"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="iA2-eg-atC">
-                                        <rect key="frame" x="0.0" y="0.0" width="343" height="457"/>
-                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                        <color key="backgroundColor" red="0.96862745100000003" green="0.82352941180000006" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    </tableView>
-                                </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                                <connections>
-                                    <outlet property="commentTableView" destination="iA2-eg-atC" id="30Q-rx-l25"/>
-                                </connections>
-                            </view>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" text="Comment" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="sfF-sZ-vdr">
-                                <rect key="frame" x="20" y="230" width="198" height="38"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                            </textView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XJV-l0-v3o">
-                                <rect key="frame" x="236" y="230" width="119" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Comment"/>
-                                <connections>
-                                    <action selector="commentBnAction:" destination="o5x-Wz-56f" eventType="touchUpInside" id="vhP-SE-0Bw"/>
-                                </connections>
-                            </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="BkP-im-cAW" userLabel="Post Table View">
-                                <rect key="frame" x="16" y="20" width="343" height="162"/>
+                                <rect key="frame" x="16" y="8" width="343" height="162"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.96862745100000003" green="0.82352941180000006" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </tableView>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="23G-1Q-Bbz">
+                                <rect key="frame" x="16" y="178" width="343" height="546"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tFm-hL-kDD" customClass="CommentFeedView" customModule="Hive" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="8" width="343" height="484"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="iA2-eg-atC">
+                                                <rect key="frame" x="0.0" y="-14" width="343" height="498"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <color key="backgroundColor" red="0.96862745100000003" green="0.82352941180000006" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </tableView>
+                                        </subviews>
+                                        <connections>
+                                            <outlet property="commentTableView" destination="iA2-eg-atC" id="30Q-rx-l25"/>
+                                        </connections>
+                                    </view>
+                                    <view contentMode="scaleToFill" id="tJM-rs-nX7">
+                                        <rect key="frame" x="4" y="500" width="335" height="38"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" text="Comment" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="sfF-sZ-vdr">
+                                                <rect key="frame" x="0.0" y="0.0" width="198" height="38"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                            </textView>
+                                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XJV-l0-v3o">
+                                                <rect key="frame" x="206" y="4" width="119" height="30"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <state key="normal" title="Comment"/>
+                                                <connections>
+                                                    <action selector="commentBnAction:" destination="o5x-Wz-56f" eventType="touchUpInside" id="vhP-SE-0Bw"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </view>
+                                </subviews>
+                            </scrollView>
                         </subviews>
                         <color key="backgroundColor" red="0.96862745100000003" green="0.82352941180000006" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
@@ -112,13 +123,15 @@
                     <connections>
                         <outlet property="commentBn" destination="XJV-l0-v3o" id="eqk-xh-cR9"/>
                         <outlet property="commentFeedView" destination="tFm-hL-kDD" id="d0H-O8-HsH"/>
+                        <outlet property="commentInputContainerView" destination="tJM-rs-nX7" id="Dn2-zE-b8B"/>
                         <outlet property="commentTextView" destination="sfF-sZ-vdr" id="u2w-id-WE0"/>
+                        <outlet property="commentsScrollView" destination="23G-1Q-Bbz" id="ebW-fg-MM0"/>
                         <outlet property="postTableView" destination="BkP-im-cAW" id="o8b-l4-26d"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PWt-9p-sTC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1172" y="-58"/>
+            <point key="canvasLocation" x="1172" y="-58.374384236453203"/>
         </scene>
         <!--Popular View Controller-->
         <scene sceneID="nWk-ec-D4e">

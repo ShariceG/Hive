@@ -18,6 +18,8 @@ class CommentsViewController: UIViewController {
     @IBOutlet weak var postTableView: UITableView!
     @IBOutlet weak var commentBn: UIButton!
     @IBOutlet weak var commentTextView: UITextView!
+    @IBOutlet weak var commentInputContainerView: UIView!
+    @IBOutlet weak var commentsScrollView: UIScrollView!
     
     private(set) var post: Post? = nil
     private var disallowInteractingWithComments: Bool = false
@@ -39,6 +41,33 @@ class CommentsViewController: UIViewController {
             }
             self.postTableView.reloadData()
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillDisappear), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: UIResponder.keyboardWillShowNotification, object: nil)
+    }
+
+    @objc func keyboardWillAppear(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            commentsScrollView.setContentOffset(CGPoint(x:
+                0, y: keyboardSize.size.height), animated: true)
+            commentFeedView.commentTableView.contentInset = UIEdgeInsets(top:
+                keyboardSize.size.height, left: 0, bottom: 0, right: 0)
+        }
+    }
+
+    @objc func keyboardWillDisappear(notification: NSNotification) {
+        commentsScrollView.setContentOffset(
+            CGPoint(x:0, y: 0), animated: true)
+        commentFeedView.commentTableView.contentInset = UIEdgeInsets(top:
+        0, left: 0, bottom: 0, right: 0)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self)
     }
     
     public func controllerInit(post: Post) {
